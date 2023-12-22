@@ -1,0 +1,259 @@
+﻿<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{62CB2B31-FEDB-4332-94F2-92FECCB4C573}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>WindowsApplication</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>ControlTest</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EOSeclipse.Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\EOSeclipse.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".vs\EOSeclipse.Controls\DesignTimeBuild\.dtbcache.v2" />
+    <None Include=".vs\EOSeclipse.Controls\FileContentIndex\2605cbac-b432-4c2c-b94e-b8af206b889f.vsidx" />
+    <None Include=".vs\EOSeclipse.Controls\FileContentIndex\70cbe6ec-f4d6-42b1-b3c9-6bfb299dbf9c.vsidx" />
+    <None Include=".vs\EOSeclipse.Controls\FileContentIndex\7f2da3f0-6512-48a8-8fac-1f277b1559e7.vsidx" />
+    <None Include=".vs\EOSeclipse.Controls\FileContentIndex\8cbead01-98be-41f8-aab5-307c96e95c09.vsidx" />
+    <None Include=".vs\EOSeclipse.Controls\FileContentIndex\99804a90-03cc-4b89-ab3a-e571fe69a76d.vsidx" />
+    <None Include=".vs\EOSeclipse.Controls\v17\.futdcache.v2" />
+    <None Include=".vs\EOSeclipse.Controls\v17\.suo" />
+    <None Include=".vs\ProjectEvaluation\eoseclipse.controls.metadata.v7.bin" />
+    <None Include=".vs\ProjectEvaluation\eoseclipse.controls.projects.v7.bin" />
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="packages\TimeSpan2.2.4.3\.signature.p7s" />
+    <None Include="packages\TimeSpan2.2.4.3\TimeSpan2.2.4.3.nupkg" />
+    <None Include="packages\TimeSpan2.Core.2.4.3\.signature.p7s" />
+    <None Include="packages\TimeSpan2.Core.2.4.3\TimeSpan2.Core.2.4.3.nupkg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages\TimeSpan2.2.4.3\lib\net20\TimeSpan2.dll" />
+    <Content Include="packages\TimeSpan2.2.4.3\lib\net20\TimeSpan2.xml" />
+    <Content Include="packages\TimeSpan2.2.4.3\lib\net35\TimeSpan2.dll" />
+    <Content Include="packages\TimeSpan2.2.4.3\lib\net35\TimeSpan2.xml" />
+    <Content Include="packages\TimeSpan2.2.4.3\lib\net462\TimeSpan2.dll" />
+    <Content Include="packages\TimeSpan2.2.4.3\lib\net462\TimeSpan2.xml" />
+    <Content Include="packages\TimeSpan2.2.4.3\lib\net48\TimeSpan2.dll" />
+    <Content Include="packages\TimeSpan2.2.4.3\lib\net48\TimeSpan2.xml" />
+    <Content Include="packages\TimeSpan2.2.4.3\lib\net6.0-windows7.0\TimeSpan2.dll" />
+    <Content Include="packages\TimeSpan2.2.4.3\lib\net6.0-windows7.0\TimeSpan2.xml" />
+    <Content Include="packages\TimeSpan2.2.4.3\lib\net7.0-windows7.0\TimeSpan2.dll" />
+    <Content Include="packages\TimeSpan2.2.4.3\lib\net7.0-windows7.0\TimeSpan2.xml" />
+    <Content Include="packages\TimeSpan2.2.4.3\stopwatch.png" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\ar\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\da\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\de\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\es\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\fr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\it\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\ja\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\ko\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\nl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\pl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\pt\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\ru\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\se\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\sv\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\TimeSpan2.Core.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\TimeSpan2.Core.xml" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\tr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\zh-CN\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net20\zh-Hant\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\ar\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\da\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\de\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\es\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\fr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\it\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\ja\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\ko\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\nl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\pl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\pt\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\ru\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\se\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\sv\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\TimeSpan2.Core.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\TimeSpan2.Core.xml" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\tr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\zh-CN\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net35\zh-Hant\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\ar\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\da\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\de\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\es\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\fr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\it\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\ja\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\ko\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\nl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\pl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\pt\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\ru\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\se\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\sv\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\TimeSpan2.Core.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\TimeSpan2.Core.xml" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\tr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\zh-CN\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net462\zh-Hant\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\ar\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\da\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\de\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\es\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\fr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\it\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\ja\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\ko\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\nl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\pl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\pt\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\ru\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\se\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\sv\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\TimeSpan2.Core.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\TimeSpan2.Core.xml" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\tr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\zh-CN\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net48\zh-Hant\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\ar\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\da\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\de\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\es\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\fr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\it\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\ja\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\ko\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\nl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\pl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\pt\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\ru\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\se\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\sv\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\TimeSpan2.Core.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\TimeSpan2.Core.xml" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\tr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\zh-CN\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net6.0\zh-Hant\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\ar\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\da\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\de\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\es\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\fr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\it\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\ja\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\ko\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\nl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\pl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\pt\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\ru\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\se\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\sv\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\TimeSpan2.Core.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\TimeSpan2.Core.xml" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\tr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\zh-CN\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\net7.0\zh-Hant\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\ar\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\da\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\de\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\es\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\fr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\it\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\ja\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\ko\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\nl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\pl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\pt\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\ru\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\se\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\sv\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\TimeSpan2.Core.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\TimeSpan2.Core.xml" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\tr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\zh-CN\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.0\zh-Hant\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\ar\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\da\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\de\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\es\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\fr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\it\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\ja\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\ko\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\nl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\pl\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\pt\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\ru\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\se\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\sv\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\TimeSpan2.Core.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\TimeSpan2.Core.xml" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\tr\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\zh-CN\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\lib\netstandard2.1\zh-Hant\TimeSpan2.Core.resources.dll" />
+    <Content Include="packages\TimeSpan2.Core.2.4.3\stopwatch.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include=".vs\ControlTest\v17\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
+</Project>
