@@ -10,11 +10,11 @@ using System.Windows.Forms;
 
 namespace EOSeclipse.Controls
 {
-    public partial class Form1 : Form
+    public partial class TestForm : Form
     {
         private List<StepControl> steps;
 
-        public Form1()
+        public TestForm()
         {
             InitializeComponent();
         }
