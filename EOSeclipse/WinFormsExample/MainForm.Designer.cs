@@ -89,6 +89,9 @@ namespace WinFormsExample
             this.SeqFlowPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.EclipseTabPage = new System.Windows.Forms.TabPage();
             this.CaptureTabPage = new System.Windows.Forms.TabPage();
+            this.PhaseComboBox = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.stepControl1 = new EOSeclipse.Controls.StepControl();
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
             this.InitGroupBox.SuspendLayout();
@@ -101,11 +104,13 @@ namespace WinFormsExample
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.SeqGenTabPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.SequenceGroupBox.SuspendLayout();
+            this.SeqFlowPanel.SuspendLayout();
             this.CaptureTabPage.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -722,6 +727,8 @@ namespace WinFormsExample
             // 
             // SeqGenTabPage
             // 
+            this.SeqGenTabPage.Controls.Add(this.label10);
+            this.SeqGenTabPage.Controls.Add(this.PhaseComboBox);
             this.SeqGenTabPage.Location = new System.Drawing.Point(4, 22);
             this.SeqGenTabPage.Name = "SeqGenTabPage";
             this.SeqGenTabPage.Padding = new System.Windows.Forms.Padding(3);
@@ -790,6 +797,7 @@ namespace WinFormsExample
             // SeqFlowPanel
             // 
             this.SeqFlowPanel.AutoScroll = true;
+            this.SeqFlowPanel.Controls.Add(this.stepControl1);
             this.SeqFlowPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.SeqFlowPanel.Location = new System.Drawing.Point(16, 66);
             this.SeqFlowPanel.Name = "SeqFlowPanel";
@@ -815,6 +823,55 @@ namespace WinFormsExample
             this.CaptureTabPage.TabIndex = 4;
             this.CaptureTabPage.Text = "Capture";
             this.CaptureTabPage.UseVisualStyleBackColor = true;
+            // 
+            // PhaseComboBox
+            // 
+            this.PhaseComboBox.FormattingEnabled = true;
+            this.PhaseComboBox.Items.AddRange(new object[] {
+            "Partial",
+            "Baily\'s Beads",
+            "Totality",
+            "Max Eclipse",
+            "C1",
+            "C2",
+            "C3",
+            "C4"});
+            this.PhaseComboBox.Location = new System.Drawing.Point(6, 7);
+            this.PhaseComboBox.Name = "PhaseComboBox";
+            this.PhaseComboBox.Size = new System.Drawing.Size(121, 21);
+            this.PhaseComboBox.TabIndex = 0;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(133, 11);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(37, 13);
+            this.label10.TabIndex = 1;
+            this.label10.Text = "Phase";
+            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // stepControl1
+            // 
+            this.stepControl1.AEB = 0;
+            this.stepControl1.Av = null;
+            this.stepControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.stepControl1.EndDateTime = new System.DateTime(((long)(0)));
+            this.stepControl1.EndOffset = System.TimeSpan.Parse("00:00:00");
+            this.stepControl1.EndRef = null;
+            this.stepControl1.Interval = System.TimeSpan.Parse("00:00:00");
+            this.stepControl1.ISO = null;
+            this.stepControl1.Location = new System.Drawing.Point(3, 3);
+            this.stepControl1.MinimumSize = new System.Drawing.Size(250, 107);
+            this.stepControl1.Name = "stepControl1";
+            this.stepControl1.Phase = null;
+            this.stepControl1.Script = null;
+            this.stepControl1.Size = new System.Drawing.Size(250, 107);
+            this.stepControl1.StartDateTime = new System.DateTime(((long)(0)));
+            this.stepControl1.StartOffset = System.TimeSpan.Parse("00:00:00");
+            this.stepControl1.StartRef = null;
+            this.stepControl1.TabIndex = 0;
+            this.stepControl1.Tv = null;
             // 
             // MainForm
             // 
@@ -842,11 +899,14 @@ namespace WinFormsExample
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.SeqGenTabPage.ResumeLayout(false);
+            this.SeqGenTabPage.PerformLayout();
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.SequenceGroupBox.ResumeLayout(false);
+            this.SeqFlowPanel.ResumeLayout(false);
             this.CaptureTabPage.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -912,6 +972,9 @@ namespace WinFormsExample
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TabPage EclipseTabPage;
         private System.Windows.Forms.TabPage CaptureTabPage;
+        private System.Windows.Forms.ComboBox PhaseComboBox;
+        private System.Windows.Forms.Label label10;
+        private EOSeclipse.Controls.StepControl stepControl1;
     }
 }
 
