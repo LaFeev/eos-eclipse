@@ -30,7 +30,7 @@ namespace WinFormsExample
         int ErrCount;
         object ErrLock = new object();
         object LvLock = new object();
-        PointLatLng Location;
+        PointLatLng ShootingLocation;
         Double Elevation;
         GMapOverlay markersOverlay = new GMapOverlay("markers");
 
@@ -299,20 +299,20 @@ namespace WinFormsExample
         {
             // Pull the lat/lon from the text fields and add the marker
             // TODO: need to validate the input
-            Location = new PointLatLng(Convert.ToDouble(LatTextBox.Text), Convert.ToDouble(LonTextBox.Text));
+            ShootingLocation = new PointLatLng(Convert.ToDouble(LatTextBox.Text), Convert.ToDouble(LonTextBox.Text));
             if (AltTextBox.Text != String.Empty) Elevation = Convert.ToDouble(AltTextBox.Text);
             else Elevation = 0;
 
-            var marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(Location,
+            var marker = new GMap.NET.WindowsForms.Markers.GMarkerGoogle(ShootingLocation,
               GMap.NET.WindowsForms.Markers.GMarkerGoogleType.purple_small);
 
             markersOverlay.Markers.Clear();
             markersOverlay.Markers.Add(marker);
             gmap.Overlays.Add(markersOverlay);
-            gmap.Position = Location;
+            gmap.Position = ShootingLocation;
 
-            LatLabel.Text = Location.Lat.ToString();
-            LonLabel.Text = Location.Lng.ToString();
+            LatLabel.Text = ShootingLocation.Lat.ToString();
+            LonLabel.Text = ShootingLocation.Lng.ToString();
             LatLabel.Visible = true;
             LonLabel.Visible = true;
         }

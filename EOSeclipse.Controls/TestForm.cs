@@ -35,14 +35,15 @@ namespace EOSeclipse.Controls
         private DateTime GetDateTime(string startRef, TimeSpan startOffset)
         {
             DateTime refTime;
-            TimeSpan offset = new TimeSpan(0)
+            TimeSpan offset = new TimeSpan(0);
 
             if (startRef == "C1") { refTime = C1dt.Value; }
             else if (startRef == "C2") { refTime = C2dt.Value; }
             else if (startRef == "C3") { refTime = C3dt.Value; }
             else if (startRef == "C4") { refTime = C4dt.Value; }
+            else { refTime = C1dt.Value; }      // TODO: pursue some error handling instead
 
-            return refTime; + TimeSpan(0, 0, startOffset);
+            return refTime + startOffset;
         }
     }
 }

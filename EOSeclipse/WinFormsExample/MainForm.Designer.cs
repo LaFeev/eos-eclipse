@@ -64,6 +64,7 @@ namespace WinFormsExample
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.EclipseTabPage = new System.Windows.Forms.TabPage();
             this.LocTabPage = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.LonLabel = new System.Windows.Forms.Label();
@@ -82,15 +83,14 @@ namespace WinFormsExample
             this.LatTextBox = new System.Windows.Forms.TextBox();
             this.gmap = new GMap.NET.WindowsForms.GMapControl();
             this.SeqGenTabPage = new System.Windows.Forms.TabPage();
+            this.label10 = new System.Windows.Forms.Label();
+            this.PhaseComboBox = new System.Windows.Forms.ComboBox();
+            this.CaptureTabPage = new System.Windows.Forms.TabPage();
             this.TakeNPhotoButton = new System.Windows.Forms.Button();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.ExpandButton = new System.Windows.Forms.Button();
             this.SequenceGroupBox = new System.Windows.Forms.GroupBox();
             this.SeqFlowPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.EclipseTabPage = new System.Windows.Forms.TabPage();
-            this.CaptureTabPage = new System.Windows.Forms.TabPage();
-            this.PhaseComboBox = new System.Windows.Forms.ComboBox();
-            this.label10 = new System.Windows.Forms.Label();
             this.stepControl1 = new EOSeclipse.Controls.StepControl();
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
@@ -105,13 +105,13 @@ namespace WinFormsExample
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.SeqGenTabPage.SuspendLayout();
+            this.CaptureTabPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.SequenceGroupBox.SuspendLayout();
             this.SeqFlowPanel.SuspendLayout();
-            this.CaptureTabPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // LiveViewGroupBox
@@ -522,6 +522,15 @@ namespace WinFormsExample
             this.label2.TabIndex = 3;
             this.label2.Text = "Tv";
             // 
+            // EclipseTabPage
+            // 
+            this.EclipseTabPage.Location = new System.Drawing.Point(4, 22);
+            this.EclipseTabPage.Name = "EclipseTabPage";
+            this.EclipseTabPage.Size = new System.Drawing.Size(398, 193);
+            this.EclipseTabPage.TabIndex = 3;
+            this.EclipseTabPage.Text = "Eclipse";
+            this.EclipseTabPage.UseVisualStyleBackColor = true;
+            // 
             // LocTabPage
             // 
             this.LocTabPage.Controls.Add(this.splitContainer1);
@@ -704,20 +713,17 @@ namespace WinFormsExample
             this.gmap.CanDragMap = true;
             this.gmap.EmptyTileColor = System.Drawing.Color.Navy;
             this.gmap.GrayScaleMode = false;
-            this.gmap.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
             this.gmap.LevelsKeepInMemory = 5;
             this.gmap.Location = new System.Drawing.Point(3, 3);
             this.gmap.MarkersEnabled = true;
             this.gmap.MaxZoom = 2;
             this.gmap.MinZoom = 2;
             this.gmap.MouseWheelZoomEnabled = true;
-            this.gmap.MouseWheelZoomType = GMap.NET.MouseWheelZoomType.MousePositionAndCenter;
             this.gmap.Name = "gmap";
             this.gmap.NegativeMode = false;
             this.gmap.PolygonsEnabled = true;
             this.gmap.RetryLoadTile = 0;
             this.gmap.RoutesEnabled = true;
-            this.gmap.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
             this.gmap.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
             this.gmap.ShowTileGridLines = false;
             this.gmap.Size = new System.Drawing.Size(256, 187);
@@ -736,6 +742,43 @@ namespace WinFormsExample
             this.SeqGenTabPage.TabIndex = 1;
             this.SeqGenTabPage.Text = "Sequence Gen";
             this.SeqGenTabPage.UseVisualStyleBackColor = true;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(133, 11);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(37, 13);
+            this.label10.TabIndex = 1;
+            this.label10.Text = "Phase";
+            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // PhaseComboBox
+            // 
+            this.PhaseComboBox.FormattingEnabled = true;
+            this.PhaseComboBox.Items.AddRange(new object[] {
+            "Partial",
+            "Baily\'s Beads",
+            "Totality",
+            "Max Eclipse",
+            "C1",
+            "C2",
+            "C3",
+            "C4"});
+            this.PhaseComboBox.Location = new System.Drawing.Point(6, 7);
+            this.PhaseComboBox.Name = "PhaseComboBox";
+            this.PhaseComboBox.Size = new System.Drawing.Size(121, 21);
+            this.PhaseComboBox.TabIndex = 0;
+            // 
+            // CaptureTabPage
+            // 
+            this.CaptureTabPage.Controls.Add(this.TakeNPhotoButton);
+            this.CaptureTabPage.Location = new System.Drawing.Point(4, 22);
+            this.CaptureTabPage.Name = "CaptureTabPage";
+            this.CaptureTabPage.Size = new System.Drawing.Size(398, 193);
+            this.CaptureTabPage.TabIndex = 4;
+            this.CaptureTabPage.Text = "Capture";
+            this.CaptureTabPage.UseVisualStyleBackColor = true;
             // 
             // TakeNPhotoButton
             // 
@@ -767,7 +810,7 @@ namespace WinFormsExample
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.SequenceGroupBox);
-            this.splitContainer2.Size = new System.Drawing.Size(862, 607);
+            this.splitContainer2.Size = new System.Drawing.Size(871, 607);
             this.splitContainer2.SplitterDistance = 566;
             this.splitContainer2.TabIndex = 14;
             // 
@@ -786,74 +829,39 @@ namespace WinFormsExample
             // 
             // SequenceGroupBox
             // 
+            this.SequenceGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.SequenceGroupBox.Controls.Add(this.SeqFlowPanel);
             this.SequenceGroupBox.Location = new System.Drawing.Point(3, 13);
             this.SequenceGroupBox.Name = "SequenceGroupBox";
-            this.SequenceGroupBox.Size = new System.Drawing.Size(284, 581);
+            this.SequenceGroupBox.Size = new System.Drawing.Size(293, 581);
             this.SequenceGroupBox.TabIndex = 0;
             this.SequenceGroupBox.TabStop = false;
             this.SequenceGroupBox.Text = "Sequence";
             // 
             // SeqFlowPanel
             // 
+            this.SeqFlowPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.SeqFlowPanel.AutoScroll = true;
+            this.SeqFlowPanel.BackColor = System.Drawing.SystemColors.Window;
             this.SeqFlowPanel.Controls.Add(this.stepControl1);
             this.SeqFlowPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.SeqFlowPanel.Location = new System.Drawing.Point(16, 66);
+            this.SeqFlowPanel.MinimumSize = new System.Drawing.Size(256, 0);
             this.SeqFlowPanel.Name = "SeqFlowPanel";
-            this.SeqFlowPanel.Size = new System.Drawing.Size(248, 503);
+            this.SeqFlowPanel.Size = new System.Drawing.Size(257, 503);
             this.SeqFlowPanel.TabIndex = 0;
             this.SeqFlowPanel.WrapContents = false;
-            // 
-            // EclipseTabPage
-            // 
-            this.EclipseTabPage.Location = new System.Drawing.Point(4, 22);
-            this.EclipseTabPage.Name = "EclipseTabPage";
-            this.EclipseTabPage.Size = new System.Drawing.Size(398, 193);
-            this.EclipseTabPage.TabIndex = 3;
-            this.EclipseTabPage.Text = "Eclipse";
-            this.EclipseTabPage.UseVisualStyleBackColor = true;
-            // 
-            // CaptureTabPage
-            // 
-            this.CaptureTabPage.Controls.Add(this.TakeNPhotoButton);
-            this.CaptureTabPage.Location = new System.Drawing.Point(4, 22);
-            this.CaptureTabPage.Name = "CaptureTabPage";
-            this.CaptureTabPage.Size = new System.Drawing.Size(398, 193);
-            this.CaptureTabPage.TabIndex = 4;
-            this.CaptureTabPage.Text = "Capture";
-            this.CaptureTabPage.UseVisualStyleBackColor = true;
-            // 
-            // PhaseComboBox
-            // 
-            this.PhaseComboBox.FormattingEnabled = true;
-            this.PhaseComboBox.Items.AddRange(new object[] {
-            "Partial",
-            "Baily\'s Beads",
-            "Totality",
-            "Max Eclipse",
-            "C1",
-            "C2",
-            "C3",
-            "C4"});
-            this.PhaseComboBox.Location = new System.Drawing.Point(6, 7);
-            this.PhaseComboBox.Name = "PhaseComboBox";
-            this.PhaseComboBox.Size = new System.Drawing.Size(121, 21);
-            this.PhaseComboBox.TabIndex = 0;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(133, 11);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(37, 13);
-            this.label10.TabIndex = 1;
-            this.label10.Text = "Phase";
-            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // stepControl1
             // 
             this.stepControl1.AEB = 0;
+            this.stepControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.stepControl1.AutoSize = true;
             this.stepControl1.Av = null;
             this.stepControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.stepControl1.EndDateTime = new System.DateTime(((long)(0)));
@@ -877,7 +885,7 @@ namespace WinFormsExample
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(862, 607);
+            this.ClientSize = new System.Drawing.Size(871, 607);
             this.Controls.Add(this.splitContainer2);
             this.Name = "MainForm";
             this.Text = "EOS Eclipse";
@@ -901,13 +909,14 @@ namespace WinFormsExample
             this.splitContainer1.ResumeLayout(false);
             this.SeqGenTabPage.ResumeLayout(false);
             this.SeqGenTabPage.PerformLayout();
+            this.CaptureTabPage.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.SequenceGroupBox.ResumeLayout(false);
             this.SeqFlowPanel.ResumeLayout(false);
-            this.CaptureTabPage.ResumeLayout(false);
+            this.SeqFlowPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
