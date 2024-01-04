@@ -30,6 +30,7 @@ namespace WinFormsExample
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.LiveViewGroupBox = new System.Windows.Forms.GroupBox();
             this.FocusFar3Button = new System.Windows.Forms.Button();
             this.FocusFar2Button = new System.Windows.Forms.Button();
@@ -83,6 +84,7 @@ namespace WinFormsExample
             this.LatTextBox = new System.Windows.Forms.TextBox();
             this.gmap = new GMap.NET.WindowsForms.GMapControl();
             this.SeqGenTabPage = new System.Windows.Forms.TabPage();
+            this.StartRefComboBox = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
             this.PhaseComboBox = new System.Windows.Forms.ComboBox();
             this.CaptureTabPage = new System.Windows.Forms.TabPage();
@@ -92,6 +94,20 @@ namespace WinFormsExample
             this.SequenceGroupBox = new System.Windows.Forms.GroupBox();
             this.SeqFlowPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.stepControl1 = new EOSeclipse.Controls.StepControl();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.StartOffsetUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.EndRefComboBox = new System.Windows.Forms.ComboBox();
+            this.EndOffsetUpDown = new System.Windows.Forms.NumericUpDown();
+            this.IntervalRadioButton = new System.Windows.Forms.RadioButton();
+            this.ContinuousRadioButton = new System.Windows.Forms.RadioButton();
+            this.SingleRadioButton = new System.Windows.Forms.RadioButton();
+            this.IntervalGroupBox = new System.Windows.Forms.GroupBox();
+            this.IntervalMinUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label13 = new System.Windows.Forms.Label();
+            this.IntervalSecUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label14 = new System.Windows.Forms.Label();
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
             this.InitGroupBox.SuspendLayout();
@@ -112,6 +128,11 @@ namespace WinFormsExample
             this.splitContainer2.SuspendLayout();
             this.SequenceGroupBox.SuspendLayout();
             this.SeqFlowPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.StartOffsetUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EndOffsetUpDown)).BeginInit();
+            this.IntervalGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.IntervalMinUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.IntervalSecUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // LiveViewGroupBox
@@ -713,17 +734,20 @@ namespace WinFormsExample
             this.gmap.CanDragMap = true;
             this.gmap.EmptyTileColor = System.Drawing.Color.Navy;
             this.gmap.GrayScaleMode = false;
+            this.gmap.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
             this.gmap.LevelsKeepInMemory = 5;
             this.gmap.Location = new System.Drawing.Point(3, 3);
             this.gmap.MarkersEnabled = true;
             this.gmap.MaxZoom = 2;
             this.gmap.MinZoom = 2;
             this.gmap.MouseWheelZoomEnabled = true;
+            this.gmap.MouseWheelZoomType = GMap.NET.MouseWheelZoomType.MousePositionAndCenter;
             this.gmap.Name = "gmap";
             this.gmap.NegativeMode = false;
             this.gmap.PolygonsEnabled = true;
             this.gmap.RetryLoadTile = 0;
             this.gmap.RoutesEnabled = true;
+            this.gmap.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
             this.gmap.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
             this.gmap.ShowTileGridLines = false;
             this.gmap.Size = new System.Drawing.Size(256, 187);
@@ -733,6 +757,13 @@ namespace WinFormsExample
             // 
             // SeqGenTabPage
             // 
+            this.SeqGenTabPage.Controls.Add(this.IntervalGroupBox);
+            this.SeqGenTabPage.Controls.Add(this.EndOffsetUpDown);
+            this.SeqGenTabPage.Controls.Add(this.StartOffsetUpDown);
+            this.SeqGenTabPage.Controls.Add(this.EndRefComboBox);
+            this.SeqGenTabPage.Controls.Add(this.label12);
+            this.SeqGenTabPage.Controls.Add(this.StartRefComboBox);
+            this.SeqGenTabPage.Controls.Add(this.label11);
             this.SeqGenTabPage.Controls.Add(this.label10);
             this.SeqGenTabPage.Controls.Add(this.PhaseComboBox);
             this.SeqGenTabPage.Location = new System.Drawing.Point(4, 22);
@@ -742,6 +773,19 @@ namespace WinFormsExample
             this.SeqGenTabPage.TabIndex = 1;
             this.SeqGenTabPage.Text = "Sequence Gen";
             this.SeqGenTabPage.UseVisualStyleBackColor = true;
+            // 
+            // StartRefComboBox
+            // 
+            this.StartRefComboBox.FormattingEnabled = true;
+            this.StartRefComboBox.Items.AddRange(new object[] {
+            "C1",
+            "C2",
+            "C3",
+            "C4"});
+            this.StartRefComboBox.Location = new System.Drawing.Point(6, 34);
+            this.StartRefComboBox.Name = "StartRefComboBox";
+            this.StartRefComboBox.Size = new System.Drawing.Size(52, 21);
+            this.StartRefComboBox.TabIndex = 2;
             // 
             // label10
             // 
@@ -881,6 +925,164 @@ namespace WinFormsExample
             this.stepControl1.TabIndex = 0;
             this.stepControl1.Tv = null;
             // 
+            // StartOffsetUpDown
+            // 
+            this.StartOffsetUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.StartOffsetUpDown.Location = new System.Drawing.Point(65, 35);
+            this.StartOffsetUpDown.Maximum = new decimal(new int[] {
+            3600,
+            0,
+            0,
+            0});
+            this.StartOffsetUpDown.Minimum = new decimal(new int[] {
+            3600,
+            0,
+            0,
+            -2147483648});
+            this.StartOffsetUpDown.Name = "StartOffsetUpDown";
+            this.StartOffsetUpDown.Size = new System.Drawing.Size(62, 20);
+            this.StartOffsetUpDown.TabIndex = 3;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(133, 37);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(101, 13);
+            this.label11.TabIndex = 1;
+            this.label11.Text = "Start +/- offset (sec)";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(133, 64);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(98, 13);
+            this.label12.TabIndex = 1;
+            this.label12.Text = "End +/- offset (sec)";
+            this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // EndRefComboBox
+            // 
+            this.EndRefComboBox.FormattingEnabled = true;
+            this.EndRefComboBox.Items.AddRange(new object[] {
+            "C1",
+            "C2",
+            "C3",
+            "C4"});
+            this.EndRefComboBox.Location = new System.Drawing.Point(6, 61);
+            this.EndRefComboBox.Name = "EndRefComboBox";
+            this.EndRefComboBox.Size = new System.Drawing.Size(52, 21);
+            this.EndRefComboBox.TabIndex = 2;
+            // 
+            // EndOffsetUpDown
+            // 
+            this.EndOffsetUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.EndOffsetUpDown.Location = new System.Drawing.Point(65, 62);
+            this.EndOffsetUpDown.Maximum = new decimal(new int[] {
+            3600,
+            0,
+            0,
+            0});
+            this.EndOffsetUpDown.Minimum = new decimal(new int[] {
+            3600,
+            0,
+            0,
+            -2147483648});
+            this.EndOffsetUpDown.Name = "EndOffsetUpDown";
+            this.EndOffsetUpDown.Size = new System.Drawing.Size(62, 20);
+            this.EndOffsetUpDown.TabIndex = 3;
+            // 
+            // IntervalRadioButton
+            // 
+            this.IntervalRadioButton.AutoSize = true;
+            this.IntervalRadioButton.Checked = true;
+            this.IntervalRadioButton.Location = new System.Drawing.Point(6, 17);
+            this.IntervalRadioButton.Name = "IntervalRadioButton";
+            this.IntervalRadioButton.Size = new System.Drawing.Size(60, 17);
+            this.IntervalRadioButton.TabIndex = 4;
+            this.IntervalRadioButton.Text = "Interval";
+            this.IntervalRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // ContinuousRadioButton
+            // 
+            this.ContinuousRadioButton.AutoSize = true;
+            this.ContinuousRadioButton.Location = new System.Drawing.Point(72, 17);
+            this.ContinuousRadioButton.Name = "ContinuousRadioButton";
+            this.ContinuousRadioButton.Size = new System.Drawing.Size(78, 17);
+            this.ContinuousRadioButton.TabIndex = 4;
+            this.ContinuousRadioButton.Text = "Continuous";
+            this.ContinuousRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // SingleRadioButton
+            // 
+            this.SingleRadioButton.AutoSize = true;
+            this.SingleRadioButton.Location = new System.Drawing.Point(156, 17);
+            this.SingleRadioButton.Name = "SingleRadioButton";
+            this.SingleRadioButton.Size = new System.Drawing.Size(54, 17);
+            this.SingleRadioButton.TabIndex = 4;
+            this.SingleRadioButton.Text = "Single";
+            this.SingleRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // IntervalGroupBox
+            // 
+            this.IntervalGroupBox.Controls.Add(this.label14);
+            this.IntervalGroupBox.Controls.Add(this.label13);
+            this.IntervalGroupBox.Controls.Add(this.IntervalSecUpDown);
+            this.IntervalGroupBox.Controls.Add(this.IntervalMinUpDown);
+            this.IntervalGroupBox.Controls.Add(this.IntervalRadioButton);
+            this.IntervalGroupBox.Controls.Add(this.SingleRadioButton);
+            this.IntervalGroupBox.Controls.Add(this.ContinuousRadioButton);
+            this.IntervalGroupBox.Location = new System.Drawing.Point(6, 88);
+            this.IntervalGroupBox.Name = "IntervalGroupBox";
+            this.IntervalGroupBox.Size = new System.Drawing.Size(384, 42);
+            this.IntervalGroupBox.TabIndex = 5;
+            this.IntervalGroupBox.TabStop = false;
+            this.IntervalGroupBox.Text = "Stage Repeat";
+            // 
+            // IntervalMinUpDown
+            // 
+            this.IntervalMinUpDown.Location = new System.Drawing.Point(228, 14);
+            this.IntervalMinUpDown.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.IntervalMinUpDown.Name = "IntervalMinUpDown";
+            this.IntervalMinUpDown.Size = new System.Drawing.Size(46, 20);
+            this.IntervalMinUpDown.TabIndex = 5;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(277, 16);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(23, 13);
+            this.label13.TabIndex = 6;
+            this.label13.Text = "min";
+            // 
+            // IntervalSecUpDown
+            // 
+            this.IntervalSecUpDown.Location = new System.Drawing.Point(306, 14);
+            this.IntervalSecUpDown.Maximum = new decimal(new int[] {
+            59,
+            0,
+            0,
+            0});
+            this.IntervalSecUpDown.Name = "IntervalSecUpDown";
+            this.IntervalSecUpDown.Size = new System.Drawing.Size(46, 20);
+            this.IntervalSecUpDown.TabIndex = 5;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(355, 16);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(24, 13);
+            this.label14.TabIndex = 6;
+            this.label14.Text = "sec";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -917,6 +1119,12 @@ namespace WinFormsExample
             this.SequenceGroupBox.ResumeLayout(false);
             this.SeqFlowPanel.ResumeLayout(false);
             this.SeqFlowPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.StartOffsetUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EndOffsetUpDown)).EndInit();
+            this.IntervalGroupBox.ResumeLayout(false);
+            this.IntervalGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.IntervalMinUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.IntervalSecUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -984,6 +1192,21 @@ namespace WinFormsExample
         private System.Windows.Forms.ComboBox PhaseComboBox;
         private System.Windows.Forms.Label label10;
         private EOSeclipse.Controls.StepControl stepControl1;
+        private System.Windows.Forms.ComboBox StartRefComboBox;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.NumericUpDown StartOffsetUpDown;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.RadioButton IntervalRadioButton;
+        private System.Windows.Forms.NumericUpDown EndOffsetUpDown;
+        private System.Windows.Forms.ComboBox EndRefComboBox;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.GroupBox IntervalGroupBox;
+        private System.Windows.Forms.RadioButton SingleRadioButton;
+        private System.Windows.Forms.RadioButton ContinuousRadioButton;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.NumericUpDown IntervalSecUpDown;
+        private System.Windows.Forms.NumericUpDown IntervalMinUpDown;
     }
 }
 

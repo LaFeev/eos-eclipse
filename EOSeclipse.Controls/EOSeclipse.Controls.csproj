@@ -43,10 +43,10 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="TimeSpan2, Version=2.4.3.0, Culture=neutral, PublicKeyToken=0f30172e1249faac, processorArchitecture=MSIL">
-      <HintPath>packages\TimeSpan2.2.4.3\lib\net35\TimeSpan2.dll</HintPath>
+      <HintPath>packages\TimeSpan2.2.4.3\lib\net48\TimeSpan2.dll</HintPath>
     </Reference>
     <Reference Include="TimeSpan2.Core, Version=2.4.3.0, Culture=neutral, PublicKeyToken=0f30172e1249faac, processorArchitecture=MSIL">
-      <HintPath>packages\TimeSpan2.Core.2.4.3\lib\net35\TimeSpan2.Core.dll</HintPath>
+      <HintPath>packages\TimeSpan2.Core.2.4.3\lib\net48\TimeSpan2.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +74,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
