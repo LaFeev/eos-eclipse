@@ -57,7 +57,7 @@
             this.StepFlowLayoutPanel.BackColor = System.Drawing.SystemColors.ControlLight;
             this.StepFlowLayoutPanel.Location = new System.Drawing.Point(80, 32);
             this.StepFlowLayoutPanel.Name = "StepFlowLayoutPanel";
-            this.StepFlowLayoutPanel.Size = new System.Drawing.Size(158, 40);
+            this.StepFlowLayoutPanel.Size = new System.Drawing.Size(158, 43);
             this.StepFlowLayoutPanel.TabIndex = 1;
             this.StepFlowLayoutPanel.TabStop = true;
             // 
@@ -139,7 +139,7 @@
             this.ProgressPanel.Controls.Add(this.StepProgressBar);
             this.ProgressPanel.Controls.Add(this.StepRemainingTimeLabel);
             this.ProgressPanel.Controls.Add(this.StepElapsedTimeLabel);
-            this.ProgressPanel.Location = new System.Drawing.Point(11, 77);
+            this.ProgressPanel.Location = new System.Drawing.Point(11, 80);
             this.ProgressPanel.Name = "ProgressPanel";
             this.ProgressPanel.Size = new System.Drawing.Size(227, 23);
             this.ProgressPanel.TabIndex = 7;
@@ -166,6 +166,7 @@
             // 
             // IntervalTimerLabel
             // 
+            this.IntervalTimerLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.IntervalTimerLabel.AutoSize = true;
             this.IntervalTimerLabel.Font = new System.Drawing.Font("Courier New", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.IntervalTimerLabel.Location = new System.Drawing.Point(13, 36);
@@ -176,6 +177,7 @@
             // 
             // IntervalLabel
             // 
+            this.IntervalLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.IntervalLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
             this.IntervalLabel.Location = new System.Drawing.Point(13, 53);
             this.IntervalLabel.Name = "IntervalLabel";
@@ -196,7 +198,6 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.Controls.Add(this.IntervalLabel);
             this.Controls.Add(this.IntervalTimerLabel);
@@ -206,7 +207,7 @@
             this.Controls.Add(this.StepFlowLayoutPanel);
             this.MinimumSize = new System.Drawing.Size(250, 107);
             this.Name = "StepControl";
-            this.Size = new System.Drawing.Size(248, 105);
+            this.Size = new System.Drawing.Size(248, 106);
             this.Load += new System.EventHandler(this.StepControl_Load);
             this.ProgressPanel.ResumeLayout(false);
             this.StartEndPanel.ResumeLayout(false);
