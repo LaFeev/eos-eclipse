@@ -53,7 +53,7 @@ namespace WinFormsExample
             this.TvCoBox = new System.Windows.Forms.ComboBox();
             this.SavePathTextBox = new System.Windows.Forms.TextBox();
             this.ISOCoBox = new System.Windows.Forms.ComboBox();
-            this.BrowseButton = new System.Windows.Forms.Button();
+            this.SaveBrowseButton = new System.Windows.Forms.Button();
             this.BulbUpDo = new System.Windows.Forms.NumericUpDown();
             this.SaveToGroupBox = new System.Windows.Forms.GroupBox();
             this.STBothRdButton = new System.Windows.Forms.RadioButton();
@@ -84,7 +84,31 @@ namespace WinFormsExample
             this.LatTextBox = new System.Windows.Forms.TextBox();
             this.gmap = new GMap.NET.WindowsForms.GMapControl();
             this.SeqGenTabPage = new System.Windows.Forms.TabPage();
+            this.CancelStageButton = new System.Windows.Forms.Button();
+            this.AddStageButton = new System.Windows.Forms.Button();
+            this.ScriptGroupBox = new System.Windows.Forms.GroupBox();
+            this.ScriptBrowseButton = new System.Windows.Forms.Button();
+            this.ScriptTextBox = new System.Windows.Forms.TextBox();
+            this.AEBGroupBox = new System.Windows.Forms.GroupBox();
+            this.AEBRadioButton = new System.Windows.Forms.RadioButton();
+            this.AEBDisabledRadioButton = new System.Windows.Forms.RadioButton();
+            this.AEBUpDown = new System.Windows.Forms.DomainUpDown();
+            this.ExposureGroupBox = new System.Windows.Forms.GroupBox();
+            this.SeqTvListBox = new System.Windows.Forms.ListBox();
+            this.IntervalGroupBox = new System.Windows.Forms.GroupBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.IntervalSecUpDown = new System.Windows.Forms.NumericUpDown();
+            this.IntervalMinUpDown = new System.Windows.Forms.NumericUpDown();
+            this.IntervalRadioButton = new System.Windows.Forms.RadioButton();
+            this.SingleRadioButton = new System.Windows.Forms.RadioButton();
+            this.ContinuousRadioButton = new System.Windows.Forms.RadioButton();
+            this.EndOffsetUpDown = new System.Windows.Forms.NumericUpDown();
+            this.StartOffsetUpDown = new System.Windows.Forms.NumericUpDown();
+            this.EndRefComboBox = new System.Windows.Forms.ComboBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.StartRefComboBox = new System.Windows.Forms.ComboBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.PhaseComboBox = new System.Windows.Forms.ComboBox();
             this.CaptureTabPage = new System.Windows.Forms.TabPage();
@@ -92,22 +116,14 @@ namespace WinFormsExample
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.ExpandButton = new System.Windows.Forms.Button();
             this.SequenceGroupBox = new System.Windows.Forms.GroupBox();
+            this.ClearSeqButton = new System.Windows.Forms.Button();
+            this.LoadSeqButton = new System.Windows.Forms.Button();
+            this.SaveSeqButton = new System.Windows.Forms.Button();
             this.SeqFlowPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.stepControl1 = new EOSeclipse.Controls.StepControl();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.StartOffsetUpDown = new System.Windows.Forms.NumericUpDown();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.EndRefComboBox = new System.Windows.Forms.ComboBox();
-            this.EndOffsetUpDown = new System.Windows.Forms.NumericUpDown();
-            this.IntervalRadioButton = new System.Windows.Forms.RadioButton();
-            this.ContinuousRadioButton = new System.Windows.Forms.RadioButton();
-            this.SingleRadioButton = new System.Windows.Forms.RadioButton();
-            this.IntervalGroupBox = new System.Windows.Forms.GroupBox();
-            this.IntervalMinUpDown = new System.Windows.Forms.NumericUpDown();
-            this.label13 = new System.Windows.Forms.Label();
-            this.IntervalSecUpDown = new System.Windows.Forms.NumericUpDown();
-            this.label14 = new System.Windows.Forms.Label();
+            this.LoadScriptBrowserOLD = new System.Windows.Forms.FolderBrowserDialog();
+            this.ScriptFileBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.stepControl1 = new EOSeclipse.Controls.StepControl();
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
             this.InitGroupBox.SuspendLayout();
@@ -121,6 +137,14 @@ namespace WinFormsExample
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.SeqGenTabPage.SuspendLayout();
+            this.ScriptGroupBox.SuspendLayout();
+            this.AEBGroupBox.SuspendLayout();
+            this.ExposureGroupBox.SuspendLayout();
+            this.IntervalGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.IntervalSecUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.IntervalMinUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EndOffsetUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.StartOffsetUpDown)).BeginInit();
             this.CaptureTabPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
@@ -128,11 +152,6 @@ namespace WinFormsExample
             this.splitContainer2.SuspendLayout();
             this.SequenceGroupBox.SuspendLayout();
             this.SeqFlowPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.StartOffsetUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.EndOffsetUpDown)).BeginInit();
-            this.IntervalGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.IntervalMinUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.IntervalSecUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // LiveViewGroupBox
@@ -331,7 +350,7 @@ namespace WinFormsExample
             this.SettingsTabPage.Controls.Add(this.TvCoBox);
             this.SettingsTabPage.Controls.Add(this.SavePathTextBox);
             this.SettingsTabPage.Controls.Add(this.ISOCoBox);
-            this.SettingsTabPage.Controls.Add(this.BrowseButton);
+            this.SettingsTabPage.Controls.Add(this.SaveBrowseButton);
             this.SettingsTabPage.Controls.Add(this.BulbUpDo);
             this.SettingsTabPage.Controls.Add(this.SaveToGroupBox);
             this.SettingsTabPage.Controls.Add(this.TakePhotoButton);
@@ -394,17 +413,17 @@ namespace WinFormsExample
             this.ISOCoBox.TabIndex = 0;
             this.ISOCoBox.SelectedIndexChanged += new System.EventHandler(this.ISOCoBox_SelectedIndexChanged);
             // 
-            // BrowseButton
+            // SaveBrowseButton
             // 
-            this.BrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BrowseButton.Enabled = false;
-            this.BrowseButton.Location = new System.Drawing.Point(293, 110);
-            this.BrowseButton.Name = "BrowseButton";
-            this.BrowseButton.Size = new System.Drawing.Size(99, 23);
-            this.BrowseButton.TabIndex = 5;
-            this.BrowseButton.Text = "Browse";
-            this.BrowseButton.UseVisualStyleBackColor = true;
-            this.BrowseButton.Click += new System.EventHandler(this.BrowseButton_Click);
+            this.SaveBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SaveBrowseButton.Enabled = false;
+            this.SaveBrowseButton.Location = new System.Drawing.Point(293, 110);
+            this.SaveBrowseButton.Name = "SaveBrowseButton";
+            this.SaveBrowseButton.Size = new System.Drawing.Size(99, 23);
+            this.SaveBrowseButton.TabIndex = 5;
+            this.SaveBrowseButton.Text = "Browse";
+            this.SaveBrowseButton.UseVisualStyleBackColor = true;
+            this.SaveBrowseButton.Click += new System.EventHandler(this.BrowseButton_Click);
             // 
             // BulbUpDo
             // 
@@ -757,6 +776,13 @@ namespace WinFormsExample
             // 
             // SeqGenTabPage
             // 
+            this.SeqGenTabPage.AutoScroll = true;
+            this.SeqGenTabPage.AutoScrollMargin = new System.Drawing.Size(0, 25);
+            this.SeqGenTabPage.Controls.Add(this.CancelStageButton);
+            this.SeqGenTabPage.Controls.Add(this.AddStageButton);
+            this.SeqGenTabPage.Controls.Add(this.ScriptGroupBox);
+            this.SeqGenTabPage.Controls.Add(this.AEBGroupBox);
+            this.SeqGenTabPage.Controls.Add(this.ExposureGroupBox);
             this.SeqGenTabPage.Controls.Add(this.IntervalGroupBox);
             this.SeqGenTabPage.Controls.Add(this.EndOffsetUpDown);
             this.SeqGenTabPage.Controls.Add(this.StartOffsetUpDown);
@@ -768,11 +794,282 @@ namespace WinFormsExample
             this.SeqGenTabPage.Controls.Add(this.PhaseComboBox);
             this.SeqGenTabPage.Location = new System.Drawing.Point(4, 22);
             this.SeqGenTabPage.Name = "SeqGenTabPage";
-            this.SeqGenTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.SeqGenTabPage.Padding = new System.Windows.Forms.Padding(3, 3, 3, 100);
             this.SeqGenTabPage.Size = new System.Drawing.Size(398, 193);
             this.SeqGenTabPage.TabIndex = 1;
             this.SeqGenTabPage.Text = "Sequence Gen";
             this.SeqGenTabPage.UseVisualStyleBackColor = true;
+            // 
+            // CancelStageButton
+            // 
+            this.CancelStageButton.Location = new System.Drawing.Point(217, 358);
+            this.CancelStageButton.Name = "CancelStageButton";
+            this.CancelStageButton.Size = new System.Drawing.Size(75, 23);
+            this.CancelStageButton.TabIndex = 11;
+            this.CancelStageButton.Text = "Reset";
+            this.CancelStageButton.UseVisualStyleBackColor = true;
+            this.CancelStageButton.Click += new System.EventHandler(this.CancelStageButton_Click);
+            // 
+            // AddStageButton
+            // 
+            this.AddStageButton.Location = new System.Drawing.Point(298, 358);
+            this.AddStageButton.Name = "AddStageButton";
+            this.AddStageButton.Size = new System.Drawing.Size(75, 23);
+            this.AddStageButton.TabIndex = 11;
+            this.AddStageButton.Text = "Add Stage";
+            this.AddStageButton.UseVisualStyleBackColor = true;
+            this.AddStageButton.Click += new System.EventHandler(this.AddStageButton_Click);
+            // 
+            // ScriptGroupBox
+            // 
+            this.ScriptGroupBox.Controls.Add(this.ScriptBrowseButton);
+            this.ScriptGroupBox.Controls.Add(this.ScriptTextBox);
+            this.ScriptGroupBox.Location = new System.Drawing.Point(6, 290);
+            this.ScriptGroupBox.Name = "ScriptGroupBox";
+            this.ScriptGroupBox.Size = new System.Drawing.Size(367, 53);
+            this.ScriptGroupBox.TabIndex = 10;
+            this.ScriptGroupBox.TabStop = false;
+            this.ScriptGroupBox.Text = "Script";
+            // 
+            // ScriptBrowseButton
+            // 
+            this.ScriptBrowseButton.Location = new System.Drawing.Point(286, 18);
+            this.ScriptBrowseButton.Name = "ScriptBrowseButton";
+            this.ScriptBrowseButton.Size = new System.Drawing.Size(75, 23);
+            this.ScriptBrowseButton.TabIndex = 10;
+            this.ScriptBrowseButton.Text = "Browse";
+            this.ScriptBrowseButton.UseVisualStyleBackColor = true;
+            this.ScriptBrowseButton.Click += new System.EventHandler(this.ScriptBrowseButton_Click);
+            // 
+            // ScriptTextBox
+            // 
+            this.ScriptTextBox.Location = new System.Drawing.Point(6, 19);
+            this.ScriptTextBox.Name = "ScriptTextBox";
+            this.ScriptTextBox.Size = new System.Drawing.Size(274, 20);
+            this.ScriptTextBox.TabIndex = 9;
+            // 
+            // AEBGroupBox
+            // 
+            this.AEBGroupBox.Controls.Add(this.AEBRadioButton);
+            this.AEBGroupBox.Controls.Add(this.AEBDisabledRadioButton);
+            this.AEBGroupBox.Controls.Add(this.AEBUpDown);
+            this.AEBGroupBox.Location = new System.Drawing.Point(147, 147);
+            this.AEBGroupBox.Name = "AEBGroupBox";
+            this.AEBGroupBox.Size = new System.Drawing.Size(149, 72);
+            this.AEBGroupBox.TabIndex = 8;
+            this.AEBGroupBox.TabStop = false;
+            this.AEBGroupBox.Text = "Bracketing (AEB)";
+            // 
+            // AEBRadioButton
+            // 
+            this.AEBRadioButton.AutoSize = true;
+            this.AEBRadioButton.Location = new System.Drawing.Point(7, 43);
+            this.AEBRadioButton.Name = "AEBRadioButton";
+            this.AEBRadioButton.Size = new System.Drawing.Size(39, 17);
+            this.AEBRadioButton.TabIndex = 1;
+            this.AEBRadioButton.Text = "+/-";
+            this.AEBRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // AEBDisabledRadioButton
+            // 
+            this.AEBDisabledRadioButton.AutoSize = true;
+            this.AEBDisabledRadioButton.Checked = true;
+            this.AEBDisabledRadioButton.Location = new System.Drawing.Point(7, 20);
+            this.AEBDisabledRadioButton.Name = "AEBDisabledRadioButton";
+            this.AEBDisabledRadioButton.Size = new System.Drawing.Size(66, 17);
+            this.AEBDisabledRadioButton.TabIndex = 1;
+            this.AEBDisabledRadioButton.TabStop = true;
+            this.AEBDisabledRadioButton.Text = "Disabled";
+            this.AEBDisabledRadioButton.UseVisualStyleBackColor = true;
+            this.AEBDisabledRadioButton.CheckedChanged += new System.EventHandler(this.AEBDisabledRadioButton_CheckedChanged);
+            // 
+            // AEBUpDown
+            // 
+            this.AEBUpDown.Items.Add("3 stop");
+            this.AEBUpDown.Items.Add("2-2/3");
+            this.AEBUpDown.Items.Add("2-1/3");
+            this.AEBUpDown.Items.Add("2 stop");
+            this.AEBUpDown.Items.Add("1-2/3");
+            this.AEBUpDown.Items.Add("1-1/3");
+            this.AEBUpDown.Items.Add("1 stop");
+            this.AEBUpDown.Items.Add("2/3");
+            this.AEBUpDown.Items.Add("1/3");
+            this.AEBUpDown.Location = new System.Drawing.Point(46, 43);
+            this.AEBUpDown.Name = "AEBUpDown";
+            this.AEBUpDown.Size = new System.Drawing.Size(90, 20);
+            this.AEBUpDown.TabIndex = 0;
+            this.AEBUpDown.Text = "1/3";
+            // 
+            // ExposureGroupBox
+            // 
+            this.ExposureGroupBox.Controls.Add(this.SeqTvListBox);
+            this.ExposureGroupBox.Location = new System.Drawing.Point(6, 147);
+            this.ExposureGroupBox.Margin = new System.Windows.Forms.Padding(3, 3, 3, 10);
+            this.ExposureGroupBox.Name = "ExposureGroupBox";
+            this.ExposureGroupBox.Size = new System.Drawing.Size(135, 137);
+            this.ExposureGroupBox.TabIndex = 7;
+            this.ExposureGroupBox.TabStop = false;
+            this.ExposureGroupBox.Text = "Exposure Lengths";
+            // 
+            // SeqTvListBox
+            // 
+            this.SeqTvListBox.FormattingEnabled = true;
+            this.SeqTvListBox.Location = new System.Drawing.Point(6, 19);
+            this.SeqTvListBox.Name = "SeqTvListBox";
+            this.SeqTvListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.SeqTvListBox.Size = new System.Drawing.Size(120, 108);
+            this.SeqTvListBox.TabIndex = 6;
+            // 
+            // IntervalGroupBox
+            // 
+            this.IntervalGroupBox.Controls.Add(this.label14);
+            this.IntervalGroupBox.Controls.Add(this.label13);
+            this.IntervalGroupBox.Controls.Add(this.IntervalSecUpDown);
+            this.IntervalGroupBox.Controls.Add(this.IntervalMinUpDown);
+            this.IntervalGroupBox.Controls.Add(this.IntervalRadioButton);
+            this.IntervalGroupBox.Controls.Add(this.SingleRadioButton);
+            this.IntervalGroupBox.Controls.Add(this.ContinuousRadioButton);
+            this.IntervalGroupBox.Location = new System.Drawing.Point(6, 88);
+            this.IntervalGroupBox.Name = "IntervalGroupBox";
+            this.IntervalGroupBox.Size = new System.Drawing.Size(367, 53);
+            this.IntervalGroupBox.TabIndex = 5;
+            this.IntervalGroupBox.TabStop = false;
+            this.IntervalGroupBox.Text = "Stage Repeat";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(340, 20);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(24, 13);
+            this.label14.TabIndex = 6;
+            this.label14.Text = "sec";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(267, 20);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(23, 13);
+            this.label13.TabIndex = 6;
+            this.label13.Text = "min";
+            // 
+            // IntervalSecUpDown
+            // 
+            this.IntervalSecUpDown.Location = new System.Drawing.Point(294, 18);
+            this.IntervalSecUpDown.Maximum = new decimal(new int[] {
+            59,
+            0,
+            0,
+            0});
+            this.IntervalSecUpDown.Name = "IntervalSecUpDown";
+            this.IntervalSecUpDown.Size = new System.Drawing.Size(46, 20);
+            this.IntervalSecUpDown.TabIndex = 5;
+            // 
+            // IntervalMinUpDown
+            // 
+            this.IntervalMinUpDown.Location = new System.Drawing.Point(221, 18);
+            this.IntervalMinUpDown.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.IntervalMinUpDown.Name = "IntervalMinUpDown";
+            this.IntervalMinUpDown.Size = new System.Drawing.Size(46, 20);
+            this.IntervalMinUpDown.TabIndex = 5;
+            // 
+            // IntervalRadioButton
+            // 
+            this.IntervalRadioButton.AutoSize = true;
+            this.IntervalRadioButton.Checked = true;
+            this.IntervalRadioButton.Location = new System.Drawing.Point(150, 21);
+            this.IntervalRadioButton.Name = "IntervalRadioButton";
+            this.IntervalRadioButton.Size = new System.Drawing.Size(60, 17);
+            this.IntervalRadioButton.TabIndex = 4;
+            this.IntervalRadioButton.TabStop = true;
+            this.IntervalRadioButton.Text = "Interval";
+            this.IntervalRadioButton.UseVisualStyleBackColor = true;
+            this.IntervalRadioButton.CheckedChanged += new System.EventHandler(this.IntervalRadioButton_CheckedChanged);
+            // 
+            // SingleRadioButton
+            // 
+            this.SingleRadioButton.AutoSize = true;
+            this.SingleRadioButton.Location = new System.Drawing.Point(90, 21);
+            this.SingleRadioButton.Name = "SingleRadioButton";
+            this.SingleRadioButton.Size = new System.Drawing.Size(54, 17);
+            this.SingleRadioButton.TabIndex = 4;
+            this.SingleRadioButton.Text = "Single";
+            this.SingleRadioButton.UseVisualStyleBackColor = true;
+            this.SingleRadioButton.CheckedChanged += new System.EventHandler(this.SingleRadioButton_CheckedChanged);
+            // 
+            // ContinuousRadioButton
+            // 
+            this.ContinuousRadioButton.AutoSize = true;
+            this.ContinuousRadioButton.Location = new System.Drawing.Point(6, 21);
+            this.ContinuousRadioButton.Name = "ContinuousRadioButton";
+            this.ContinuousRadioButton.Size = new System.Drawing.Size(78, 17);
+            this.ContinuousRadioButton.TabIndex = 4;
+            this.ContinuousRadioButton.Text = "Continuous";
+            this.ContinuousRadioButton.UseVisualStyleBackColor = true;
+            // 
+            // EndOffsetUpDown
+            // 
+            this.EndOffsetUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.EndOffsetUpDown.Location = new System.Drawing.Point(65, 62);
+            this.EndOffsetUpDown.Maximum = new decimal(new int[] {
+            3600,
+            0,
+            0,
+            0});
+            this.EndOffsetUpDown.Minimum = new decimal(new int[] {
+            3600,
+            0,
+            0,
+            -2147483648});
+            this.EndOffsetUpDown.Name = "EndOffsetUpDown";
+            this.EndOffsetUpDown.Size = new System.Drawing.Size(62, 20);
+            this.EndOffsetUpDown.TabIndex = 3;
+            // 
+            // StartOffsetUpDown
+            // 
+            this.StartOffsetUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.StartOffsetUpDown.Location = new System.Drawing.Point(65, 35);
+            this.StartOffsetUpDown.Maximum = new decimal(new int[] {
+            3600,
+            0,
+            0,
+            0});
+            this.StartOffsetUpDown.Minimum = new decimal(new int[] {
+            3600,
+            0,
+            0,
+            -2147483648});
+            this.StartOffsetUpDown.Name = "StartOffsetUpDown";
+            this.StartOffsetUpDown.Size = new System.Drawing.Size(62, 20);
+            this.StartOffsetUpDown.TabIndex = 3;
+            // 
+            // EndRefComboBox
+            // 
+            this.EndRefComboBox.FormattingEnabled = true;
+            this.EndRefComboBox.Items.AddRange(new object[] {
+            "C1",
+            "C2",
+            "C3",
+            "C4"});
+            this.EndRefComboBox.Location = new System.Drawing.Point(6, 61);
+            this.EndRefComboBox.Name = "EndRefComboBox";
+            this.EndRefComboBox.Size = new System.Drawing.Size(52, 21);
+            this.EndRefComboBox.TabIndex = 2;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(133, 64);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(98, 13);
+            this.label12.TabIndex = 1;
+            this.label12.Text = "End +/- offset (sec)";
+            this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // StartRefComboBox
             // 
@@ -786,6 +1083,17 @@ namespace WinFormsExample
             this.StartRefComboBox.Name = "StartRefComboBox";
             this.StartRefComboBox.Size = new System.Drawing.Size(52, 21);
             this.StartRefComboBox.TabIndex = 2;
+            this.StartRefComboBox.SelectedIndexChanged += new System.EventHandler(this.StartRefComboBox_SelectedIndexChanged);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(133, 37);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(101, 13);
+            this.label11.TabIndex = 1;
+            this.label11.Text = "Start +/- offset (sec)";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label10
             // 
@@ -799,6 +1107,8 @@ namespace WinFormsExample
             // 
             // PhaseComboBox
             // 
+            this.PhaseComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
+            this.PhaseComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.PhaseComboBox.FormattingEnabled = true;
             this.PhaseComboBox.Items.AddRange(new object[] {
             "Partial",
@@ -808,11 +1118,14 @@ namespace WinFormsExample
             "C1",
             "C2",
             "C3",
-            "C4"});
+            "C4",
+            "Script",
+            "Other"});
             this.PhaseComboBox.Location = new System.Drawing.Point(6, 7);
             this.PhaseComboBox.Name = "PhaseComboBox";
             this.PhaseComboBox.Size = new System.Drawing.Size(121, 21);
             this.PhaseComboBox.TabIndex = 0;
+            this.PhaseComboBox.SelectedIndexChanged += new System.EventHandler(this.PhaseComboBox_SelectedIndexChanged);
             // 
             // CaptureTabPage
             // 
@@ -853,6 +1166,8 @@ namespace WinFormsExample
             // 
             // splitContainer2.Panel2
             // 
+            this.splitContainer2.Panel2.AutoScroll = true;
+            this.splitContainer2.Panel2.AutoScrollMargin = new System.Drawing.Size(3, 3);
             this.splitContainer2.Panel2.Controls.Add(this.SequenceGroupBox);
             this.splitContainer2.Size = new System.Drawing.Size(871, 607);
             this.splitContainer2.SplitterDistance = 566;
@@ -876,13 +1191,48 @@ namespace WinFormsExample
             this.SequenceGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.SequenceGroupBox.Controls.Add(this.ClearSeqButton);
+            this.SequenceGroupBox.Controls.Add(this.LoadSeqButton);
+            this.SequenceGroupBox.Controls.Add(this.SaveSeqButton);
             this.SequenceGroupBox.Controls.Add(this.SeqFlowPanel);
             this.SequenceGroupBox.Location = new System.Drawing.Point(3, 13);
+            this.SequenceGroupBox.MinimumSize = new System.Drawing.Size(292, 581);
             this.SequenceGroupBox.Name = "SequenceGroupBox";
             this.SequenceGroupBox.Size = new System.Drawing.Size(293, 581);
             this.SequenceGroupBox.TabIndex = 0;
             this.SequenceGroupBox.TabStop = false;
             this.SequenceGroupBox.Text = "Sequence";
+            // 
+            // ClearSeqButton
+            // 
+            this.ClearSeqButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ClearSeqButton.Location = new System.Drawing.Point(16, 546);
+            this.ClearSeqButton.Name = "ClearSeqButton";
+            this.ClearSeqButton.Size = new System.Drawing.Size(75, 23);
+            this.ClearSeqButton.TabIndex = 11;
+            this.ClearSeqButton.Text = "Clear";
+            this.ClearSeqButton.UseVisualStyleBackColor = true;
+            this.ClearSeqButton.Click += new System.EventHandler(this.ClearSeqButton_Click);
+            // 
+            // LoadSeqButton
+            // 
+            this.LoadSeqButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.LoadSeqButton.Location = new System.Drawing.Point(117, 546);
+            this.LoadSeqButton.Name = "LoadSeqButton";
+            this.LoadSeqButton.Size = new System.Drawing.Size(75, 23);
+            this.LoadSeqButton.TabIndex = 11;
+            this.LoadSeqButton.Text = "Load";
+            this.LoadSeqButton.UseVisualStyleBackColor = true;
+            // 
+            // SaveSeqButton
+            // 
+            this.SaveSeqButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.SaveSeqButton.Location = new System.Drawing.Point(198, 546);
+            this.SaveSeqButton.Name = "SaveSeqButton";
+            this.SaveSeqButton.Size = new System.Drawing.Size(75, 23);
+            this.SaveSeqButton.TabIndex = 11;
+            this.SaveSeqButton.Text = "Save";
+            this.SaveSeqButton.UseVisualStyleBackColor = true;
             // 
             // SeqFlowPanel
             // 
@@ -896,192 +1246,31 @@ namespace WinFormsExample
             this.SeqFlowPanel.Location = new System.Drawing.Point(16, 66);
             this.SeqFlowPanel.MinimumSize = new System.Drawing.Size(256, 0);
             this.SeqFlowPanel.Name = "SeqFlowPanel";
-            this.SeqFlowPanel.Size = new System.Drawing.Size(257, 503);
+            this.SeqFlowPanel.Size = new System.Drawing.Size(257, 472);
             this.SeqFlowPanel.TabIndex = 0;
             this.SeqFlowPanel.WrapContents = false;
             // 
+            // ScriptFileBrowser
+            // 
+            this.ScriptFileBrowser.FileName = "openFileDialog1";
+            // 
             // stepControl1
             // 
-            this.stepControl1.AEB = 0;
-            this.stepControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.stepControl1.AutoSize = true;
-            this.stepControl1.Av = null;
             this.stepControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.stepControl1.EndDateTime = new System.DateTime(((long)(0)));
             this.stepControl1.EndOffset = System.TimeSpan.Parse("00:00:00");
             this.stepControl1.EndRef = null;
             this.stepControl1.Interval = System.TimeSpan.Parse("00:00:00");
-            this.stepControl1.ISO = null;
             this.stepControl1.Location = new System.Drawing.Point(3, 3);
             this.stepControl1.MinimumSize = new System.Drawing.Size(250, 107);
             this.stepControl1.Name = "stepControl1";
             this.stepControl1.Phase = null;
-            this.stepControl1.Script = null;
             this.stepControl1.Size = new System.Drawing.Size(250, 107);
             this.stepControl1.StartDateTime = new System.DateTime(((long)(0)));
             this.stepControl1.StartOffset = System.TimeSpan.Parse("00:00:00");
             this.stepControl1.StartRef = null;
             this.stepControl1.TabIndex = 0;
-            this.stepControl1.Tv = null;
-            // 
-            // StartOffsetUpDown
-            // 
-            this.StartOffsetUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.StartOffsetUpDown.Location = new System.Drawing.Point(65, 35);
-            this.StartOffsetUpDown.Maximum = new decimal(new int[] {
-            3600,
-            0,
-            0,
-            0});
-            this.StartOffsetUpDown.Minimum = new decimal(new int[] {
-            3600,
-            0,
-            0,
-            -2147483648});
-            this.StartOffsetUpDown.Name = "StartOffsetUpDown";
-            this.StartOffsetUpDown.Size = new System.Drawing.Size(62, 20);
-            this.StartOffsetUpDown.TabIndex = 3;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(133, 37);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(101, 13);
-            this.label11.TabIndex = 1;
-            this.label11.Text = "Start +/- offset (sec)";
-            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(133, 64);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(98, 13);
-            this.label12.TabIndex = 1;
-            this.label12.Text = "End +/- offset (sec)";
-            this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // EndRefComboBox
-            // 
-            this.EndRefComboBox.FormattingEnabled = true;
-            this.EndRefComboBox.Items.AddRange(new object[] {
-            "C1",
-            "C2",
-            "C3",
-            "C4"});
-            this.EndRefComboBox.Location = new System.Drawing.Point(6, 61);
-            this.EndRefComboBox.Name = "EndRefComboBox";
-            this.EndRefComboBox.Size = new System.Drawing.Size(52, 21);
-            this.EndRefComboBox.TabIndex = 2;
-            // 
-            // EndOffsetUpDown
-            // 
-            this.EndOffsetUpDown.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.EndOffsetUpDown.Location = new System.Drawing.Point(65, 62);
-            this.EndOffsetUpDown.Maximum = new decimal(new int[] {
-            3600,
-            0,
-            0,
-            0});
-            this.EndOffsetUpDown.Minimum = new decimal(new int[] {
-            3600,
-            0,
-            0,
-            -2147483648});
-            this.EndOffsetUpDown.Name = "EndOffsetUpDown";
-            this.EndOffsetUpDown.Size = new System.Drawing.Size(62, 20);
-            this.EndOffsetUpDown.TabIndex = 3;
-            // 
-            // IntervalRadioButton
-            // 
-            this.IntervalRadioButton.AutoSize = true;
-            this.IntervalRadioButton.Checked = true;
-            this.IntervalRadioButton.Location = new System.Drawing.Point(6, 17);
-            this.IntervalRadioButton.Name = "IntervalRadioButton";
-            this.IntervalRadioButton.Size = new System.Drawing.Size(60, 17);
-            this.IntervalRadioButton.TabIndex = 4;
-            this.IntervalRadioButton.Text = "Interval";
-            this.IntervalRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // ContinuousRadioButton
-            // 
-            this.ContinuousRadioButton.AutoSize = true;
-            this.ContinuousRadioButton.Location = new System.Drawing.Point(72, 17);
-            this.ContinuousRadioButton.Name = "ContinuousRadioButton";
-            this.ContinuousRadioButton.Size = new System.Drawing.Size(78, 17);
-            this.ContinuousRadioButton.TabIndex = 4;
-            this.ContinuousRadioButton.Text = "Continuous";
-            this.ContinuousRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // SingleRadioButton
-            // 
-            this.SingleRadioButton.AutoSize = true;
-            this.SingleRadioButton.Location = new System.Drawing.Point(156, 17);
-            this.SingleRadioButton.Name = "SingleRadioButton";
-            this.SingleRadioButton.Size = new System.Drawing.Size(54, 17);
-            this.SingleRadioButton.TabIndex = 4;
-            this.SingleRadioButton.Text = "Single";
-            this.SingleRadioButton.UseVisualStyleBackColor = true;
-            // 
-            // IntervalGroupBox
-            // 
-            this.IntervalGroupBox.Controls.Add(this.label14);
-            this.IntervalGroupBox.Controls.Add(this.label13);
-            this.IntervalGroupBox.Controls.Add(this.IntervalSecUpDown);
-            this.IntervalGroupBox.Controls.Add(this.IntervalMinUpDown);
-            this.IntervalGroupBox.Controls.Add(this.IntervalRadioButton);
-            this.IntervalGroupBox.Controls.Add(this.SingleRadioButton);
-            this.IntervalGroupBox.Controls.Add(this.ContinuousRadioButton);
-            this.IntervalGroupBox.Location = new System.Drawing.Point(6, 88);
-            this.IntervalGroupBox.Name = "IntervalGroupBox";
-            this.IntervalGroupBox.Size = new System.Drawing.Size(384, 42);
-            this.IntervalGroupBox.TabIndex = 5;
-            this.IntervalGroupBox.TabStop = false;
-            this.IntervalGroupBox.Text = "Stage Repeat";
-            // 
-            // IntervalMinUpDown
-            // 
-            this.IntervalMinUpDown.Location = new System.Drawing.Point(228, 14);
-            this.IntervalMinUpDown.Maximum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
-            this.IntervalMinUpDown.Name = "IntervalMinUpDown";
-            this.IntervalMinUpDown.Size = new System.Drawing.Size(46, 20);
-            this.IntervalMinUpDown.TabIndex = 5;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(277, 16);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(23, 13);
-            this.label13.TabIndex = 6;
-            this.label13.Text = "min";
-            // 
-            // IntervalSecUpDown
-            // 
-            this.IntervalSecUpDown.Location = new System.Drawing.Point(306, 14);
-            this.IntervalSecUpDown.Maximum = new decimal(new int[] {
-            59,
-            0,
-            0,
-            0});
-            this.IntervalSecUpDown.Name = "IntervalSecUpDown";
-            this.IntervalSecUpDown.Size = new System.Drawing.Size(46, 20);
-            this.IntervalSecUpDown.TabIndex = 5;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(355, 16);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(24, 13);
-            this.label14.TabIndex = 6;
-            this.label14.Text = "sec";
             // 
             // MainForm
             // 
@@ -1111,6 +1300,17 @@ namespace WinFormsExample
             this.splitContainer1.ResumeLayout(false);
             this.SeqGenTabPage.ResumeLayout(false);
             this.SeqGenTabPage.PerformLayout();
+            this.ScriptGroupBox.ResumeLayout(false);
+            this.ScriptGroupBox.PerformLayout();
+            this.AEBGroupBox.ResumeLayout(false);
+            this.AEBGroupBox.PerformLayout();
+            this.ExposureGroupBox.ResumeLayout(false);
+            this.IntervalGroupBox.ResumeLayout(false);
+            this.IntervalGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.IntervalSecUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.IntervalMinUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EndOffsetUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.StartOffsetUpDown)).EndInit();
             this.CaptureTabPage.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
@@ -1119,12 +1319,6 @@ namespace WinFormsExample
             this.SequenceGroupBox.ResumeLayout(false);
             this.SeqFlowPanel.ResumeLayout(false);
             this.SeqFlowPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.StartOffsetUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.EndOffsetUpDown)).EndInit();
-            this.IntervalGroupBox.ResumeLayout(false);
-            this.IntervalGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.IntervalMinUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.IntervalSecUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1152,7 +1346,7 @@ namespace WinFormsExample
         private System.Windows.Forms.ComboBox TvCoBox;
         private System.Windows.Forms.TextBox SavePathTextBox;
         private System.Windows.Forms.ComboBox ISOCoBox;
-        private System.Windows.Forms.Button BrowseButton;
+        private System.Windows.Forms.Button SaveBrowseButton;
         private System.Windows.Forms.NumericUpDown BulbUpDo;
         private System.Windows.Forms.GroupBox SaveToGroupBox;
         private System.Windows.Forms.RadioButton STBothRdButton;
@@ -1191,7 +1385,6 @@ namespace WinFormsExample
         private System.Windows.Forms.TabPage CaptureTabPage;
         private System.Windows.Forms.ComboBox PhaseComboBox;
         private System.Windows.Forms.Label label10;
-        private EOSeclipse.Controls.StepControl stepControl1;
         private System.Windows.Forms.ComboBox StartRefComboBox;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.NumericUpDown StartOffsetUpDown;
@@ -1207,6 +1400,23 @@ namespace WinFormsExample
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.NumericUpDown IntervalSecUpDown;
         private System.Windows.Forms.NumericUpDown IntervalMinUpDown;
+        private System.Windows.Forms.ListBox SeqTvListBox;
+        private System.Windows.Forms.GroupBox ExposureGroupBox;
+        private System.Windows.Forms.GroupBox AEBGroupBox;
+        private System.Windows.Forms.DomainUpDown AEBUpDown;
+        private System.Windows.Forms.RadioButton AEBRadioButton;
+        private System.Windows.Forms.RadioButton AEBDisabledRadioButton;
+        private System.Windows.Forms.FolderBrowserDialog LoadScriptBrowserOLD;
+        private System.Windows.Forms.GroupBox ScriptGroupBox;
+        private System.Windows.Forms.TextBox ScriptTextBox;
+        private System.Windows.Forms.Button ScriptBrowseButton;
+        private System.Windows.Forms.Button SaveSeqButton;
+        private System.Windows.Forms.Button CancelStageButton;
+        private System.Windows.Forms.Button AddStageButton;
+        private System.Windows.Forms.Button ClearSeqButton;
+        private System.Windows.Forms.Button LoadSeqButton;
+        private System.Windows.Forms.OpenFileDialog ScriptFileBrowser;
+        private EOSeclipse.Controls.StepControl stepControl1;
     }
 }
 

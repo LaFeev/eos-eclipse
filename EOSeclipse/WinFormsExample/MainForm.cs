@@ -9,6 +9,7 @@ using EOSDigital.SDK;
 using System.Threading;
 using GMap.NET;
 using GMap.NET.WindowsForms;
+using EOSeclipse.Controls;
 
 namespace WinFormsExample
 {
@@ -33,6 +34,8 @@ namespace WinFormsExample
         PointLatLng ShootingLocation;
         Double Elevation;
         GMapOverlay markersOverlay = new GMapOverlay("markers");
+
+        List<StepControl> StepList = new List<StepControl>();
 
         #endregion
 
@@ -64,6 +67,12 @@ namespace WinFormsExample
                 splitContainer1.Panel2.Controls.Add( gmap );
 
                 splitContainer2.Panel2Collapsed = true;
+
+                // TODO: load cached session (stage, sequence, location, etc) instead of clearing everything
+                ResetStage();
+                ClearSequence();
+                ScriptTextBox.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Eclipse Scripts");
+                LoadScriptBrowserOLD.Description = "Load Script...";
             }
             catch (DllNotFoundException) { ReportError("Canon DLLs not found!", true); }
             catch (Exception ex) { ReportError(ex.Message, true); }
@@ -78,6 +87,9 @@ namespace WinFormsExample
                 APIHandler?.Dispose();
             }
             catch (Exception ex) { ReportError(ex.Message, false); }
+
+            // TODO: add a dialog to confirm form closing a la:
+            // https://stackoverflow.com/a/9231770/22854232
         }
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -275,7 +287,7 @@ namespace WinFormsExample
                     if (STCameraRdButton.Checked)
                     {
                         MainCamera.SetSetting(PropertyID.SaveTo, (int)SaveTo.Camera);
-                        BrowseButton.Enabled = false;
+                        SaveBrowseButton.Enabled = false;
                         SavePathTextBox.Enabled = false;
                     }
                     else
@@ -284,7 +296,7 @@ namespace WinFormsExample
                         else if (STBothRdButton.Checked) MainCamera.SetSetting(PropertyID.SaveTo, (int)SaveTo.Both);
 
                         MainCamera.SetCapacity(4096, int.MaxValue);
-                        BrowseButton.Enabled = true;
+                        SaveBrowseButton.Enabled = true;
                         SavePathTextBox.Enabled = true;
                     }
                 }
@@ -351,6 +363,398 @@ namespace WinFormsExample
                 //TODO: actually parse the returned values and insert in text boxes (not a priority until Canon adds GPS support in SDK)
                 GPSStatusTextBox.Text = "GPS found";
                 GPSDateTimeTextBox.Visible = true;
+            }
+        }
+
+        #endregion
+
+        #region Sequence gen
+
+        private void PhaseComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (PhaseComboBox.SelectedItem != null)
+            {
+                IntervalGroupBox.Enabled = true;
+                ExposureGroupBox.Enabled = true;
+                AEBGroupBox.Enabled = true;
+                SingleRadioButton.Enabled = true;
+
+                StartRefComboBox.Items.Clear();
+                StartOffsetUpDown.Value = 0;
+                StartRefComboBox.SelectedIndex = -1;
+                StartRefComboBox.Enabled = true;
+                StartOffsetUpDown.Enabled = true;
+                EndRefComboBox.Items.Clear();
+                EndOffsetUpDown.Value = 0;
+                EndRefComboBox.SelectedIndex = -1;
+                EndRefComboBox.Enabled = false;
+                EndOffsetUpDown.Enabled = false;
+
+                switch (PhaseComboBox.SelectedItem.ToString())
+                {
+                    case "Partial":
+                        if (SingleRadioButton.Checked)
+                        {
+                            IntervalRadioButton.Checked = true;
+                        }
+                        StartRefComboBox.Items.AddRange(new string[] { "C1", "C2" });
+                        EndRefComboBox.Items.AddRange(new string[] { "C3", "C4" });
+
+                        StartRefComboBox.SelectedItem = "C1";
+                        EndRefComboBox.SelectedItem = "C4";
+
+                        EndRefComboBox.Enabled = true;
+                        EndOffsetUpDown.Enabled = true;
+                        SingleRadioButton.Enabled = false;
+                        break;
+                    case "Baily's Beads":
+                        if (SingleRadioButton.Checked)
+                        {
+                            IntervalRadioButton.Checked = true;
+                        }
+                        StartRefComboBox.Items.AddRange(new string[] { "C2", "C3" });
+                        EndRefComboBox.Items.AddRange(new string[] { "C2", "C3" });
+                        StartRefComboBox.Enabled = true;
+                        EndRefComboBox.Enabled = false;
+                        EndOffsetUpDown.Enabled = true;
+
+                        // if one of the two baily's beads stages has been configured, remove it from the start/end reference options
+                        foreach (StepControl step in StepList)
+                        {
+                            if (step.Phase == "Baily's Beads")
+                            {
+                                StartRefComboBox.Items.Remove(step.StartRef);
+                            }
+                        }
+
+                        StartRefComboBox.SelectedIndex = 0;
+                        EndRefComboBox.SelectedIndex = 0;
+                        SingleRadioButton.Enabled = false;
+                        break;
+                    case "Totality":
+                        if (SingleRadioButton.Checked)
+                        {
+                            IntervalRadioButton.Checked = true;
+                        }
+                        StartRefComboBox.Items.AddRange(new string[] { "C2" });
+                        EndRefComboBox.Items.AddRange(new string[] { "C3" });
+
+                        StartRefComboBox.SelectedItem = "C2";
+                        EndRefComboBox.SelectedItem = "C3";
+                        SingleRadioButton.Enabled = false;
+
+                        // set default offsets and allow editing
+                        StartRefComboBox.Enabled = false;
+                        EndRefComboBox.Enabled = false;
+                        EndOffsetUpDown.Enabled = true;
+                        StartOffsetUpDown.Value = 10;
+                        EndOffsetUpDown.Value = -10;
+
+                        // if either baily's beads events are already configured, use their start/end offsets to define totality and disable edit
+                        foreach (StepControl step in StepList)
+                        {
+                            if (step.Phase == "Baily's Beads" && step.StartRef == "C2")
+                            {
+                                StartOffsetUpDown.Enabled = false;
+                                StartOffsetUpDown.Value = (decimal)step.EndOffset.TotalSeconds;
+                            }
+                            else if (step.Phase == "Baily's Beads" && step.StartRef == "C3")
+                            {
+                                EndOffsetUpDown.Enabled = false;
+                                EndOffsetUpDown.Value = (decimal)step.StartOffset.TotalSeconds;
+                            }
+                        }
+                        break;
+                    case "Max Eclipse":
+                        StartRefComboBox.Items.AddRange(new string[] { "Mx" });
+                        EndRefComboBox.Items.AddRange(new string[] { "Mx" });
+
+                        StartRefComboBox.SelectedItem = "Mx";
+                        EndRefComboBox.SelectedItem = "Mx";
+
+                        StartRefComboBox.Enabled = false;
+                        EndOffsetUpDown.Enabled = true;
+
+                        StartOffsetUpDown.Value = 10;
+                        EndOffsetUpDown.Value = -10;
+                        break;
+                    case "C1":
+                        StartRefComboBox.Items.AddRange(new string[] { "C1" });
+                        EndRefComboBox.Items.AddRange(new string[] { "C1" });
+
+                        StartRefComboBox.SelectedItem = "C1";
+                        EndRefComboBox.SelectedItem = "C1";
+
+                        StartRefComboBox.Enabled = false;
+                        EndOffsetUpDown.Enabled = true;
+
+                        StartOffsetUpDown.Value = 1;
+                        EndOffsetUpDown.Value = -1;
+                    break;
+                    case "C2":
+                        StartRefComboBox.Items.AddRange(new string[] { "C2" });
+                        EndRefComboBox.Items.AddRange(new string[] { "C2" });
+
+                        StartRefComboBox.SelectedItem = "C2";
+                        EndRefComboBox.SelectedItem = "C2";
+
+                        StartRefComboBox.Enabled = false;
+                        EndOffsetUpDown.Enabled = true;
+
+                        StartOffsetUpDown.Value = 1;
+                        EndOffsetUpDown.Value = -1;
+                    break;
+                    case "C3":
+                        StartRefComboBox.Items.AddRange(new string[] { "C3" });
+                        EndRefComboBox.Items.AddRange(new string[] { "C3" });
+
+                        StartRefComboBox.SelectedItem = "C3";
+                        EndRefComboBox.SelectedItem = "C3";
+
+                        StartRefComboBox.Enabled = false;
+                        EndOffsetUpDown.Enabled = true;
+
+                        StartOffsetUpDown.Value = 1;
+                        EndOffsetUpDown.Value = -1;
+                    break;
+                    case "C4":
+                        StartRefComboBox.Items.AddRange(new string[] { "C4" });
+                        EndRefComboBox.Items.AddRange(new string[] { "C4" });
+
+                        StartRefComboBox.SelectedItem = "C4";
+                        EndRefComboBox.SelectedItem = "C4";
+
+                        StartRefComboBox.Enabled = false;
+                        EndOffsetUpDown.Enabled = true;
+
+                        StartOffsetUpDown.Value = 1;
+                        EndOffsetUpDown.Value = -1;
+                    break;
+                    case "Script":
+                        StartRefComboBox.Items.AddRange(new string[] { "C1", "C2", "Mx", "C3", "C4" });
+                        EndRefComboBox.Items.AddRange(new string[] { "C1", "C2", "Mx", "C3", "C4" });
+
+                        StartRefComboBox.SelectedIndex = -1;
+                        EndRefComboBox.SelectedIndex = -1;
+
+                        if (SingleRadioButton.Checked)
+                        {
+                            EndRefComboBox.Enabled = false;
+                        }
+                        else { EndRefComboBox.Enabled = true; }
+                        EndOffsetUpDown.Enabled = true;
+
+                        StartOffsetUpDown.Value = 0;
+                        EndOffsetUpDown.Value = 0;
+
+                        ExposureGroupBox.Enabled = false;
+                        AEBGroupBox.Enabled = false;
+                        ScriptGroupBox.Enabled = true;
+                    break;
+                    default:
+                        StartRefComboBox.Items.AddRange(new string[] { "C1", "C2", "Mx", "C3", "C4" });
+                        EndRefComboBox.Items.AddRange(new string[] { "C1", "C2", "Mx", "C3", "C4" });
+
+                        StartRefComboBox.SelectedIndex = -1;
+                        EndRefComboBox.SelectedIndex = -1;
+
+                        if (SingleRadioButton.Checked)
+                        {
+                            EndRefComboBox.Enabled = false;
+                        }
+                        else { EndRefComboBox.Enabled = true; }
+                        EndOffsetUpDown.Enabled = true;
+
+                        StartOffsetUpDown.Value = 0;
+                        EndOffsetUpDown.Value = 0;
+                    break;
+                }
+            }
+            else
+            {
+                // should only get here via a call to StageReset(), which should clear everything etc
+                // TODO: delete this else block?
+            }
+        }
+
+        private void IntervalRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (IntervalRadioButton.Checked) 
+            {
+                IntervalMinUpDown.Enabled = true;
+                IntervalSecUpDown.Enabled = true;
+            }
+            else
+            {
+                IntervalMinUpDown.Enabled = false;
+                IntervalSecUpDown.Enabled = false;
+            }
+        }
+
+        private void ResetStage()
+        {
+            PhaseComboBox.SelectedIndex = -1;
+            StartRefComboBox.SelectedIndex = -1;
+            StartRefComboBox.Items.Clear();
+            StartRefComboBox.Enabled = false;
+            StartOffsetUpDown.Value = 0;
+            StartOffsetUpDown.Enabled = false;
+            EndRefComboBox.SelectedIndex = -1;
+            EndRefComboBox.Items.Clear();
+            EndRefComboBox.Enabled = false;
+            EndOffsetUpDown.Value = 0;
+            EndOffsetUpDown.Enabled = false;
+            IntervalRadioButton.Checked = true;
+            IntervalMinUpDown.Value = 0;
+            IntervalSecUpDown.Value = 0;
+            SeqTvListBox.SelectedIndex = -1;
+            AEBDisabledRadioButton.Checked = true;
+            AEBUpDown.SelectedIndex = AEBUpDown.Items.Count -1;
+            AEBUpDown.Enabled = false;
+
+            IntervalGroupBox.Enabled = false;
+            ExposureGroupBox.Enabled = false;
+            AEBGroupBox.Enabled = false;
+            ScriptGroupBox.Enabled = false;
+        }
+
+        private void ClearSequence()
+        {
+            if (StepList.Count > 0)
+            {
+                foreach (StepControl step in StepList)
+                {
+                    SeqFlowPanel.Controls.Remove(step);
+                }
+                StepList.Clear();
+            }
+        }
+
+        private void ScriptBrowseButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (File.Exists(ScriptTextBox.Text)) ScriptFileBrowser.InitialDirectory = ScriptTextBox.Text;
+                if (ScriptFileBrowser.ShowDialog() == DialogResult.OK)
+                {
+                    ScriptTextBox.Text = ScriptFileBrowser.FileName;
+                }
+            }
+            catch (Exception ex) { ReportError(ex.Message, false); }
+        }
+
+        private void CancelStageButton_Click(object sender, EventArgs e)
+        {
+            DialogResult confirmResult = MessageBox.Show("Are you sure you want to clear the stage inputs above?", "Confirm reset!", MessageBoxButtons.OKCancel);
+
+            if (confirmResult == DialogResult.OK)
+            {
+                ResetStage();
+            }
+            else
+            {
+                // don't reset...
+            }
+        }
+
+        private void AEBDisabledRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (AEBDisabledRadioButton.Checked)
+            {
+                AEBUpDown.Enabled = false;
+            }
+            else
+            {
+                AEBUpDown.Enabled = true;
+            }
+        }
+
+        private void StartRefComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (StartRefComboBox.SelectedItem != null)
+            {
+                switch (PhaseComboBox.SelectedItem.ToString())
+                {
+                    case "Partial":
+                        if (StartRefComboBox.SelectedItem.ToString() == "C1") { EndRefComboBox.SelectedItem = "C4"; }
+                        else { EndRefComboBox.SelectedItem = "C3"; }
+                    break;
+                    case "Baily's Beads":
+                        if (StartRefComboBox.SelectedItem.ToString() == "C2") { EndRefComboBox.SelectedItem = "C2"; }
+                        else { EndRefComboBox.SelectedItem = "C3"; }
+                    break;
+                    case "Script":
+                        EndRefComboBox.SelectedItem = StartRefComboBox.SelectedItem.ToString();
+                    break;
+                    case "Other":
+                        if (SingleRadioButton.Checked)
+                        {
+                            EndRefComboBox.SelectedItem = StartRefComboBox.SelectedItem.ToString();
+                        }
+                    break;
+                }
+            }
+        }
+
+        private void SingleRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (SingleRadioButton.Checked)
+            {
+                EndRefComboBox.Enabled = false;
+
+                if (StartRefComboBox.SelectedItem != null) 
+                {
+                    EndRefComboBox.SelectedItem = StartRefComboBox.SelectedItem.ToString();
+                }
+            }
+            else
+            {
+                EndRefComboBox.Enabled = true;
+            }
+        }
+
+        private void AddStageButton_Click(object sender, EventArgs e)
+        {
+            // create the step
+            StepControl step = new StepControl();
+            step.Phase = PhaseComboBox.SelectedItem.ToString();
+            step.StartRef = StartRefComboBox.SelectedItem.ToString();
+            step.StartOffset = new TimeSpan(0,0, (int)StartOffsetUpDown.Value);
+            step.EndRef = EndRefComboBox.SelectedItem.ToString();
+            step.EndOffset = new TimeSpan(0,0, (int)EndOffsetUpDown.Value);
+            
+            if (IntervalRadioButton.Checked)
+            {
+                step.Interval = new TimeSpan(0, (int)IntervalMinUpDown.Value, (int)IntervalSecUpDown.Value);
+            }
+            else if (ContinuousRadioButton.Checked) { step.Interval = TimeSpan.Zero; }
+            else { step.Interval = new TimeSpan(-99,-99, -99); }
+
+            // TODO: all the task related stuff
+            // TODO: also need to create the task class
+
+            // add the step to the step list
+            StepList.Add(step);
+
+            // add the step to the sequence panel
+            SeqFlowPanel.Controls.Add(step);
+        }
+
+        #endregion
+
+        #region Sequence Panel
+
+        private void ClearSeqButton_Click(object sender, EventArgs e)
+        {
+            DialogResult confirmResult = MessageBox.Show("Are you sure you want to clear the entire sequence?", "Confirm reset!", MessageBoxButtons.OKCancel);
+
+            if (confirmResult == DialogResult.OK)
+            {
+                ClearSequence();
+            }
+            else
+            {
+                // don't reset...
             }
         }
 
@@ -454,6 +858,7 @@ namespace WinFormsExample
             AvCoBox.Items.Clear();
             TvCoBox.Items.Clear();
             ISOCoBox.Items.Clear();
+            SeqTvListBox.Items.Clear();
             SettingsTabPage.Enabled = false;
             LiveViewGroupBox.Enabled = false;
             GetGPSButton.Enabled = false;
@@ -503,6 +908,7 @@ namespace WinFormsExample
                 ISOList = MainCamera.GetSettingsList(PropertyID.ISO);
                 foreach (var Av in AvList) AvCoBox.Items.Add(Av.StringValue);
                 foreach (var Tv in TvList) TvCoBox.Items.Add(Tv.StringValue);
+                foreach (var Tv in TvList) SeqTvListBox.Items.Add(Tv.StringValue);
                 foreach (var ISO in ISOList) ISOCoBox.Items.Add(ISO.StringValue);
                 AvCoBox.SelectedIndex = AvCoBox.Items.IndexOf(AvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Av)).StringValue);
                 TvCoBox.SelectedIndex = TvCoBox.Items.IndexOf(TvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Tv)).StringValue);
