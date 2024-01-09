@@ -21,13 +21,14 @@ namespace EOSeclipse.Controls
         public string EndRef { get; set; }
         public TimeSpan StartOffset { get; set; }
         public TimeSpan EndOffset { get; set; }
-        public string Script { get; set; }      // should this be a property of Task?
+        //public string Script { get; set; }      // should this be a property of Task?
         public string Phase { get; set; }
+        private List<TaskControl> Tasks { get; set; }
         // the following properties should move to a different class for "Task"
-        public List<double> Av { get; set; }
-        public List<string> Tv { get; set; }
-        public List<int> ISO { get; set; }
-        public int AEB { get; set; }
+        //public List<double> Av { get; set; }
+        //public List<string> Tv { get; set; }
+        //public List<int> ISO { get; set; }
+        //public int AEB { get; set; }
 
         public StepControl()
         {
@@ -117,7 +118,7 @@ namespace EOSeclipse.Controls
                 _active = true;
                 ToggleEnabled();
 
-                if (Interval != null && Interval != TimeSpan.Zero)
+                if (Interval > TimeSpan.Zero)
                 {
                     IntervalTimer.Interval = (int)Interval.TotalMilliseconds;
                     IntervalTimer.Start();
@@ -187,7 +188,7 @@ namespace EOSeclipse.Controls
             string intervalText = string.Empty;
             string intervalMetric = string.Empty;
 
-            if (interval == null) intervalText = "Single";
+            if (interval < TimeSpan.Zero) intervalText = "Single";
             else if (interval == TimeSpan.Zero) intervalText = "Cont.";
             else if (interval.Days > 0 || interval.Hours > 0) { intervalText = interval.TotalHours.ToString(); intervalMetric = " hr"; }
             else if (interval.Minutes > 0) { intervalText = interval.TotalMinutes.ToString(); intervalMetric = " min"; }
@@ -204,7 +205,7 @@ namespace EOSeclipse.Controls
             // TODO: throw a warning if hours or days are encountered
             TimeSpan ts;
             
-            if (Interval == null || Interval == TimeSpan.Zero)
+            if (Interval <= TimeSpan.Zero)
             {
                 // single action or continuous (no interval)
                 return "--:--.-";
