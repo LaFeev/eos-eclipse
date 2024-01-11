@@ -128,6 +128,7 @@ namespace WinFormsExample
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.LoadScriptBrowserOLD = new System.Windows.Forms.FolderBrowserDialog();
             this.ScriptFileBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.SeqSizerPanel = new System.Windows.Forms.Panel();
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
             this.InitGroupBox.SuspendLayout();
@@ -156,6 +157,7 @@ namespace WinFormsExample
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.SequenceGroupBox.SuspendLayout();
+            this.SeqFlowPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // LiveViewGroupBox
@@ -174,7 +176,7 @@ namespace WinFormsExample
             this.LiveViewGroupBox.Enabled = false;
             this.LiveViewGroupBox.Location = new System.Drawing.Point(12, 238);
             this.LiveViewGroupBox.Name = "LiveViewGroupBox";
-            this.LiveViewGroupBox.Size = new System.Drawing.Size(547, 355);
+            this.LiveViewGroupBox.Size = new System.Drawing.Size(541, 355);
             this.LiveViewGroupBox.TabIndex = 13;
             this.LiveViewGroupBox.TabStop = false;
             this.LiveViewGroupBox.Text = "LiveView";
@@ -253,7 +255,7 @@ namespace WinFormsExample
             this.LiveViewPicBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.LiveViewPicBox.Location = new System.Drawing.Point(9, 51);
             this.LiveViewPicBox.Name = "LiveViewPicBox";
-            this.LiveViewPicBox.Size = new System.Drawing.Size(528, 293);
+            this.LiveViewPicBox.Size = new System.Drawing.Size(522, 293);
             this.LiveViewPicBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.LiveViewPicBox.TabIndex = 1;
             this.LiveViewPicBox.TabStop = false;
@@ -815,7 +817,7 @@ namespace WinFormsExample
             this.SeqSettingsPanel.Controls.Add(this.ExposureGroupBox);
             this.SeqSettingsPanel.Location = new System.Drawing.Point(0, 144);
             this.SeqSettingsPanel.Name = "SeqSettingsPanel";
-            this.SeqSettingsPanel.Size = new System.Drawing.Size(360, 146);
+            this.SeqSettingsPanel.Size = new System.Drawing.Size(343, 146);
             this.SeqSettingsPanel.TabIndex = 14;
             // 
             // label16
@@ -1204,7 +1206,7 @@ namespace WinFormsExample
             // 
             this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
             this.splitContainer2.Name = "splitContainer2";
             // 
@@ -1214,22 +1216,23 @@ namespace WinFormsExample
             this.splitContainer2.Panel1.Controls.Add(this.InitGroupBox);
             this.splitContainer2.Panel1.Controls.Add(this.SettingsTabControl);
             this.splitContainer2.Panel1.Controls.Add(this.LiveViewGroupBox);
-            this.splitContainer2.Panel1MinSize = 566;
+            this.splitContainer2.Panel1MinSize = 560;
             // 
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.AutoScroll = true;
             this.splitContainer2.Panel2.AutoScrollMargin = new System.Drawing.Size(3, 3);
             this.splitContainer2.Panel2.Controls.Add(this.SequenceGroupBox);
+            this.splitContainer2.Panel2MinSize = 305;
             this.splitContainer2.Size = new System.Drawing.Size(871, 607);
-            this.splitContainer2.SplitterDistance = 566;
+            this.splitContainer2.SplitterDistance = 560;
             this.splitContainer2.TabIndex = 14;
             // 
             // ExpandButton
             // 
             this.ExpandButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ExpandButton.Location = new System.Drawing.Point(549, 216);
+            this.ExpandButton.Location = new System.Drawing.Point(543, 216);
             this.ExpandButton.Name = "ExpandButton";
             this.ExpandButton.Size = new System.Drawing.Size(17, 52);
             this.ExpandButton.TabIndex = 7;
@@ -1250,7 +1253,7 @@ namespace WinFormsExample
             this.SequenceGroupBox.Location = new System.Drawing.Point(3, 13);
             this.SequenceGroupBox.MinimumSize = new System.Drawing.Size(292, 581);
             this.SequenceGroupBox.Name = "SequenceGroupBox";
-            this.SequenceGroupBox.Size = new System.Drawing.Size(292, 581);
+            this.SequenceGroupBox.Size = new System.Drawing.Size(298, 581);
             this.SequenceGroupBox.TabIndex = 0;
             this.SequenceGroupBox.TabStop = false;
             this.SequenceGroupBox.Text = "Sequence";
@@ -1269,7 +1272,7 @@ namespace WinFormsExample
             // LoadSeqButton
             // 
             this.LoadSeqButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.LoadSeqButton.Location = new System.Drawing.Point(117, 546);
+            this.LoadSeqButton.Location = new System.Drawing.Point(123, 546);
             this.LoadSeqButton.Name = "LoadSeqButton";
             this.LoadSeqButton.Size = new System.Drawing.Size(75, 23);
             this.LoadSeqButton.TabIndex = 11;
@@ -1279,12 +1282,13 @@ namespace WinFormsExample
             // SaveSeqButton
             // 
             this.SaveSeqButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SaveSeqButton.Location = new System.Drawing.Point(198, 546);
+            this.SaveSeqButton.Location = new System.Drawing.Point(204, 546);
             this.SaveSeqButton.Name = "SaveSeqButton";
             this.SaveSeqButton.Size = new System.Drawing.Size(75, 23);
             this.SaveSeqButton.TabIndex = 11;
             this.SaveSeqButton.Text = "Save";
             this.SaveSeqButton.UseVisualStyleBackColor = true;
+            this.SaveSeqButton.Click += new System.EventHandler(this.SaveSeqButton_Click);
             // 
             // SeqFlowPanel
             // 
@@ -1293,11 +1297,13 @@ namespace WinFormsExample
             | System.Windows.Forms.AnchorStyles.Right)));
             this.SeqFlowPanel.AutoScroll = true;
             this.SeqFlowPanel.BackColor = System.Drawing.SystemColors.Window;
+            this.SeqFlowPanel.Controls.Add(this.SeqSizerPanel);
             this.SeqFlowPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.SeqFlowPanel.Location = new System.Drawing.Point(16, 66);
             this.SeqFlowPanel.MinimumSize = new System.Drawing.Size(256, 0);
             this.SeqFlowPanel.Name = "SeqFlowPanel";
-            this.SeqFlowPanel.Size = new System.Drawing.Size(257, 472);
+            this.SeqFlowPanel.Padding = new System.Windows.Forms.Padding(5, 0, 0, 10);
+            this.SeqFlowPanel.Size = new System.Drawing.Size(263, 472);
             this.SeqFlowPanel.TabIndex = 0;
             this.SeqFlowPanel.WrapContents = false;
             this.SeqFlowPanel.Resize += new System.EventHandler(this.SeqFlowPanel_Resize);
@@ -1305,6 +1311,13 @@ namespace WinFormsExample
             // ScriptFileBrowser
             // 
             this.ScriptFileBrowser.FileName = "openFileDialog1";
+            // 
+            // SeqSizerPanel
+            // 
+            this.SeqSizerPanel.Location = new System.Drawing.Point(8, 3);
+            this.SeqSizerPanel.Name = "SeqSizerPanel";
+            this.SeqSizerPanel.Size = new System.Drawing.Size(128, 0);
+            this.SeqSizerPanel.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -1353,6 +1366,7 @@ namespace WinFormsExample
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.SequenceGroupBox.ResumeLayout(false);
+            this.SeqFlowPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1455,6 +1469,7 @@ namespace WinFormsExample
         private System.Windows.Forms.ComboBox SeqAvCoBox;
         private System.Windows.Forms.ComboBox SeqIsoCoBox;
         private System.Windows.Forms.Panel SeqSettingsPanel;
+        private System.Windows.Forms.Panel SeqSizerPanel;
     }
 }
 

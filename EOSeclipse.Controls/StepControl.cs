@@ -172,6 +172,11 @@ namespace EOSeclipse.Controls
             }
             Tasks.Add(task);
             StepFlowLayoutPanel.Controls.Add(task);
+
+            if (StepFlowLayoutPanel.HorizontalScroll.Visible)
+            {
+                this.Height = 133;
+            }
         }
 
         #endregion

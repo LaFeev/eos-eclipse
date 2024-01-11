@@ -941,6 +941,12 @@ namespace WinFormsExample
             }
         }
 
+        private void SaveSeqButton_Click(object sender, EventArgs e)
+        {
+            if (SeqFlowPanel.VerticalScroll.Visible) { Console.WriteLine("scroll visible"); }
+            else { Console.WriteLine("scroll NOT visible"); }
+        }
+
         private void ReportError(string message, bool lockdown)
         {
             int errc;
@@ -968,13 +974,13 @@ namespace WinFormsExample
 
         private void SeqFlowPanel_Resize(object sender, EventArgs e)
         {
-            if (StepList.Count > 0)
-            {
-                // TODO: resize one of the stepcontrols to fill the width of the flowlayoutpanel whenever the flowlayoutpanel is resized.
-                //        this isn't currently working
-                StepList[0].Width = SeqFlowPanel.Width - 4;
-
-            }
+            // the children within SeqFlowPanel will get automatically resized to the width of the widest member, but resizing
+            // the first StepControl was not working.  The SeqSizer panel is a zero-height panel that is resized to follow the
+            // SeqFlowPanel, and the subsequent StepControls will follow suit.
+            int offset = 15;
+            if (SeqFlowPanel.VerticalScroll.Visible) { offset = 32; }
+                
+            SeqSizerPanel.Width = SeqFlowPanel.Width - offset;
         }
 
         private List<Step> FakeSteps()
