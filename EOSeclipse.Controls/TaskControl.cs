@@ -7,20 +7,69 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using EOSDigital.API;
 
 namespace EOSeclipse.Controls
 {
     public partial class TaskControl : UserControl
     {
-        public double Av { get; set; }
-        public string Tv { get; set; }
-        public int ISO { get; set; }
-        public int AEB { get; set; }
+        public CameraValue Av { get; set; }
+        public CameraValue Tv { get; set; }
+        public CameraValue ISO { get; set; }
+        public CameraValue AEBMinus { get; set; }
+        public CameraValue AEBPlus { get; set; }
         public string Script { get; set; }
 
         public TaskControl()
         {
             InitializeComponent();
+        }
+
+        private void TaskControl_Refresh()
+        {
+            if (Script != null)
+            {
+                ScriptVisible(true);
+                ScriptLabel.Text = Script;
+            }
+            else
+            {
+                ScriptVisible(false);
+                TvLabel.Text = Tv.StringValue;
+                IsoLabel.Text = ISO.DoubleValue.ToString();
+                AvLabel.Text = Av.StringValue;
+                AEBMinusLabel.Text = AEBMinus;
+                AEBPlusLabel.Text = AEBPlus;
+            }
+            
+
+        }
+
+        private void ScriptVisible(bool toggle)
+        {
+            if (toggle)
+            {
+                TvLabel.Visible = false;
+                IsoLabel.Visible = false;
+                AvLabel.Visible = false;
+                AEBMinusLabel.Visible = false;
+                AEBPlusLabel.Visible = false;
+                ScriptLabel.Visible = true;
+            }
+            else
+            {
+                TvLabel.Visible = true;
+                IsoLabel.Visible = true;
+                AvLabel.Visible = true;
+                AEBMinusLabel.Visible = true;
+                AEBPlusLabel.Visible = true;
+                ScriptLabel.Visible = false;
+            }
+        }
+
+        private void TaskControl_Load(object sender, EventArgs e)
+        {
+            TaskControl_Refresh();
         }
     }
 }

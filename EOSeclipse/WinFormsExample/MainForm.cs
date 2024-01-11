@@ -375,9 +375,9 @@ namespace WinFormsExample
             if (PhaseComboBox.SelectedItem != null)
             {
                 IntervalGroupBox.Enabled = true;
-                ExposureGroupBox.Enabled = true;
-                AEBGroupBox.Enabled = true;
+                SeqSettingsPanel.Enabled = true;
                 SingleRadioButton.Enabled = true;
+                ScriptGroupBox.Enabled = false;
 
                 StartRefComboBox.Items.Clear();
                 StartOffsetUpDown.Value = 0;
@@ -547,8 +547,7 @@ namespace WinFormsExample
                         StartOffsetUpDown.Value = 0;
                         EndOffsetUpDown.Value = 0;
 
-                        ExposureGroupBox.Enabled = false;
-                        AEBGroupBox.Enabled = false;
+                        SeqSettingsPanel.Enabled = false;
                         ScriptGroupBox.Enabled = true;
                     break;
                     default:
@@ -608,13 +607,14 @@ namespace WinFormsExample
             IntervalMinUpDown.Value = 0;
             IntervalSecUpDown.Value = 0;
             SeqTvListBox.SelectedIndex = -1;
+            SeqAvCoBox.SelectedIndex = -1;
+            SeqIsoCoBox.SelectedIndex = -1;
             AEBDisabledRadioButton.Checked = true;
             AEBUpDown.SelectedIndex = AEBUpDown.Items.Count -1;
             AEBUpDown.Enabled = false;
 
             IntervalGroupBox.Enabled = false;
-            ExposureGroupBox.Enabled = false;
-            AEBGroupBox.Enabled = false;
+            SeqSettingsPanel.Enabled = false;
             ScriptGroupBox.Enabled = false;
         }
 
@@ -729,9 +729,28 @@ namespace WinFormsExample
             }
             else if (ContinuousRadioButton.Checked) { step.Interval = TimeSpan.Zero; }
             else { step.Interval = new TimeSpan(-99,-99, -99); }
+            
+            int i = 0;
+            // create tasks
+            foreach (string Tv in SeqTvListBox.SelectedItems)
+            {
 
-            // TODO: all the task related stuff
-            // TODO: also need to create the task class
+                TaskControl task = new TaskControl();
+                task.Tv = new CameraValue(Tv, PropertyID.Tv);
+                task.ISO = new CameraValue((double)SeqIsoCoBox.SelectedItem, PropertyID.ISO);
+                task.Av = new CameraValue(SeqAvCoBox.SelectedItem.ToString(), PropertyID.Av);
+                // TODO: assign AEBminus and AEBPlus values
+
+                // for debug only
+                task.AEBMinus = new CameraValue(Tv, PropertyID.Tv);
+                task.AEBPlus = new CameraValue(Tv, PropertyID.Tv);
+                Console.WriteLine("##### task {0} ######", i);
+                Console.WriteLine("Tv: {0}\nAv: {1}\nISO: {2}", task.Tv.StringValue, task.Av.StringValue, task.ISO.DoubleValue.ToString());
+
+                // add task to step
+                step.AddTask(task);
+                i++;
+            }
 
             // add the step to the step list
             StepList.Add(step);
@@ -859,6 +878,8 @@ namespace WinFormsExample
             TvCoBox.Items.Clear();
             ISOCoBox.Items.Clear();
             SeqTvListBox.Items.Clear();
+            SeqAvCoBox.Items.Clear();
+            SeqIsoCoBox.Items.Clear();
             SettingsTabPage.Enabled = false;
             LiveViewGroupBox.Enabled = false;
             GetGPSButton.Enabled = false;
@@ -906,13 +927,14 @@ namespace WinFormsExample
                 AvList = MainCamera.GetSettingsList(PropertyID.Av);
                 TvList = MainCamera.GetSettingsList(PropertyID.Tv);
                 ISOList = MainCamera.GetSettingsList(PropertyID.ISO);
-                foreach (var Av in AvList) AvCoBox.Items.Add(Av.StringValue);
-                foreach (var Tv in TvList) TvCoBox.Items.Add(Tv.StringValue);
-                foreach (var Tv in TvList) SeqTvListBox.Items.Add(Tv.StringValue);
-                foreach (var ISO in ISOList) ISOCoBox.Items.Add(ISO.StringValue);
+                foreach (var Av in AvList) { AvCoBox.Items.Add(Av.StringValue); SeqAvCoBox.Items.Add(Av.StringValue); }
+                foreach (var Tv in TvList) { TvCoBox.Items.Add(Tv.StringValue); SeqTvListBox.Items.Add(Tv.StringValue); }
+                foreach (var ISO in ISOList) { ISOCoBox.Items.Add(ISO.StringValue); SeqIsoCoBox.Items.Add(ISO.DoubleValue); }
                 AvCoBox.SelectedIndex = AvCoBox.Items.IndexOf(AvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Av)).StringValue);
                 TvCoBox.SelectedIndex = TvCoBox.Items.IndexOf(TvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Tv)).StringValue);
                 ISOCoBox.SelectedIndex = ISOCoBox.Items.IndexOf(ISOValues.GetValue(MainCamera.GetInt32Setting(PropertyID.ISO)).StringValue);
+                SeqAvCoBox.SelectedIndex = AvCoBox.SelectedIndex;
+                SeqIsoCoBox.SelectedIndex = ISOCoBox.SelectedIndex;
                 SettingsTabPage.Enabled = true;
                 LiveViewGroupBox.Enabled = true;
                 GetGPSButton.Enabled = true;
@@ -941,6 +963,17 @@ namespace WinFormsExample
                 InitGroupBox.Enabled = enable;
                 LiveViewGroupBox.Enabled = enable;
                 GetGPSButton.Enabled = enable;
+            }
+        }
+
+        private void SeqFlowPanel_Resize(object sender, EventArgs e)
+        {
+            if (StepList.Count > 0)
+            {
+                // TODO: resize one of the stepcontrols to fill the width of the flowlayoutpanel whenever the flowlayoutpanel is resized.
+                //        this isn't currently working
+                StepList[0].Width = SeqFlowPanel.Width - 4;
+
             }
         }
 

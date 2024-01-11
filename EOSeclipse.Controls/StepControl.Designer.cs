@@ -44,8 +44,10 @@
             this.IntervalLabel = new System.Windows.Forms.Label();
             this.IntervalTimer = new System.Windows.Forms.Timer(this.components);
             this.RefreshTimer = new System.Windows.Forms.Timer(this.components);
+            this.MainPanel = new System.Windows.Forms.Panel();
             this.ProgressPanel.SuspendLayout();
             this.StartEndPanel.SuspendLayout();
+            this.MainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // StepFlowLayoutPanel
@@ -54,12 +56,16 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.StepFlowLayoutPanel.AutoScroll = true;
+            this.StepFlowLayoutPanel.AutoScrollMargin = new System.Drawing.Size(0, 5);
             this.StepFlowLayoutPanel.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.StepFlowLayoutPanel.Location = new System.Drawing.Point(80, 32);
+            this.StepFlowLayoutPanel.Location = new System.Drawing.Point(79, 32);
+            this.StepFlowLayoutPanel.MinimumSize = new System.Drawing.Size(159, 49);
             this.StepFlowLayoutPanel.Name = "StepFlowLayoutPanel";
-            this.StepFlowLayoutPanel.Size = new System.Drawing.Size(158, 43);
+            this.StepFlowLayoutPanel.Padding = new System.Windows.Forms.Padding(0, 0, 0, 10);
+            this.StepFlowLayoutPanel.Size = new System.Drawing.Size(159, 69);
             this.StepFlowLayoutPanel.TabIndex = 1;
             this.StepFlowLayoutPanel.TabStop = true;
+            this.StepFlowLayoutPanel.WrapContents = false;
             // 
             // PhaseLabel
             // 
@@ -67,10 +73,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.PhaseLabel.AutoEllipsis = true;
             this.PhaseLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PhaseLabel.Location = new System.Drawing.Point(8, 7);
+            this.PhaseLabel.Location = new System.Drawing.Point(7, 7);
             this.PhaseLabel.MinimumSize = new System.Drawing.Size(98, 0);
             this.PhaseLabel.Name = "PhaseLabel";
-            this.PhaseLabel.Size = new System.Drawing.Size(115, 17);
+            this.PhaseLabel.Size = new System.Drawing.Size(116, 17);
             this.PhaseLabel.TabIndex = 0;
             this.PhaseLabel.Text = "Phase Label";
             // 
@@ -139,7 +145,7 @@
             this.ProgressPanel.Controls.Add(this.StepProgressBar);
             this.ProgressPanel.Controls.Add(this.StepRemainingTimeLabel);
             this.ProgressPanel.Controls.Add(this.StepElapsedTimeLabel);
-            this.ProgressPanel.Location = new System.Drawing.Point(11, 80);
+            this.ProgressPanel.Location = new System.Drawing.Point(11, 104);
             this.ProgressPanel.Name = "ProgressPanel";
             this.ProgressPanel.Size = new System.Drawing.Size(227, 23);
             this.ProgressPanel.TabIndex = 7;
@@ -169,7 +175,7 @@
             this.IntervalTimerLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.IntervalTimerLabel.AutoSize = true;
             this.IntervalTimerLabel.Font = new System.Drawing.Font("Courier New", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IntervalTimerLabel.Location = new System.Drawing.Point(13, 36);
+            this.IntervalTimerLabel.Location = new System.Drawing.Point(12, 50);
             this.IntervalTimerLabel.Name = "IntervalTimerLabel";
             this.IntervalTimerLabel.Size = new System.Drawing.Size(64, 17);
             this.IntervalTimerLabel.TabIndex = 9;
@@ -179,7 +185,7 @@
             // 
             this.IntervalLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.IntervalLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.IntervalLabel.Location = new System.Drawing.Point(13, 53);
+            this.IntervalLabel.Location = new System.Drawing.Point(12, 67);
             this.IntervalLabel.Name = "IntervalLabel";
             this.IntervalLabel.Size = new System.Drawing.Size(65, 13);
             this.IntervalLabel.TabIndex = 10;
@@ -194,23 +200,35 @@
             this.RefreshTimer.Interval = 10;
             this.RefreshTimer.Tick += new System.EventHandler(this.RefreshTimer_Tick);
             // 
+            // MainPanel
+            // 
+            this.MainPanel.AutoSize = true;
+            this.MainPanel.Controls.Add(this.ProgressPanel);
+            this.MainPanel.Controls.Add(this.IntervalLabel);
+            this.MainPanel.Controls.Add(this.IntervalTimerLabel);
+            this.MainPanel.Controls.Add(this.StartEndPanel);
+            this.MainPanel.Controls.Add(this.PhaseLabel);
+            this.MainPanel.Controls.Add(this.StepFlowLayoutPanel);
+            this.MainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainPanel.Location = new System.Drawing.Point(0, 0);
+            this.MainPanel.Name = "MainPanel";
+            this.MainPanel.Size = new System.Drawing.Size(248, 130);
+            this.MainPanel.TabIndex = 11;
+            // 
             // StepControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Controls.Add(this.IntervalLabel);
-            this.Controls.Add(this.IntervalTimerLabel);
-            this.Controls.Add(this.StartEndPanel);
-            this.Controls.Add(this.ProgressPanel);
-            this.Controls.Add(this.PhaseLabel);
-            this.Controls.Add(this.StepFlowLayoutPanel);
-            this.MinimumSize = new System.Drawing.Size(250, 107);
+            this.Controls.Add(this.MainPanel);
+            this.MinimumSize = new System.Drawing.Size(250, 132);
             this.Name = "StepControl";
-            this.Size = new System.Drawing.Size(248, 106);
+            this.Size = new System.Drawing.Size(248, 130);
             this.Load += new System.EventHandler(this.StepControl_Load);
             this.ProgressPanel.ResumeLayout(false);
             this.StartEndPanel.ResumeLayout(false);
+            this.MainPanel.ResumeLayout(false);
+            this.MainPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -233,5 +251,6 @@
         private System.Windows.Forms.Label IntervalLabel;
         private System.Windows.Forms.Timer IntervalTimer;
         private System.Windows.Forms.Timer RefreshTimer;
+        private System.Windows.Forms.Panel MainPanel;
     }
 }

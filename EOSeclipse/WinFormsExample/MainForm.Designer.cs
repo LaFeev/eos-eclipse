@@ -84,17 +84,22 @@ namespace WinFormsExample
             this.LatTextBox = new System.Windows.Forms.TextBox();
             this.gmap = new GMap.NET.WindowsForms.GMapControl();
             this.SeqGenTabPage = new System.Windows.Forms.TabPage();
-            this.CancelStageButton = new System.Windows.Forms.Button();
-            this.AddStageButton = new System.Windows.Forms.Button();
-            this.ScriptGroupBox = new System.Windows.Forms.GroupBox();
-            this.ScriptBrowseButton = new System.Windows.Forms.Button();
-            this.ScriptTextBox = new System.Windows.Forms.TextBox();
+            this.SeqSettingsPanel = new System.Windows.Forms.Panel();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.SeqAvCoBox = new System.Windows.Forms.ComboBox();
+            this.SeqIsoCoBox = new System.Windows.Forms.ComboBox();
             this.AEBGroupBox = new System.Windows.Forms.GroupBox();
             this.AEBRadioButton = new System.Windows.Forms.RadioButton();
             this.AEBDisabledRadioButton = new System.Windows.Forms.RadioButton();
             this.AEBUpDown = new System.Windows.Forms.DomainUpDown();
             this.ExposureGroupBox = new System.Windows.Forms.GroupBox();
             this.SeqTvListBox = new System.Windows.Forms.ListBox();
+            this.CancelStageButton = new System.Windows.Forms.Button();
+            this.AddStageButton = new System.Windows.Forms.Button();
+            this.ScriptGroupBox = new System.Windows.Forms.GroupBox();
+            this.ScriptBrowseButton = new System.Windows.Forms.Button();
+            this.ScriptTextBox = new System.Windows.Forms.TextBox();
             this.IntervalGroupBox = new System.Windows.Forms.GroupBox();
             this.label14 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
@@ -123,7 +128,6 @@ namespace WinFormsExample
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.LoadScriptBrowserOLD = new System.Windows.Forms.FolderBrowserDialog();
             this.ScriptFileBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.stepControl1 = new EOSeclipse.Controls.StepControl();
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
             this.InitGroupBox.SuspendLayout();
@@ -137,9 +141,10 @@ namespace WinFormsExample
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.SeqGenTabPage.SuspendLayout();
-            this.ScriptGroupBox.SuspendLayout();
+            this.SeqSettingsPanel.SuspendLayout();
             this.AEBGroupBox.SuspendLayout();
             this.ExposureGroupBox.SuspendLayout();
+            this.ScriptGroupBox.SuspendLayout();
             this.IntervalGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.IntervalSecUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.IntervalMinUpDown)).BeginInit();
@@ -151,7 +156,6 @@ namespace WinFormsExample
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.SequenceGroupBox.SuspendLayout();
-            this.SeqFlowPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // LiveViewGroupBox
@@ -778,11 +782,10 @@ namespace WinFormsExample
             // 
             this.SeqGenTabPage.AutoScroll = true;
             this.SeqGenTabPage.AutoScrollMargin = new System.Drawing.Size(0, 25);
+            this.SeqGenTabPage.Controls.Add(this.SeqSettingsPanel);
             this.SeqGenTabPage.Controls.Add(this.CancelStageButton);
             this.SeqGenTabPage.Controls.Add(this.AddStageButton);
             this.SeqGenTabPage.Controls.Add(this.ScriptGroupBox);
-            this.SeqGenTabPage.Controls.Add(this.AEBGroupBox);
-            this.SeqGenTabPage.Controls.Add(this.ExposureGroupBox);
             this.SeqGenTabPage.Controls.Add(this.IntervalGroupBox);
             this.SeqGenTabPage.Controls.Add(this.EndOffsetUpDown);
             this.SeqGenTabPage.Controls.Add(this.StartOffsetUpDown);
@@ -800,60 +803,61 @@ namespace WinFormsExample
             this.SeqGenTabPage.Text = "Sequence Gen";
             this.SeqGenTabPage.UseVisualStyleBackColor = true;
             // 
-            // CancelStageButton
+            // SeqSettingsPanel
             // 
-            this.CancelStageButton.Location = new System.Drawing.Point(217, 358);
-            this.CancelStageButton.Name = "CancelStageButton";
-            this.CancelStageButton.Size = new System.Drawing.Size(75, 23);
-            this.CancelStageButton.TabIndex = 11;
-            this.CancelStageButton.Text = "Reset";
-            this.CancelStageButton.UseVisualStyleBackColor = true;
-            this.CancelStageButton.Click += new System.EventHandler(this.CancelStageButton_Click);
+            this.SeqSettingsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.SeqSettingsPanel.Controls.Add(this.label16);
+            this.SeqSettingsPanel.Controls.Add(this.label15);
+            this.SeqSettingsPanel.Controls.Add(this.SeqAvCoBox);
+            this.SeqSettingsPanel.Controls.Add(this.SeqIsoCoBox);
+            this.SeqSettingsPanel.Controls.Add(this.AEBGroupBox);
+            this.SeqSettingsPanel.Controls.Add(this.ExposureGroupBox);
+            this.SeqSettingsPanel.Location = new System.Drawing.Point(0, 144);
+            this.SeqSettingsPanel.Name = "SeqSettingsPanel";
+            this.SeqSettingsPanel.Size = new System.Drawing.Size(360, 146);
+            this.SeqSettingsPanel.TabIndex = 14;
             // 
-            // AddStageButton
+            // label16
             // 
-            this.AddStageButton.Location = new System.Drawing.Point(298, 358);
-            this.AddStageButton.Name = "AddStageButton";
-            this.AddStageButton.Size = new System.Drawing.Size(75, 23);
-            this.AddStageButton.TabIndex = 11;
-            this.AddStageButton.Text = "Add Stage";
-            this.AddStageButton.UseVisualStyleBackColor = true;
-            this.AddStageButton.Click += new System.EventHandler(this.AddStageButton_Click);
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(243, 111);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(20, 13);
+            this.label16.TabIndex = 13;
+            this.label16.Text = "Av";
             // 
-            // ScriptGroupBox
+            // label15
             // 
-            this.ScriptGroupBox.Controls.Add(this.ScriptBrowseButton);
-            this.ScriptGroupBox.Controls.Add(this.ScriptTextBox);
-            this.ScriptGroupBox.Location = new System.Drawing.Point(6, 290);
-            this.ScriptGroupBox.Name = "ScriptGroupBox";
-            this.ScriptGroupBox.Size = new System.Drawing.Size(367, 53);
-            this.ScriptGroupBox.TabIndex = 10;
-            this.ScriptGroupBox.TabStop = false;
-            this.ScriptGroupBox.Text = "Script";
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(243, 84);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(25, 13);
+            this.label15.TabIndex = 13;
+            this.label15.Text = "ISO";
             // 
-            // ScriptBrowseButton
+            // SeqAvCoBox
             // 
-            this.ScriptBrowseButton.Location = new System.Drawing.Point(286, 18);
-            this.ScriptBrowseButton.Name = "ScriptBrowseButton";
-            this.ScriptBrowseButton.Size = new System.Drawing.Size(75, 23);
-            this.ScriptBrowseButton.TabIndex = 10;
-            this.ScriptBrowseButton.Text = "Browse";
-            this.ScriptBrowseButton.UseVisualStyleBackColor = true;
-            this.ScriptBrowseButton.Click += new System.EventHandler(this.ScriptBrowseButton_Click);
+            this.SeqAvCoBox.FormattingEnabled = true;
+            this.SeqAvCoBox.Location = new System.Drawing.Point(147, 106);
+            this.SeqAvCoBox.Name = "SeqAvCoBox";
+            this.SeqAvCoBox.Size = new System.Drawing.Size(90, 21);
+            this.SeqAvCoBox.TabIndex = 12;
             // 
-            // ScriptTextBox
+            // SeqIsoCoBox
             // 
-            this.ScriptTextBox.Location = new System.Drawing.Point(6, 19);
-            this.ScriptTextBox.Name = "ScriptTextBox";
-            this.ScriptTextBox.Size = new System.Drawing.Size(274, 20);
-            this.ScriptTextBox.TabIndex = 9;
+            this.SeqIsoCoBox.FormattingEnabled = true;
+            this.SeqIsoCoBox.Location = new System.Drawing.Point(147, 79);
+            this.SeqIsoCoBox.Name = "SeqIsoCoBox";
+            this.SeqIsoCoBox.Size = new System.Drawing.Size(90, 21);
+            this.SeqIsoCoBox.TabIndex = 12;
             // 
             // AEBGroupBox
             // 
             this.AEBGroupBox.Controls.Add(this.AEBRadioButton);
             this.AEBGroupBox.Controls.Add(this.AEBDisabledRadioButton);
             this.AEBGroupBox.Controls.Add(this.AEBUpDown);
-            this.AEBGroupBox.Location = new System.Drawing.Point(147, 147);
+            this.AEBGroupBox.Location = new System.Drawing.Point(147, 3);
             this.AEBGroupBox.Name = "AEBGroupBox";
             this.AEBGroupBox.Size = new System.Drawing.Size(149, 72);
             this.AEBGroupBox.TabIndex = 8;
@@ -903,7 +907,7 @@ namespace WinFormsExample
             // ExposureGroupBox
             // 
             this.ExposureGroupBox.Controls.Add(this.SeqTvListBox);
-            this.ExposureGroupBox.Location = new System.Drawing.Point(6, 147);
+            this.ExposureGroupBox.Location = new System.Drawing.Point(6, 3);
             this.ExposureGroupBox.Margin = new System.Windows.Forms.Padding(3, 3, 3, 10);
             this.ExposureGroupBox.Name = "ExposureGroupBox";
             this.ExposureGroupBox.Size = new System.Drawing.Size(135, 137);
@@ -919,6 +923,54 @@ namespace WinFormsExample
             this.SeqTvListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.SeqTvListBox.Size = new System.Drawing.Size(120, 108);
             this.SeqTvListBox.TabIndex = 6;
+            // 
+            // CancelStageButton
+            // 
+            this.CancelStageButton.Location = new System.Drawing.Point(217, 358);
+            this.CancelStageButton.Name = "CancelStageButton";
+            this.CancelStageButton.Size = new System.Drawing.Size(75, 23);
+            this.CancelStageButton.TabIndex = 11;
+            this.CancelStageButton.Text = "Reset";
+            this.CancelStageButton.UseVisualStyleBackColor = true;
+            this.CancelStageButton.Click += new System.EventHandler(this.CancelStageButton_Click);
+            // 
+            // AddStageButton
+            // 
+            this.AddStageButton.Location = new System.Drawing.Point(298, 358);
+            this.AddStageButton.Name = "AddStageButton";
+            this.AddStageButton.Size = new System.Drawing.Size(75, 23);
+            this.AddStageButton.TabIndex = 11;
+            this.AddStageButton.Text = "Add Stage";
+            this.AddStageButton.UseVisualStyleBackColor = true;
+            this.AddStageButton.Click += new System.EventHandler(this.AddStageButton_Click);
+            // 
+            // ScriptGroupBox
+            // 
+            this.ScriptGroupBox.Controls.Add(this.ScriptBrowseButton);
+            this.ScriptGroupBox.Controls.Add(this.ScriptTextBox);
+            this.ScriptGroupBox.Location = new System.Drawing.Point(6, 290);
+            this.ScriptGroupBox.Name = "ScriptGroupBox";
+            this.ScriptGroupBox.Size = new System.Drawing.Size(367, 53);
+            this.ScriptGroupBox.TabIndex = 10;
+            this.ScriptGroupBox.TabStop = false;
+            this.ScriptGroupBox.Text = "Script";
+            // 
+            // ScriptBrowseButton
+            // 
+            this.ScriptBrowseButton.Location = new System.Drawing.Point(286, 18);
+            this.ScriptBrowseButton.Name = "ScriptBrowseButton";
+            this.ScriptBrowseButton.Size = new System.Drawing.Size(75, 23);
+            this.ScriptBrowseButton.TabIndex = 10;
+            this.ScriptBrowseButton.Text = "Browse";
+            this.ScriptBrowseButton.UseVisualStyleBackColor = true;
+            this.ScriptBrowseButton.Click += new System.EventHandler(this.ScriptBrowseButton_Click);
+            // 
+            // ScriptTextBox
+            // 
+            this.ScriptTextBox.Location = new System.Drawing.Point(6, 19);
+            this.ScriptTextBox.Name = "ScriptTextBox";
+            this.ScriptTextBox.Size = new System.Drawing.Size(274, 20);
+            this.ScriptTextBox.TabIndex = 9;
             // 
             // IntervalGroupBox
             // 
@@ -1198,7 +1250,7 @@ namespace WinFormsExample
             this.SequenceGroupBox.Location = new System.Drawing.Point(3, 13);
             this.SequenceGroupBox.MinimumSize = new System.Drawing.Size(292, 581);
             this.SequenceGroupBox.Name = "SequenceGroupBox";
-            this.SequenceGroupBox.Size = new System.Drawing.Size(293, 581);
+            this.SequenceGroupBox.Size = new System.Drawing.Size(292, 581);
             this.SequenceGroupBox.TabIndex = 0;
             this.SequenceGroupBox.TabStop = false;
             this.SequenceGroupBox.Text = "Sequence";
@@ -1241,7 +1293,6 @@ namespace WinFormsExample
             | System.Windows.Forms.AnchorStyles.Right)));
             this.SeqFlowPanel.AutoScroll = true;
             this.SeqFlowPanel.BackColor = System.Drawing.SystemColors.Window;
-            this.SeqFlowPanel.Controls.Add(this.stepControl1);
             this.SeqFlowPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.SeqFlowPanel.Location = new System.Drawing.Point(16, 66);
             this.SeqFlowPanel.MinimumSize = new System.Drawing.Size(256, 0);
@@ -1249,28 +1300,11 @@ namespace WinFormsExample
             this.SeqFlowPanel.Size = new System.Drawing.Size(257, 472);
             this.SeqFlowPanel.TabIndex = 0;
             this.SeqFlowPanel.WrapContents = false;
+            this.SeqFlowPanel.Resize += new System.EventHandler(this.SeqFlowPanel_Resize);
             // 
             // ScriptFileBrowser
             // 
             this.ScriptFileBrowser.FileName = "openFileDialog1";
-            // 
-            // stepControl1
-            // 
-            this.stepControl1.AutoSize = true;
-            this.stepControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.stepControl1.EndDateTime = new System.DateTime(((long)(0)));
-            this.stepControl1.EndOffset = System.TimeSpan.Parse("00:00:00");
-            this.stepControl1.EndRef = null;
-            this.stepControl1.Interval = System.TimeSpan.Parse("00:00:00");
-            this.stepControl1.Location = new System.Drawing.Point(3, 3);
-            this.stepControl1.MinimumSize = new System.Drawing.Size(250, 107);
-            this.stepControl1.Name = "stepControl1";
-            this.stepControl1.Phase = null;
-            this.stepControl1.Size = new System.Drawing.Size(250, 107);
-            this.stepControl1.StartDateTime = new System.DateTime(((long)(0)));
-            this.stepControl1.StartOffset = System.TimeSpan.Parse("00:00:00");
-            this.stepControl1.StartRef = null;
-            this.stepControl1.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -1300,11 +1334,13 @@ namespace WinFormsExample
             this.splitContainer1.ResumeLayout(false);
             this.SeqGenTabPage.ResumeLayout(false);
             this.SeqGenTabPage.PerformLayout();
-            this.ScriptGroupBox.ResumeLayout(false);
-            this.ScriptGroupBox.PerformLayout();
+            this.SeqSettingsPanel.ResumeLayout(false);
+            this.SeqSettingsPanel.PerformLayout();
             this.AEBGroupBox.ResumeLayout(false);
             this.AEBGroupBox.PerformLayout();
             this.ExposureGroupBox.ResumeLayout(false);
+            this.ScriptGroupBox.ResumeLayout(false);
+            this.ScriptGroupBox.PerformLayout();
             this.IntervalGroupBox.ResumeLayout(false);
             this.IntervalGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.IntervalSecUpDown)).EndInit();
@@ -1317,8 +1353,6 @@ namespace WinFormsExample
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.SequenceGroupBox.ResumeLayout(false);
-            this.SeqFlowPanel.ResumeLayout(false);
-            this.SeqFlowPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1416,7 +1450,11 @@ namespace WinFormsExample
         private System.Windows.Forms.Button ClearSeqButton;
         private System.Windows.Forms.Button LoadSeqButton;
         private System.Windows.Forms.OpenFileDialog ScriptFileBrowser;
-        private EOSeclipse.Controls.StepControl stepControl1;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.ComboBox SeqAvCoBox;
+        private System.Windows.Forms.ComboBox SeqIsoCoBox;
+        private System.Windows.Forms.Panel SeqSettingsPanel;
     }
 }
 

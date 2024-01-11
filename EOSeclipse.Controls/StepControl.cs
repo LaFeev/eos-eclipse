@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using EOSeclipse.Controls;
 
 namespace EOSeclipse.Controls
 {
@@ -33,15 +34,16 @@ namespace EOSeclipse.Controls
         public StepControl()
         {
             InitializeComponent();
+            this.Anchor = (AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right);
         }
 
         private void StepControl_Load(object sender, EventArgs e)
         {
-            StepControl_Refresh(sender, e);
+            StepControl_Refresh();
         }
 
         #region Refresh
-        private void StepControl_Refresh(object sender, EventArgs e)
+        private void StepControl_Refresh()
         {
             // Must be called anytime a property is updated
 
@@ -161,6 +163,17 @@ namespace EOSeclipse.Controls
             PartialRefresh_ProgressTimes();
             ToggleEnabled();
         }
+
+        public void AddTask(TaskControl task)
+        {
+            if (Tasks == null)
+            {
+                Tasks = new List<TaskControl>();
+            }
+            Tasks.Add(task);
+            StepFlowLayoutPanel.Controls.Add(task);
+        }
+
         #endregion
 
         #region Subroutines
