@@ -10,6 +10,7 @@ using System.Threading;
 using GMap.NET;
 using GMap.NET.WindowsForms;
 using EOSeclipse.Controls;
+using System.Linq;
 
 namespace WinFormsExample
 {
@@ -22,6 +23,7 @@ namespace WinFormsExample
         CameraValue[] AvList;
         CameraValue[] TvList;
         CameraValue[] ISOList;
+        List<AEBValue> AEBList;
         List<Camera> CamList;
         bool IsInit = false;
         Bitmap Evf_Bmp;
@@ -741,11 +743,18 @@ namespace WinFormsExample
                 task.Av = new CameraValue(SeqAvCoBox.SelectedItem.ToString(), PropertyID.Av);
                 // TODO: assign AEBminus and AEBPlus values
 
+                if (AEBRadioButton.Checked)
+                {
+                    task.AEBMinus = GetAEB(task.Tv, new AEBValue(AEBUpDown.SelectedItem.ToString()), false);
+                    task.AEBPlus = GetAEB(task.Tv, new AEBValue(AEBUpDown.SelectedItem.ToString()), true);
+                }
+                else { task.AEBMinus = task.AEBPlus = TvValues.Auto; }
+                
                 // for debug only
-                task.AEBMinus = new CameraValue(Tv, PropertyID.Tv);
-                task.AEBPlus = new CameraValue(Tv, PropertyID.Tv);
                 Console.WriteLine("##### task {0} ######", i);
-                Console.WriteLine("Tv: {0}\nAv: {1}\nISO: {2}", task.Tv.StringValue, task.Av.StringValue, task.ISO.DoubleValue.ToString());
+                Console.WriteLine("Tv: {0}\nAv: {1}\nISO: {2}\nAEB+ {3}\nAEB- {4}", 
+                    task.Tv.StringValue, task.Av.StringValue, task.ISO.DoubleValue.ToString(),
+                    task.AEBPlus.StringValue, task.AEBMinus.StringValue);
 
                 // add task to step
                 step.AddTask(task);
@@ -877,6 +886,7 @@ namespace WinFormsExample
             AvCoBox.Items.Clear();
             TvCoBox.Items.Clear();
             ISOCoBox.Items.Clear();
+            AEBUpDown.Items.Clear();
             SeqTvListBox.Items.Clear();
             SeqAvCoBox.Items.Clear();
             SeqIsoCoBox.Items.Clear();
@@ -927,9 +937,12 @@ namespace WinFormsExample
                 AvList = MainCamera.GetSettingsList(PropertyID.Av);
                 TvList = MainCamera.GetSettingsList(PropertyID.Tv);
                 ISOList = MainCamera.GetSettingsList(PropertyID.ISO);
+                AEBList = AEBValue.AEBValues();
                 foreach (var Av in AvList) { AvCoBox.Items.Add(Av.StringValue); SeqAvCoBox.Items.Add(Av.StringValue); }
                 foreach (var Tv in TvList) { TvCoBox.Items.Add(Tv.StringValue); SeqTvListBox.Items.Add(Tv.StringValue); }
                 foreach (var ISO in ISOList) { ISOCoBox.Items.Add(ISO.StringValue); SeqIsoCoBox.Items.Add(ISO.DoubleValue); }
+                for (int i = AEBList.Count - 1; i >= 0; i--) { AEBUpDown.Items.Add(AEBList[i].StringValue); }
+
                 AvCoBox.SelectedIndex = AvCoBox.Items.IndexOf(AvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Av)).StringValue);
                 TvCoBox.SelectedIndex = TvCoBox.Items.IndexOf(TvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Tv)).StringValue);
                 ISOCoBox.SelectedIndex = ISOCoBox.Items.IndexOf(ISOValues.GetValue(MainCamera.GetInt32Setting(PropertyID.ISO)).StringValue);
@@ -943,8 +956,7 @@ namespace WinFormsExample
 
         private void SaveSeqButton_Click(object sender, EventArgs e)
         {
-            if (SeqFlowPanel.VerticalScroll.Visible) { Console.WriteLine("scroll visible"); }
-            else { Console.WriteLine("scroll NOT visible"); }
+            //Console.WriteLine(TvList.)
         }
 
         private void ReportError(string message, bool lockdown)
@@ -981,6 +993,42 @@ namespace WinFormsExample
             if (SeqFlowPanel.VerticalScroll.Visible) { offset = 32; }
                 
             SeqSizerPanel.Width = SeqFlowPanel.Width - offset;
+        }
+
+        private CameraValue GetAEB(CameraValue baseTv, AEBValue AEB, bool plus)
+        {
+            double offset = (double)AEB.IntValue;
+
+            // if "plus" is false, get the "minus" bracket
+            if (!plus)
+            {
+                offset *= -1;
+            }
+
+            double target = baseTv.DoubleValue * Math.Pow(2, offset / 3);  // computes the precise shutter speed, but cameras list nominal values
+            Console.WriteLine("offset: {0}\nbaseTv: {1}\ntarget: {2}", offset.ToString(), baseTv.DoubleValue.ToString(), target.ToString());
+
+            for (int i = 0; i < TvList.Count(); i++)
+            {
+                double high = TvList[i].DoubleValue;
+                
+                // on first item, if target is higher, return first item
+                if (i == 0 & target >= high) { return TvList[i]; }
+                // on last item, no other choice, return last item
+                if (i == TvList.Count() - 1) { return TvList[i]; }
+
+                // only try this if not on last item
+                double low = TvList[i + 1].DoubleValue;
+
+                // assumes TvList is sorted longest to shortest
+                if (target >= low)
+                {
+                    if (Math.Abs(target - high) < Math.Abs(target - low)) { return TvList[i]; }
+                    else { return TvList[i+1]; }
+                }
+            }
+            // shouldn't get here without returning
+            return TvValues.Invalid;
         }
 
         private List<Step> FakeSteps()

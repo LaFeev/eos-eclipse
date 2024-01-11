@@ -38,8 +38,14 @@ namespace EOSeclipse.Controls
                 TvLabel.Text = Tv.StringValue;
                 IsoLabel.Text = ISO.DoubleValue.ToString();
                 AvLabel.Text = Av.StringValue;
-                AEBMinusLabel.Text = AEBMinus;
-                AEBPlusLabel.Text = AEBPlus;
+                AEBMinusLabel.Text = AEBMinus.StringValue;
+                AEBPlusLabel.Text = AEBPlus.StringValue;
+                if (AEBMinus.StringValue == TvValues.Auto.StringValue)
+                {
+                    // signals that AEB is disabled
+                    AEBMinusLabel.Visible = false;
+                    AEBPlusLabel.Visible = false;
+                }               
             }
             
 

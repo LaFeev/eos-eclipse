@@ -45,9 +45,13 @@
             this.IntervalTimer = new System.Windows.Forms.Timer(this.components);
             this.RefreshTimer = new System.Windows.Forms.Timer(this.components);
             this.MainPanel = new System.Windows.Forms.Panel();
+            this.StepContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.EditStageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteStageMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProgressPanel.SuspendLayout();
             this.StartEndPanel.SuspendLayout();
             this.MainPanel.SuspendLayout();
+            this.StepContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // StepFlowLayoutPanel
@@ -215,11 +219,34 @@
             this.MainPanel.Size = new System.Drawing.Size(248, 113);
             this.MainPanel.TabIndex = 11;
             // 
+            // StepContextMenuStrip
+            // 
+            this.StepContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.EditStageMenuItem,
+            this.DeleteStageMenuItem});
+            this.StepContextMenuStrip.Name = "StepContextMenuStrip";
+            this.StepContextMenuStrip.Size = new System.Drawing.Size(181, 70);
+            // 
+            // EditStageMenuItem
+            // 
+            this.EditStageMenuItem.Name = "EditStageMenuItem";
+            this.EditStageMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.EditStageMenuItem.Text = "Edit Stage";
+            this.EditStageMenuItem.Click += new System.EventHandler(this.EditStageMenuItem_Click);
+            // 
+            // DeleteStageMenuItem
+            // 
+            this.DeleteStageMenuItem.Name = "DeleteStageMenuItem";
+            this.DeleteStageMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.DeleteStageMenuItem.Text = "Delete Stage";
+            this.DeleteStageMenuItem.Click += new System.EventHandler(this.DeleteStageMenuItem_Click);
+            // 
             // StepControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ContextMenuStrip = this.StepContextMenuStrip;
             this.Controls.Add(this.MainPanel);
             this.MinimumSize = new System.Drawing.Size(250, 115);
             this.Name = "StepControl";
@@ -229,6 +256,7 @@
             this.StartEndPanel.ResumeLayout(false);
             this.MainPanel.ResumeLayout(false);
             this.MainPanel.PerformLayout();
+            this.StepContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -252,5 +280,8 @@
         private System.Windows.Forms.Timer IntervalTimer;
         private System.Windows.Forms.Timer RefreshTimer;
         private System.Windows.Forms.Panel MainPanel;
+        private System.Windows.Forms.ContextMenuStrip StepContextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem EditStageMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem DeleteStageMenuItem;
     }
 }

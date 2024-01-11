@@ -340,5 +340,19 @@ namespace EOSeclipse.Controls
         }
 
         #endregion
+
+        private void EditStageMenuItem_Click(object sender, EventArgs e)
+        {
+            // somehow need to make calls to the parent parent tab control etc
+            Console.WriteLine(sender.ToString());
+            Console.WriteLine(sender.GetType().ToString());
+        }
+
+        private void DeleteStageMenuItem_Click(object sender, EventArgs e)
+        {
+            // somehow need to make calls to the parent parent tab control etc
+            Console.WriteLine(sender.ToString());
+            Console.WriteLine(sender.GetType().ToString());
+        }
     }
 }

@@ -125,10 +125,10 @@ namespace WinFormsExample
             this.LoadSeqButton = new System.Windows.Forms.Button();
             this.SaveSeqButton = new System.Windows.Forms.Button();
             this.SeqFlowPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.SeqSizerPanel = new System.Windows.Forms.Panel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.LoadScriptBrowserOLD = new System.Windows.Forms.FolderBrowserDialog();
             this.ScriptFileBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.SeqSizerPanel = new System.Windows.Forms.Panel();
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
             this.InitGroupBox.SuspendLayout();
@@ -817,7 +817,7 @@ namespace WinFormsExample
             this.SeqSettingsPanel.Controls.Add(this.ExposureGroupBox);
             this.SeqSettingsPanel.Location = new System.Drawing.Point(0, 144);
             this.SeqSettingsPanel.Name = "SeqSettingsPanel";
-            this.SeqSettingsPanel.Size = new System.Drawing.Size(343, 146);
+            this.SeqSettingsPanel.Size = new System.Drawing.Size(326, 146);
             this.SeqSettingsPanel.TabIndex = 14;
             // 
             // label16
@@ -891,15 +891,6 @@ namespace WinFormsExample
             // 
             // AEBUpDown
             // 
-            this.AEBUpDown.Items.Add("3 stop");
-            this.AEBUpDown.Items.Add("2-2/3");
-            this.AEBUpDown.Items.Add("2-1/3");
-            this.AEBUpDown.Items.Add("2 stop");
-            this.AEBUpDown.Items.Add("1-2/3");
-            this.AEBUpDown.Items.Add("1-1/3");
-            this.AEBUpDown.Items.Add("1 stop");
-            this.AEBUpDown.Items.Add("2/3");
-            this.AEBUpDown.Items.Add("1/3");
             this.AEBUpDown.Location = new System.Drawing.Point(46, 43);
             this.AEBUpDown.Name = "AEBUpDown";
             this.AEBUpDown.Size = new System.Drawing.Size(90, 20);
@@ -1308,16 +1299,16 @@ namespace WinFormsExample
             this.SeqFlowPanel.WrapContents = false;
             this.SeqFlowPanel.Resize += new System.EventHandler(this.SeqFlowPanel_Resize);
             // 
-            // ScriptFileBrowser
-            // 
-            this.ScriptFileBrowser.FileName = "openFileDialog1";
-            // 
             // SeqSizerPanel
             // 
             this.SeqSizerPanel.Location = new System.Drawing.Point(8, 3);
             this.SeqSizerPanel.Name = "SeqSizerPanel";
             this.SeqSizerPanel.Size = new System.Drawing.Size(128, 0);
             this.SeqSizerPanel.TabIndex = 0;
+            // 
+            // ScriptFileBrowser
+            // 
+            this.ScriptFileBrowser.FileName = "openFileDialog1";
             // 
             // MainForm
             // 

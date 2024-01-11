@@ -364,4 +364,4 @@ FodyWeavers.xsd
 
 
 # ARL - include the EDSDKLib release build DLL
-!EOSeclipse\EDSDKLib\bin\Release\*
+!/EOSeclipse/EDSDKLib/bin/release/*
