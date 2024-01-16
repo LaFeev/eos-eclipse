@@ -1105,6 +1105,16 @@ namespace WinFormsExample
             return list;
         }
 
+        public void PopulateSequenceGen(StepControl step)
+        {
+            // TODO
+        }
+
+        public void DeleteStep(StepControl step)
+        {
+            // TODO
+        }
+
         #endregion        
     }
 }

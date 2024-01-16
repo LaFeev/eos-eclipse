@@ -22,14 +22,10 @@ namespace EOSeclipse.Controls
         public string EndRef { get; set; }
         public TimeSpan StartOffset { get; set; }
         public TimeSpan EndOffset { get; set; }
-        //public string Script { get; set; }      // should this be a property of Task?
         public string Phase { get; set; }
         private List<TaskControl> Tasks { get; set; }
-        // the following properties should move to a different class for "Task"
-        //public List<double> Av { get; set; }
-        //public List<string> Tv { get; set; }
-        //public List<int> ISO { get; set; }
-        //public int AEB { get; set; }
+        public MainForm HostForm {  get; set; }
+
 
         public StepControl()
         {
@@ -339,20 +335,21 @@ namespace EOSeclipse.Controls
             //
         }
 
-        #endregion
-
         private void EditStageMenuItem_Click(object sender, EventArgs e)
         {
-            // somehow need to make calls to the parent parent tab control etc
-            Console.WriteLine(sender.ToString());
-            Console.WriteLine(sender.GetType().ToString());
+            // is there a way to send the entire StepControl object to a 'session' instance?
+            // somehow this class would still have to communicate back to the main form. Maybe pass a reference
+            // to the entire form class? 
+            HostForm.PopulateSequenceGen(this);
         }
 
         private void DeleteStageMenuItem_Click(object sender, EventArgs e)
         {
-            // somehow need to make calls to the parent parent tab control etc
-            Console.WriteLine(sender.ToString());
-            Console.WriteLine(sender.GetType().ToString());
+            // similar to above, but need to somehow identify a specific Step from the list, for deletion (an ID property?)
+
+            // don't forget to pop a confirmation dialog
+            HostForm.DeleteStepControl(this);
         }
+        #endregion
     }
 }
