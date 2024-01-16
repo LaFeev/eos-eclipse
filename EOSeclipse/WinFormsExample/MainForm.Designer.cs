@@ -1155,17 +1155,6 @@ namespace WinFormsExample
             this.PhaseComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
             this.PhaseComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.PhaseComboBox.FormattingEnabled = true;
-            this.PhaseComboBox.Items.AddRange(new object[] {
-            "Partial",
-            "Baily\'s Beads",
-            "Totality",
-            "Max Eclipse",
-            "C1",
-            "C2",
-            "C3",
-            "C4",
-            "Script",
-            "Other"});
             this.PhaseComboBox.Location = new System.Drawing.Point(6, 7);
             this.PhaseComboBox.Name = "PhaseComboBox";
             this.PhaseComboBox.Size = new System.Drawing.Size(121, 21);

@@ -11,6 +11,8 @@ using GMap.NET;
 using GMap.NET.WindowsForms;
 using EOSeclipse.Controls;
 using System.Linq;
+using GMap.NET.MapProviders;
+//using System.Windows.Shapes;
 
 namespace WinFormsExample
 {
@@ -426,6 +428,7 @@ namespace WinFormsExample
                             if (step.Phase == "Baily's Beads")
                             {
                                 StartRefComboBox.Items.Remove(step.StartRef);
+                                EndRefComboBox.Items.Remove(step.EndRef);
                             }
                         }
 
@@ -629,6 +632,30 @@ namespace WinFormsExample
                     SeqFlowPanel.Controls.Remove(step);
                 }
                 StepList.Clear();
+                ResetPhaseList();
+            }
+        }
+
+        private void ResetPhaseList()
+        {
+            PhaseComboBox.Items.Clear();
+            PhaseComboBox.Items.AddRange(new object[] { "Partial", "Baily's Beads", "Totality", "Max Eclipse", "C1", "C2", "C3", "C4", "Script", "Other" });
+            // reset the phase combo box selection
+            PhaseComboBox.SelectedIndex = -1;
+
+            // now cycle through any existing StepControls and remove, if necessary, the phase from phase list
+            bool otherBead = false;
+            foreach (StepControl step in StepList)
+            {
+                if (step.Phase == "Baily's Beads")
+                {
+                    if (otherBead) { PhaseComboBox.Items.Remove(step.Phase); }
+                    else { otherBead = true; }
+                }
+                else if ((step.Phase != "Script") & (step.Phase != "Other"))
+                {
+                    PhaseComboBox.Items.Remove(step.Phase);
+                }
             }
         }
 
@@ -761,11 +788,17 @@ namespace WinFormsExample
                 i++;
             }
 
+            // remove the phase from the phase list (if necessary)
+            ResetPhaseList();
+
             // add the step to the step list
             StepList.Add(step);
 
             // add the step to the sequence panel
             SeqFlowPanel.Controls.Add(step);
+
+            // add the event listeners
+            step.EditStage += new EventHandler(EventHandler_EditStage);
         }
 
         #endregion
@@ -887,6 +920,7 @@ namespace WinFormsExample
             TvCoBox.Items.Clear();
             ISOCoBox.Items.Clear();
             AEBUpDown.Items.Clear();
+            PhaseComboBox.Items.Clear();
             SeqTvListBox.Items.Clear();
             SeqAvCoBox.Items.Clear();
             SeqIsoCoBox.Items.Clear();
@@ -942,6 +976,7 @@ namespace WinFormsExample
                 foreach (var Tv in TvList) { TvCoBox.Items.Add(Tv.StringValue); SeqTvListBox.Items.Add(Tv.StringValue); }
                 foreach (var ISO in ISOList) { ISOCoBox.Items.Add(ISO.StringValue); SeqIsoCoBox.Items.Add(ISO.DoubleValue); }
                 for (int i = AEBList.Count - 1; i >= 0; i--) { AEBUpDown.Items.Add(AEBList[i].StringValue); }
+                ResetPhaseList();
 
                 AvCoBox.SelectedIndex = AvCoBox.Items.IndexOf(AvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Av)).StringValue);
                 TvCoBox.SelectedIndex = TvCoBox.Items.IndexOf(TvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Tv)).StringValue);
@@ -1031,83 +1066,31 @@ namespace WinFormsExample
             return TvValues.Invalid;
         }
 
-        private List<Step> FakeSteps()
+        private void EventHandler_EditStage(object sender, EventArgs e)
         {
-            var list = new List<Step>();
-            list.Add(new Step()
+            StepControl step = (StepControl)sender;
+            SettingsTabControl.SelectedTab = SeqGenTabPage;
+            PhaseComboBox.Items.Clear();
+            PhaseComboBox.Items.Add(step.Phase);
+            PhaseComboBox.SelectedIndex = 0;
+            PhaseComboBox.Enabled = false;
+
+            StartRefComboBox.SelectedItem = step.StartRef;
+            EndRefComboBox.SelectedItem = step.EndRef;
+            StartOffsetUpDown.Value = (decimal)step.StartOffset.TotalSeconds;
+            EndOffsetUpDown.Value = (decimal)(step.EndOffset.TotalSeconds);
+
+            if (step.Interval < TimeSpan.Zero) { SingleRadioButton.Checked = true; }
+            else if (step.Interval == TimeSpan.Zero) { ContinuousRadioButton.Checked = true; }
+            else
             {
-                StartDateTime = new DateTime(2024, 04, 08, 11, 27, 30),
-                StartRef = "C1",
-                StartOffset = -10,
-                EndDateTime = new DateTime(2024, 04, 08, 11, 28, 20),
-                EndRef = "C2",
-                EndOffset = -10,
-                Interval = new TimeSpan(0, 1, 0),
-                Av = new List<double> { 4.0 },
-                Tv = new List<string> { "1/500", "1/400" },
-                ISO = new List<int> { 200 },
-                Phase = "Partial",
-                Script = null,
-                AEB = 1,
-            });
+                IntervalRadioButton.Checked = true;
+                IntervalMinUpDown.Value = step.Interval.Minutes;
+                IntervalSecUpDown.Value = step.Interval.Seconds;
+            }
 
-            list.Add(new Step()
-            {
-                StartDateTime = new DateTime(2024, 04, 08, 11, 28, 20),
-                StartRef = "C2",
-                StartOffset = -10,
-                EndDateTime = new DateTime(2024, 04, 08, 11, 28, 40),
-                EndRef = "C2",
-                EndOffset = 10,
-                Interval = new TimeSpan(0, 0, 0),   // interval of 0s indicates the pattern is repeated as rapidly as possible from start to end
-                Av = new List<double> { 4.0 },
-                Tv = new List<string> { "1/1000" },
-                ISO = new List<int> { 200 },
-                Phase = "Bailys Beads",
-                Script = null,
-                AEB = 1,
-            });
+            // now we need to populate the task data
 
-            list.Add(new Step()
-            {
-                StartDateTime = new DateTime(2024, 04, 08, 11, 28, 40),
-                StartRef = "C2",
-                StartOffset = 10,
-                EndDateTime = new DateTime(2024, 04, 08, 11, 32, 20),
-                EndRef = "C3",
-                EndOffset = -10,
-                Interval = new TimeSpan(0, 0, 0),
-                Av = new List<double> { 4.0 },
-                Tv = new List<string> { "1/1000", "1/125", "1/15", "0\"5", "4\"" },
-                ISO = new List<int> { 200 },
-                Phase = "Totality",
-                Script = null,
-                AEB = 1,
-            });
-
-            //list.Add(new Step()
-            //{
-            //    StartDateTime = new DateTime(2024, 04, 08, 11, 27, 30),
-            //    StartRef = "C2",
-            //    StartOffset = -60,
-            //    EndDateTime = null,
-            //    EndRef = null,
-            //    EndOffset = null,
-            //    Interval = null,
-            //    Av = null,
-            //    Tv = null,
-            //    ISO = null,
-            //    Phase = "Script",
-            //    Script = "remove_filter.BAT",
-            //    AEB = 0,
-            //});
-
-            return list;
-        }
-
-        public void PopulateSequenceGen(StepControl step)
-        {
-            // TODO
         }
 
         public void DeleteStep(StepControl step)

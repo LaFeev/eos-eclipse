@@ -24,7 +24,6 @@ namespace EOSeclipse.Controls
         public TimeSpan EndOffset { get; set; }
         public string Phase { get; set; }
         private List<TaskControl> Tasks { get; set; }
-        public MainForm HostForm {  get; set; }
 
 
         public StepControl()
@@ -37,6 +36,15 @@ namespace EOSeclipse.Controls
         {
             StepControl_Refresh();
         }
+
+
+        #region events
+
+        public event EventHandler EditStage;
+
+        public event EventHandler DeleteStage;
+
+        #endregion
 
         #region Refresh
         private void StepControl_Refresh()
@@ -337,10 +345,12 @@ namespace EOSeclipse.Controls
 
         private void EditStageMenuItem_Click(object sender, EventArgs e)
         {
-            // is there a way to send the entire StepControl object to a 'session' instance?
-            // somehow this class would still have to communicate back to the main form. Maybe pass a reference
-            // to the entire form class? 
-            HostForm.PopulateSequenceGen(this);
+            // raise an EditStage event
+            if (EditStage != null)
+            {
+                EditStage(this, new EventArgs());
+            }
+                
         }
 
         private void DeleteStageMenuItem_Click(object sender, EventArgs e)
@@ -348,7 +358,7 @@ namespace EOSeclipse.Controls
             // similar to above, but need to somehow identify a specific Step from the list, for deletion (an ID property?)
 
             // don't forget to pop a confirmation dialog
-            HostForm.DeleteStepControl(this);
+
         }
         #endregion
     }
