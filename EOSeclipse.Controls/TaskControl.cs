@@ -19,6 +19,7 @@ namespace EOSeclipse.Controls
         public CameraValue AEBMinus { get; set; }
         public CameraValue AEBPlus { get; set; }
         public string Script { get; set; }
+        public AEBValue AEB { get; set; }
 
         public TaskControl()
         {

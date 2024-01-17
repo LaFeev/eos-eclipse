@@ -840,6 +840,7 @@ namespace WinFormsExample
             // 
             // SeqAvCoBox
             // 
+            this.SeqAvCoBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.SeqAvCoBox.FormattingEnabled = true;
             this.SeqAvCoBox.Location = new System.Drawing.Point(147, 106);
             this.SeqAvCoBox.Name = "SeqAvCoBox";
@@ -848,6 +849,7 @@ namespace WinFormsExample
             // 
             // SeqIsoCoBox
             // 
+            this.SeqIsoCoBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.SeqIsoCoBox.FormattingEnabled = true;
             this.SeqIsoCoBox.Location = new System.Drawing.Point(147, 79);
             this.SeqIsoCoBox.Name = "SeqIsoCoBox";
@@ -1095,6 +1097,7 @@ namespace WinFormsExample
             // 
             // EndRefComboBox
             // 
+            this.EndRefComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.EndRefComboBox.FormattingEnabled = true;
             this.EndRefComboBox.Items.AddRange(new object[] {
             "C1",
@@ -1118,6 +1121,7 @@ namespace WinFormsExample
             // 
             // StartRefComboBox
             // 
+            this.StartRefComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.StartRefComboBox.FormattingEnabled = true;
             this.StartRefComboBox.Items.AddRange(new object[] {
             "C1",
@@ -1154,6 +1158,7 @@ namespace WinFormsExample
             // 
             this.PhaseComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Append;
             this.PhaseComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.PhaseComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.PhaseComboBox.FormattingEnabled = true;
             this.PhaseComboBox.Location = new System.Drawing.Point(6, 7);
             this.PhaseComboBox.Name = "PhaseComboBox";

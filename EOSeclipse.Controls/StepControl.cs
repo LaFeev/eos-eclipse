@@ -24,6 +24,8 @@ namespace EOSeclipse.Controls
         public TimeSpan EndOffset { get; set; }
         public string Phase { get; set; }
         private List<TaskControl> Tasks { get; set; }
+        private int _heightLow = 113;
+        private int _heightHigh = 133;
 
 
         public StepControl()
@@ -177,10 +179,36 @@ namespace EOSeclipse.Controls
             Tasks.Add(task);
             StepFlowLayoutPanel.Controls.Add(task);
 
+            // TODO: turn this height adjustment into a subroutine function that can be called on resize events
             if (StepFlowLayoutPanel.HorizontalScroll.Visible)
             {
-                this.Height = 133;
+                this.Height = _heightHigh;
             }
+        }
+
+        public void ClearTasks() 
+        {
+            if (Tasks != null) 
+            {
+                foreach (TaskControl task in Tasks)
+                {
+                    StepFlowLayoutPanel.Controls.Remove(task);
+                }
+                Tasks.Clear();
+
+                // reduce the height of the control since there are no tasks present (for now)
+                this.Height = _heightLow;
+            }
+        }
+
+        public List<TaskControl> GetTasks()
+        {
+            return Tasks;
+        }
+
+        public void EditRefresh()
+        {
+            StepControl_Refresh();
         }
 
         #endregion
@@ -355,10 +383,11 @@ namespace EOSeclipse.Controls
 
         private void DeleteStageMenuItem_Click(object sender, EventArgs e)
         {
-            // similar to above, but need to somehow identify a specific Step from the list, for deletion (an ID property?)
-
-            // don't forget to pop a confirmation dialog
-
+            // raise a DeleteStage event
+            if (DeleteStage != null)
+            {
+                DeleteStage(this, new EventArgs());
+            }
         }
         #endregion
     }

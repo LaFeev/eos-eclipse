@@ -12,7 +12,6 @@ using GMap.NET.WindowsForms;
 using EOSeclipse.Controls;
 using System.Linq;
 using GMap.NET.MapProviders;
-//using System.Windows.Shapes;
 
 namespace WinFormsExample
 {
@@ -40,6 +39,7 @@ namespace WinFormsExample
         GMapOverlay markersOverlay = new GMapOverlay("markers");
 
         List<StepControl> StepList = new List<StepControl>();
+        private StepControl _editStep;
 
         #endregion
 
@@ -422,6 +422,7 @@ namespace WinFormsExample
                         EndRefComboBox.Enabled = false;
                         EndOffsetUpDown.Enabled = true;
 
+// TODO: this errors out if both BB phases are in steplist, and you go back to edit one.  Needs a rethink
                         // if one of the two baily's beads stages has been configured, remove it from the start/end reference options
                         foreach (StepControl step in StepList)
                         {
@@ -597,6 +598,7 @@ namespace WinFormsExample
 
         private void ResetStage()
         {
+            PhaseComboBox.Enabled = true;
             PhaseComboBox.SelectedIndex = -1;
             StartRefComboBox.SelectedIndex = -1;
             StartRefComboBox.Items.Clear();
@@ -612,8 +614,8 @@ namespace WinFormsExample
             IntervalMinUpDown.Value = 0;
             IntervalSecUpDown.Value = 0;
             SeqTvListBox.SelectedIndex = -1;
-            SeqAvCoBox.SelectedIndex = -1;
-            SeqIsoCoBox.SelectedIndex = -1;
+            SeqAvCoBox.SelectedIndex = AvCoBox.SelectedIndex;
+            SeqIsoCoBox.SelectedIndex = ISOCoBox.SelectedIndex;
             AEBDisabledRadioButton.Checked = true;
             AEBUpDown.SelectedIndex = AEBUpDown.Items.Count -1;
             AEBUpDown.Enabled = false;
@@ -621,6 +623,10 @@ namespace WinFormsExample
             IntervalGroupBox.Enabled = false;
             SeqSettingsPanel.Enabled = false;
             ScriptGroupBox.Enabled = false;
+
+            CancelStageButton.Text = "Reset";
+            AddStageButton.Text = "Add Stage";
+            ClearSeqButton.Enabled = true;
         }
 
         private void ClearSequence()
@@ -636,13 +642,23 @@ namespace WinFormsExample
             }
         }
 
+        private void RemoveStep(StepControl step) 
+        {
+            if (StepList.Count > 0)
+            {
+                SeqFlowPanel.Controls.Remove(step);
+                StepList.Remove(step);
+                ResetPhaseList();
+            }
+        }
+
         private void ResetPhaseList()
         {
             PhaseComboBox.Items.Clear();
-            PhaseComboBox.Items.AddRange(new object[] { "Partial", "Baily's Beads", "Totality", "Max Eclipse", "C1", "C2", "C3", "C4", "Script", "Other" });
             // reset the phase combo box selection
             PhaseComboBox.SelectedIndex = -1;
-
+            PhaseComboBox.Items.AddRange(new object[] { "Partial", "Baily's Beads", "Totality", "Max Eclipse", "C1", "C2", "C3", "C4", "Script", "Other" });
+            
             // now cycle through any existing StepControls and remove, if necessary, the phase from phase list
             bool otherBead = false;
             foreach (StepControl step in StepList)
@@ -674,11 +690,25 @@ namespace WinFormsExample
 
         private void CancelStageButton_Click(object sender, EventArgs e)
         {
-            DialogResult confirmResult = MessageBox.Show("Are you sure you want to clear the stage inputs above?", "Confirm reset!", MessageBoxButtons.OKCancel);
+            Button btn = (Button)sender;
+            DialogResult confirmResult;
+            if (btn.Text == "Reset")
+            {
+                string msg = "Are you sure you want to clear the stage inputs above?";
+                string caption = "Confirm reset!";
+                confirmResult = MessageBox.Show(msg, caption, MessageBoxButtons.OKCancel);
+            }
+            else
+            {
+                string msg = "Are you sure you want to cancel the stage edit?";
+                string caption = "Confirm cancel!";
+                confirmResult = MessageBox.Show(msg, caption, MessageBoxButtons.OKCancel);
+            }
 
             if (confirmResult == DialogResult.OK)
             {
                 ResetStage();
+                ResetPhaseList();
             }
             else
             {
@@ -730,22 +760,37 @@ namespace WinFormsExample
             if (SingleRadioButton.Checked)
             {
                 EndRefComboBox.Enabled = false;
+                EndOffsetUpDown.Enabled = false;
 
                 if (StartRefComboBox.SelectedItem != null) 
                 {
-                    EndRefComboBox.SelectedItem = StartRefComboBox.SelectedItem.ToString();
+                    EndRefComboBox.SelectedItem = StartRefComboBox.SelectedItem;
                 }
             }
             else
             {
                 EndRefComboBox.Enabled = true;
+                EndOffsetUpDown.Enabled = true;
             }
         }
 
         private void AddStageButton_Click(object sender, EventArgs e)
         {
-            // create the step
-            StepControl step = new StepControl();
+            Button btn = (Button)sender;
+            StepControl step;
+            if (btn.Text != "Add Stage")
+            {
+                Console.WriteLine("Update Stage (edit)");
+                // grab the reference to the step which triggered the edit event
+                step = _editStep;
+            }
+            else
+            {
+                Console.WriteLine("Add Stage (normal)");
+                // create the step
+                step = new StepControl();
+            }
+            
             step.Phase = PhaseComboBox.SelectedItem.ToString();
             step.StartRef = StartRefComboBox.SelectedItem.ToString();
             step.StartOffset = new TimeSpan(0,0, (int)StartOffsetUpDown.Value);
@@ -759,6 +804,9 @@ namespace WinFormsExample
             else if (ContinuousRadioButton.Checked) { step.Interval = TimeSpan.Zero; }
             else { step.Interval = new TimeSpan(-99,-99, -99); }
             
+            // clear tasks (relevant for edit mode)
+            step.ClearTasks();
+
             int i = 0;
             // create tasks
             foreach (string Tv in SeqTvListBox.SelectedItems)
@@ -772,6 +820,7 @@ namespace WinFormsExample
 
                 if (AEBRadioButton.Checked)
                 {
+                    task.AEB = new AEBValue(AEBUpDown.SelectedItem.ToString());
                     task.AEBMinus = GetAEB(task.Tv, new AEBValue(AEBUpDown.SelectedItem.ToString()), false);
                     task.AEBPlus = GetAEB(task.Tv, new AEBValue(AEBUpDown.SelectedItem.ToString()), true);
                 }
@@ -788,17 +837,27 @@ namespace WinFormsExample
                 i++;
             }
 
+            // if -not- in edit mode
+            if (btn.Text == "Add Stage")
+            {
+                // add the step to the step list
+                StepList.Add(step);
+
+                // add the step to the sequence panel
+                SeqFlowPanel.Controls.Add(step);
+
+                // add the event listeners
+                step.EditStage += new EventHandler(EventHandler_EditStage);
+                step.DeleteStage += new EventHandler(EventHandler_DeleteStage);
+            }
+            else
+            {
+                step.EditRefresh();
+            }
+
             // remove the phase from the phase list (if necessary)
             ResetPhaseList();
-
-            // add the step to the step list
-            StepList.Add(step);
-
-            // add the step to the sequence panel
-            SeqFlowPanel.Controls.Add(step);
-
-            // add the event listeners
-            step.EditStage += new EventHandler(EventHandler_EditStage);
+            ResetStage();
         }
 
         #endregion
@@ -807,7 +866,9 @@ namespace WinFormsExample
 
         private void ClearSeqButton_Click(object sender, EventArgs e)
         {
-            DialogResult confirmResult = MessageBox.Show("Are you sure you want to clear the entire sequence?", "Confirm reset!", MessageBoxButtons.OKCancel);
+            DialogResult confirmResult = MessageBox.Show("Are you sure you want to clear the entire sequence? This cannot be undone.", 
+                "Confirm reset!", 
+                MessageBoxButtons.OKCancel);
 
             if (confirmResult == DialogResult.OK)
             {
@@ -991,7 +1052,13 @@ namespace WinFormsExample
 
         private void SaveSeqButton_Click(object sender, EventArgs e)
         {
-            //Console.WriteLine(TvList.)
+            foreach (StepControl step in StepList)
+            {
+                Console.WriteLine("#### Step List ####\n{0}\n{1}\n{2}", 
+                    step.Phase, 
+                    step.StartRef + step.StartOffset.TotalSeconds.ToString(), 
+                    step.EndRef + step.EndOffset.TotalSeconds.ToString());
+            }
         }
 
         private void ReportError(string message, bool lockdown)
@@ -1069,11 +1136,16 @@ namespace WinFormsExample
         private void EventHandler_EditStage(object sender, EventArgs e)
         {
             StepControl step = (StepControl)sender;
+            Console.WriteLine("Edit Step: {0}", StepList.IndexOf(step));
+
             SettingsTabControl.SelectedTab = SeqGenTabPage;
             PhaseComboBox.Items.Clear();
             PhaseComboBox.Items.Add(step.Phase);
             PhaseComboBox.SelectedIndex = 0;
             PhaseComboBox.Enabled = false;
+            ClearSeqButton.Enabled = false;
+            CancelStageButton.Text = "Cancel";
+            AddStageButton.Text = "Save Changes";
 
             StartRefComboBox.SelectedItem = step.StartRef;
             EndRefComboBox.SelectedItem = step.EndRef;
@@ -1090,12 +1162,44 @@ namespace WinFormsExample
             }
 
             // now we need to populate the task data
+            List<TaskControl> tasks = step.GetTasks();
+            foreach (TaskControl task in tasks)
+            {
+                SeqTvListBox.SelectedItems.Add(task.Tv.StringValue);
+                SeqAvCoBox.SelectedItem = task.Av.StringValue;
+                SeqIsoCoBox.SelectedItem = task.ISO.DoubleValue;
+                if (task.AEBMinus == TvValues.Auto)
+                {
+                    AEBDisabledRadioButton.Checked = true;
+                }
+                else
+                {
+                    AEBRadioButton.Checked = true;
+                    AEBUpDown.SelectedItem = task.AEB.StringValue;
+                }
+            }
 
+            // TODO: handle the script field
+
+            // save the index of this step so it can be written to later
+            _editStep = step;
         }
 
-        public void DeleteStep(StepControl step)
+        private void EventHandler_DeleteStage(object sender, EventArgs e)
         {
-            // TODO
+            StepControl step = (StepControl)sender;
+            DialogResult confirmResult = MessageBox.Show("Are you sure you want to delete this stage? This cannot be undone.", 
+                "Confirm delete!", 
+                MessageBoxButtons.OKCancel);
+
+            if (confirmResult == DialogResult.OK)
+            {
+                RemoveStep(step);
+            }
+            else
+            {
+                // don't reset...
+            }
         }
 
         #endregion        

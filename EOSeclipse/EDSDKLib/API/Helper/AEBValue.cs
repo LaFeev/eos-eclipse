@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WinFormsExample
+namespace EOSDigital.API
 {
-    internal class AEBValue
+    public class AEBValue
     {
         public string StringValue { get; set; }
         public int IntValue { get; set; }
@@ -18,18 +18,21 @@ namespace WinFormsExample
         }
 
         public AEBValue(string value)
+            : this()
         {
             StringValue = value;
             IntValue = GetValue(value).IntValue;
         }
 
         public AEBValue(int value)
+            : this()
         {
             IntValue = value;
             StringValue = GetValue(value).StringValue;
         }
 
         public AEBValue(string SValue, int Ivalue)
+            : this()
         {
             IntValue = Ivalue;
             StringValue = SValue;

@@ -20,9 +20,11 @@ Global
 		{AC6B306C-AC16-43C4-8624-54A026A5B822}.Debug|x86.ActiveCfg = Debug|x86
 		{AC6B306C-AC16-43C4-8624-54A026A5B822}.Debug|x86.Build.0 = Debug|x86
 		{AC6B306C-AC16-43C4-8624-54A026A5B822}.Release|x86.ActiveCfg = Release|x86
-		{AC6B306C-AC16-43C4-8624-54A026A5B822}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7FDE3E19-C334-4E6C-B30E-9EA48994FABD}
 	EndGlobalSection
 EndGlobal

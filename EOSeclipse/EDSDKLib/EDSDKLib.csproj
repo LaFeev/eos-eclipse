@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="API\Base\Camera.cs" />
     <Compile Include="API\Base\CanonAPI.cs" />
+    <Compile Include="API\Helper\AEBValue.cs" />
     <Compile Include="API\Helper\ApiThread.cs" />
     <Compile Include="API\Helper\CameraValue.cs" />
     <Compile Include="API\Helper\Delegates.cs" />
