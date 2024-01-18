@@ -416,26 +416,34 @@ namespace WinFormsExample
                         {
                             IntervalRadioButton.Checked = true;
                         }
+                        SingleRadioButton.Enabled = false;
+
                         StartRefComboBox.Items.AddRange(new string[] { "C2", "C3" });
                         EndRefComboBox.Items.AddRange(new string[] { "C2", "C3" });
-                        StartRefComboBox.Enabled = true;
+
                         EndRefComboBox.Enabled = false;
                         EndOffsetUpDown.Enabled = true;
 
-// TODO: this errors out if both BB phases are in steplist, and you go back to edit one.  Needs a rethink
-                        // if one of the two baily's beads stages has been configured, remove it from the start/end reference options
-                        foreach (StepControl step in StepList)
+                        // TODO: need to test this change.  Add both BB stages, and then try to edit one.
+                        if (AddStageButton.Text == "Add Stage")
                         {
-                            if (step.Phase == "Baily's Beads")
+                            // if one of the two baily's beads stages has been configured, remove it from the start/end reference options
+                            foreach (StepControl step in StepList)
                             {
-                                StartRefComboBox.Items.Remove(step.StartRef);
-                                EndRefComboBox.Items.Remove(step.EndRef);
+                                if (step.Phase == "Baily's Beads")
+                                {
+                                    StartRefComboBox.Items.Remove(step.StartRef);
+                                    EndRefComboBox.Items.Remove(step.EndRef);
+                                }
                             }
+                            StartRefComboBox.Enabled = true;
+                            StartRefComboBox.SelectedIndex = 0;
+                            EndRefComboBox.SelectedIndex = 0;
                         }
-
-                        StartRefComboBox.SelectedIndex = 0;
-                        EndRefComboBox.SelectedIndex = 0;
-                        SingleRadioButton.Enabled = false;
+                        else
+                        {
+                            StartRefComboBox.Enabled = false;
+                        }
                         break;
                     case "Totality":
                         if (SingleRadioButton.Checked)
@@ -780,13 +788,11 @@ namespace WinFormsExample
             StepControl step;
             if (btn.Text != "Add Stage")
             {
-                Console.WriteLine("Update Stage (edit)");
                 // grab the reference to the step which triggered the edit event
                 step = _editStep;
             }
             else
             {
-                Console.WriteLine("Add Stage (normal)");
                 // create the step
                 step = new StepControl();
             }
@@ -809,32 +815,40 @@ namespace WinFormsExample
 
             int i = 0;
             // create tasks
-            foreach (string Tv in SeqTvListBox.SelectedItems)
+            if (step.Phase == "Script")
             {
-
                 TaskControl task = new TaskControl();
-                task.Tv = new CameraValue(Tv, PropertyID.Tv);
-                task.ISO = new CameraValue((double)SeqIsoCoBox.SelectedItem, PropertyID.ISO);
-                task.Av = new CameraValue(SeqAvCoBox.SelectedItem.ToString(), PropertyID.Av);
-                // TODO: assign AEBminus and AEBPlus values
-
-                if (AEBRadioButton.Checked)
-                {
-                    task.AEB = new AEBValue(AEBUpDown.SelectedItem.ToString());
-                    task.AEBMinus = GetAEB(task.Tv, new AEBValue(AEBUpDown.SelectedItem.ToString()), false);
-                    task.AEBPlus = GetAEB(task.Tv, new AEBValue(AEBUpDown.SelectedItem.ToString()), true);
-                }
-                else { task.AEBMinus = task.AEBPlus = TvValues.Auto; }
-                
-                // for debug only
-                Console.WriteLine("##### task {0} ######", i);
-                Console.WriteLine("Tv: {0}\nAv: {1}\nISO: {2}\nAEB+ {3}\nAEB- {4}", 
-                    task.Tv.StringValue, task.Av.StringValue, task.ISO.DoubleValue.ToString(),
-                    task.AEBPlus.StringValue, task.AEBMinus.StringValue);
-
-                // add task to step
+                task.Script = ScriptTextBox.Text;
                 step.AddTask(task);
-                i++;
+            }
+            else
+            {
+                foreach (string Tv in SeqTvListBox.SelectedItems)
+                {
+                    TaskControl task = new TaskControl();
+                    task.Tv = new CameraValue(Tv, PropertyID.Tv);
+                    task.ISO = new CameraValue((double)SeqIsoCoBox.SelectedItem, PropertyID.ISO);
+                    task.Av = new CameraValue(SeqAvCoBox.SelectedItem.ToString(), PropertyID.Av);
+                    // TODO: assign AEBminus and AEBPlus values
+
+                    if (AEBRadioButton.Checked)
+                    {
+                        task.AEB = new AEBValue(AEBUpDown.SelectedItem.ToString());
+                        task.AEBMinus = GetAEB(task.Tv, new AEBValue(AEBUpDown.SelectedItem.ToString()), false);
+                        task.AEBPlus = GetAEB(task.Tv, new AEBValue(AEBUpDown.SelectedItem.ToString()), true);
+                    }
+                    else { task.AEBMinus = task.AEBPlus = TvValues.Auto; }
+
+                    // for debug only
+                    Console.WriteLine("##### task {0} ######", i);
+                    Console.WriteLine("Tv: {0}\nAv: {1}\nISO: {2}\nAEB+ {3}\nAEB- {4}",
+                        task.Tv.StringValue, task.Av.StringValue, task.ISO.DoubleValue.ToString(),
+                        task.AEBPlus.StringValue, task.AEBMinus.StringValue);
+
+                    // add task to step
+                    step.AddTask(task);
+                    i++;
+                }
             }
 
             // if -not- in edit mode
@@ -1165,17 +1179,24 @@ namespace WinFormsExample
             List<TaskControl> tasks = step.GetTasks();
             foreach (TaskControl task in tasks)
             {
-                SeqTvListBox.SelectedItems.Add(task.Tv.StringValue);
-                SeqAvCoBox.SelectedItem = task.Av.StringValue;
-                SeqIsoCoBox.SelectedItem = task.ISO.DoubleValue;
-                if (task.AEBMinus == TvValues.Auto)
+                if (task.Script != null)
                 {
-                    AEBDisabledRadioButton.Checked = true;
+                    ScriptTextBox.Text = task.Script;
                 }
                 else
                 {
-                    AEBRadioButton.Checked = true;
-                    AEBUpDown.SelectedItem = task.AEB.StringValue;
+                    SeqTvListBox.SelectedItems.Add(task.Tv.StringValue);
+                    SeqAvCoBox.SelectedItem = task.Av.StringValue;
+                    SeqIsoCoBox.SelectedItem = task.ISO.DoubleValue;
+                    if (task.AEBMinus == TvValues.Auto)
+                    {
+                        AEBDisabledRadioButton.Checked = true;
+                    }
+                    else
+                    {
+                        AEBRadioButton.Checked = true;
+                        AEBUpDown.SelectedItem = task.AEB.StringValue;
+                    }
                 }
             }
 

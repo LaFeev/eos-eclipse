@@ -31,8 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EDSDKLib">
-      <HintPath>..\EOSeclipse\EDSDKLib\bin\Release\EDSDKLib.dll</HintPath>
+    <Reference Include="EDSDKLib, Version=1.1.1.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\EOSeclipse\EDSDKLib\bin\Debug\EDSDKLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
