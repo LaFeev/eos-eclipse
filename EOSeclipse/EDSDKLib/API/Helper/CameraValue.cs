@@ -1,10 +1,12 @@
 ﻿using EOSDigital.SDK;
+using System;
 
 namespace EOSDigital.API
 {
     /// <summary>
     /// Stores a camera value
     /// </summary>
+    [Serializable]
     public class CameraValue
     {
         /// <summary>

@@ -129,6 +129,10 @@ namespace WinFormsExample
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.LoadScriptBrowserOLD = new System.Windows.Forms.FolderBrowserDialog();
             this.ScriptFileBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.SaveSettingsButton = new System.Windows.Forms.Button();
+            this.LoadSettingsButton = new System.Windows.Forms.Button();
+            this.LoadedCameraSettingsLabel = new System.Windows.Forms.Label();
+            this.SettingsFileBrowser = new System.Windows.Forms.OpenFileDialog();
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
             this.InitGroupBox.SuspendLayout();
@@ -784,6 +788,9 @@ namespace WinFormsExample
             // 
             this.SeqGenTabPage.AutoScroll = true;
             this.SeqGenTabPage.AutoScrollMargin = new System.Drawing.Size(0, 25);
+            this.SeqGenTabPage.Controls.Add(this.LoadedCameraSettingsLabel);
+            this.SeqGenTabPage.Controls.Add(this.LoadSettingsButton);
+            this.SeqGenTabPage.Controls.Add(this.SaveSettingsButton);
             this.SeqGenTabPage.Controls.Add(this.SeqSettingsPanel);
             this.SeqGenTabPage.Controls.Add(this.CancelStageButton);
             this.SeqGenTabPage.Controls.Add(this.AddStageButton);
@@ -817,7 +824,7 @@ namespace WinFormsExample
             this.SeqSettingsPanel.Controls.Add(this.ExposureGroupBox);
             this.SeqSettingsPanel.Location = new System.Drawing.Point(0, 144);
             this.SeqSettingsPanel.Name = "SeqSettingsPanel";
-            this.SeqSettingsPanel.Size = new System.Drawing.Size(326, 146);
+            this.SeqSettingsPanel.Size = new System.Drawing.Size(309, 146);
             this.SeqSettingsPanel.TabIndex = 14;
             // 
             // label16
@@ -1304,6 +1311,43 @@ namespace WinFormsExample
             // 
             this.ScriptFileBrowser.FileName = "openFileDialog1";
             // 
+            // SaveSettingsButton
+            // 
+            this.SaveSettingsButton.AutoSize = true;
+            this.SaveSettingsButton.Location = new System.Drawing.Point(251, 7);
+            this.SaveSettingsButton.Name = "SaveSettingsButton";
+            this.SaveSettingsButton.Size = new System.Drawing.Size(122, 23);
+            this.SaveSettingsButton.TabIndex = 15;
+            this.SaveSettingsButton.Text = "Save Camera Settings";
+            this.SaveSettingsButton.UseVisualStyleBackColor = true;
+            this.SaveSettingsButton.Click += new System.EventHandler(this.SaveSettingsButton_Click);
+            // 
+            // LoadSettingsButton
+            // 
+            this.LoadSettingsButton.AutoSize = true;
+            this.LoadSettingsButton.Location = new System.Drawing.Point(251, 34);
+            this.LoadSettingsButton.Name = "LoadSettingsButton";
+            this.LoadSettingsButton.Size = new System.Drawing.Size(122, 23);
+            this.LoadSettingsButton.TabIndex = 15;
+            this.LoadSettingsButton.Text = "Load Camera Settings";
+            this.LoadSettingsButton.UseVisualStyleBackColor = true;
+            this.LoadSettingsButton.Click += new System.EventHandler(this.LoadSettingsButton_Click);
+            // 
+            // LoadedCameraSettingsLabel
+            // 
+            this.LoadedCameraSettingsLabel.AutoEllipsis = true;
+            this.LoadedCameraSettingsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LoadedCameraSettingsLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.LoadedCameraSettingsLabel.Location = new System.Drawing.Point(251, 61);
+            this.LoadedCameraSettingsLabel.Name = "LoadedCameraSettingsLabel";
+            this.LoadedCameraSettingsLabel.Size = new System.Drawing.Size(122, 16);
+            this.LoadedCameraSettingsLabel.TabIndex = 16;
+            this.LoadedCameraSettingsLabel.Text = "camera settings loaded";
+            // 
+            // SettingsFileBrowser
+            // 
+            this.SettingsFileBrowser.FileName = "openFileDialog1";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1455,6 +1499,10 @@ namespace WinFormsExample
         private System.Windows.Forms.ComboBox SeqIsoCoBox;
         private System.Windows.Forms.Panel SeqSettingsPanel;
         private System.Windows.Forms.Panel SeqSizerPanel;
+        private System.Windows.Forms.Button LoadSettingsButton;
+        private System.Windows.Forms.Button SaveSettingsButton;
+        private System.Windows.Forms.Label LoadedCameraSettingsLabel;
+        private System.Windows.Forms.OpenFileDialog SettingsFileBrowser;
     }
 }
 

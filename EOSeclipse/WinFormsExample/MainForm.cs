@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using EOSDigital.API;
@@ -15,6 +14,7 @@ using GMap.NET.MapProviders;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.InteropServices.ComTypes;
+using System.IO;
 
 namespace WinFormsExample
 {
@@ -44,6 +44,8 @@ namespace WinFormsExample
         List<StepControl> StepList = new List<StepControl>();
         private StepControl _editStep;
 
+        string AppDataDir;
+
         #endregion
 
         public MainForm()
@@ -63,6 +65,7 @@ namespace WinFormsExample
                 RefreshCamera();
                 IsInit = true;
                 SaveSettingsButton.Enabled = false;
+                LoadedCameraSettingsLabel.Visible = false;
 
                 gmap.MapProvider = GMap.NET.MapProviders.GMapProviders.GoogleMap;
                 gmap.Dock = DockStyle.Fill;
@@ -81,6 +84,27 @@ namespace WinFormsExample
                 ClearSequence();
                 ScriptTextBox.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Eclipse Scripts");
                 LoadScriptBrowserOLD.Description = "Load Script...";
+
+                // create an app data directory if it doesn't already exist
+                var directory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                AppDataDir = Path.Combine(directory, @"EOSeclipse");
+                try
+                {
+                    // Determine whether the directory exists.
+                    if (Directory.Exists(AppDataDir))
+                    {
+                        Console.WriteLine("EOSeclipse app data directory already exists.");
+                        return;
+                    }
+
+                    // Try to create the directory.
+                    DirectoryInfo di = Directory.CreateDirectory(AppDataDir);
+                    Console.WriteLine("App data directory was created successfully at {0}.", Directory.GetCreationTime(AppDataDir));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Directory creation process failed: {0}", e.ToString());
+                }
             }
             catch (DllNotFoundException) { ReportError("Canon DLLs not found!", true); }
             catch (Exception ex) { ReportError(ex.Message, true); }
@@ -1064,6 +1088,7 @@ namespace WinFormsExample
                 ResetPhaseList();
                 LoadSettingsButton.Enabled = false;
                 SaveSettingsButton.Enabled = true;
+                LoadedCameraSettingsLabel.Visible = false;
                 AvCoBox.SelectedIndex = AvCoBox.Items.IndexOf(AvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Av)).StringValue);
                 TvCoBox.SelectedIndex = TvCoBox.Items.IndexOf(TvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Tv)).StringValue);
                 ISOCoBox.SelectedIndex = ISOCoBox.Items.IndexOf(ISOValues.GetValue(MainCamera.GetInt32Setting(PropertyID.ISO)).StringValue);
@@ -1116,29 +1141,58 @@ namespace WinFormsExample
             // serialize the current Tv, Av, and ISO settings and save to file.
             string fname = MainCamera.DeviceName.Replace(" ", "_");
             fname += ".settings";
+            Console.WriteLine(fname);
             IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream("test.settings", FileMode.Create, System.IO.FileAccess.Write);
+            // debug location
+            Stream streamDebug = new FileStream("../../test.settings", FileMode.Create, System.IO.FileAccess.Write);
+            // production location
+            Stream stream = new FileStream(Path.Combine(AppDataDir, fname), FileMode.Create, System.IO.FileAccess.Write);
 
-            CameraValue[] CombinedList = AvList;
-            CombinedList.Concat(TvList);
-            CombinedList.Concat(ISOList);
-            formatter.Serialize(stream, CombinedList);
+            List<CameraValue> valueList = AvList.ToList<CameraValue>();
+            Console.WriteLine(valueList.Count);
+            valueList.AddRange(TvList);
+            Console.WriteLine(valueList.Count);
+            valueList.AddRange(ISOList);
+            Console.WriteLine(valueList.Count);
+            // write to debug location
+            formatter.Serialize(streamDebug, valueList);
+            streamDebug.Close();
+            // also write to production location
+            formatter.Serialize(stream, valueList);
             stream.Close();
         }
 
         // TODO: employ a file picker for settings load
         private void LoadSettingsButton_Click(object sender, EventArgs e)
         {
-            // deserialize the settings and populate the lists
-            IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream("test.settings", FileMode.Open, System.IO.FileAccess.Read);
-            CameraValue[] CombinedList = (CameraValue[])formatter.Deserialize(stream);
-            foreach (CameraValue val in CombinedList)
+            // get the settings file
+            String SettingsPath;
+            try
             {
-                if (val.ValueType == PropertyID.Av) { SeqAvCoBox.Items.Add(val.StringValue); }
-                else if (val.ValueType == PropertyID.ISO) { SeqIsoCoBox.Items.Add(val.DoubleValue); }
-                else if (val.ValueType == PropertyID.Tv) { SeqTvListBox.Items.Add(val.StringValue); }
+                if (File.Exists(AppDataDir)) SettingsFileBrowser.InitialDirectory = AppDataDir;
+                if (SettingsFileBrowser.ShowDialog() == DialogResult.OK)
+                {
+                    SettingsPath = SettingsFileBrowser.FileName;
+                    // deserialize the settings and populate the lists
+                    IFormatter formatter = new BinaryFormatter();
+                    Stream stream = new FileStream(SettingsPath, FileMode.Open, System.IO.FileAccess.Read);
+                    List<CameraValue> valueList = (List<CameraValue>)formatter.Deserialize(stream);
+                    Console.WriteLine(valueList.Count);
+                    foreach (CameraValue val in valueList)
+                    {
+                        if (val.ValueType == PropertyID.Av) { SeqAvCoBox.Items.Add(val.StringValue); }
+                        else if (val.ValueType == PropertyID.ISO) { SeqIsoCoBox.Items.Add(val.DoubleValue); }
+                        else if (val.ValueType == PropertyID.Tv) { SeqTvListBox.Items.Add(val.StringValue); }
+                        else { Console.WriteLine("ValueType mismatch!"); }
+                    }
+                    ResetPhaseList();
+                    // TODO: change label text to match loaded camera, use regex to drop the ".settings"
+                    LoadedCameraSettingsLabel.Visible = true;
+                    LoadedCameraSettingsLabel.Text = "TODO: update this";
+                }
             }
+            catch (Exception ex) { ReportError(ex.Message, false); }
+            
         }
 
         private void SeqFlowPanel_Resize(object sender, EventArgs e)
