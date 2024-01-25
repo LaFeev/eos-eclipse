@@ -12,6 +12,9 @@ using GMap.NET.WindowsForms;
 using EOSeclipse.Controls;
 using System.Linq;
 using GMap.NET.MapProviders;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace WinFormsExample
 {
@@ -59,6 +62,7 @@ namespace WinFormsExample
                 LVBh = LiveViewPicBox.Height;
                 RefreshCamera();
                 IsInit = true;
+                SaveSettingsButton.Enabled = false;
 
                 gmap.MapProvider = GMap.NET.MapProviders.GMapProviders.GoogleMap;
                 gmap.Dock = DockStyle.Fill;
@@ -760,6 +764,7 @@ namespace WinFormsExample
                         }
                     break;
                 }
+
             }
         }
 
@@ -1005,6 +1010,8 @@ namespace WinFormsExample
             SessionButton.Text = "Open Session";
             SessionLabel.Text = "No open session";
             LiveViewButton.Text = "Start LV";
+            LoadSettingsButton.Enabled = true;
+            SaveSettingsButton.Enabled = false;
         }
 
         private void ExpandButton_Click(object sender, EventArgs e)
@@ -1047,12 +1054,16 @@ namespace WinFormsExample
                 TvList = MainCamera.GetSettingsList(PropertyID.Tv);
                 ISOList = MainCamera.GetSettingsList(PropertyID.ISO);
                 AEBList = AEBValue.AEBValues();
+                SeqTvListBox.Items.Clear();
+                SeqAvCoBox.Items.Clear();
+                SeqIsoCoBox.Items.Clear();
                 foreach (var Av in AvList) { AvCoBox.Items.Add(Av.StringValue); SeqAvCoBox.Items.Add(Av.StringValue); }
                 foreach (var Tv in TvList) { TvCoBox.Items.Add(Tv.StringValue); SeqTvListBox.Items.Add(Tv.StringValue); }
                 foreach (var ISO in ISOList) { ISOCoBox.Items.Add(ISO.StringValue); SeqIsoCoBox.Items.Add(ISO.DoubleValue); }
                 for (int i = AEBList.Count - 1; i >= 0; i--) { AEBUpDown.Items.Add(AEBList[i].StringValue); }
                 ResetPhaseList();
-
+                LoadSettingsButton.Enabled = false;
+                SaveSettingsButton.Enabled = true;
                 AvCoBox.SelectedIndex = AvCoBox.Items.IndexOf(AvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Av)).StringValue);
                 TvCoBox.SelectedIndex = TvCoBox.Items.IndexOf(TvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Tv)).StringValue);
                 ISOCoBox.SelectedIndex = ISOCoBox.Items.IndexOf(ISOValues.GetValue(MainCamera.GetInt32Setting(PropertyID.ISO)).StringValue);
@@ -1097,6 +1108,36 @@ namespace WinFormsExample
                 InitGroupBox.Enabled = enable;
                 LiveViewGroupBox.Enabled = enable;
                 GetGPSButton.Enabled = enable;
+            }
+        }
+
+        private void SaveSettingsButton_Click(object sender, EventArgs e)
+        {
+            // serialize the current Tv, Av, and ISO settings and save to file.
+            string fname = MainCamera.DeviceName.Replace(" ", "_");
+            fname += ".settings";
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream("test.settings", FileMode.Create, System.IO.FileAccess.Write);
+
+            CameraValue[] CombinedList = AvList;
+            CombinedList.Concat(TvList);
+            CombinedList.Concat(ISOList);
+            formatter.Serialize(stream, CombinedList);
+            stream.Close();
+        }
+
+        // TODO: employ a file picker for settings load
+        private void LoadSettingsButton_Click(object sender, EventArgs e)
+        {
+            // deserialize the settings and populate the lists
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream("test.settings", FileMode.Open, System.IO.FileAccess.Read);
+            CameraValue[] CombinedList = (CameraValue[])formatter.Deserialize(stream);
+            foreach (CameraValue val in CombinedList)
+            {
+                if (val.ValueType == PropertyID.Av) { SeqAvCoBox.Items.Add(val.StringValue); }
+                else if (val.ValueType == PropertyID.ISO) { SeqIsoCoBox.Items.Add(val.DoubleValue); }
+                else if (val.ValueType == PropertyID.Tv) { SeqTvListBox.Items.Add(val.StringValue); }
             }
         }
 
