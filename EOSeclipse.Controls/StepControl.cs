@@ -11,6 +11,7 @@ using EOSeclipse.Controls;
 
 namespace EOSeclipse.Controls
 {
+    [Serializable]
     public partial class StepControl: UserControl//, INotifyPropertyChanged
     {
         private bool _active { get; set; }

@@ -802,12 +802,21 @@ namespace WinFormsExample
                 if (StartRefComboBox.SelectedItem != null) 
                 {
                     EndRefComboBox.SelectedItem = StartRefComboBox.SelectedItem;
+                    EndOffsetUpDown.Value = StartOffsetUpDown.Value;
                 }
             }
             else
             {
                 EndRefComboBox.Enabled = true;
                 EndOffsetUpDown.Enabled = true;
+            }
+        }
+
+        private void StartOffsetUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            if (EndOffsetUpDown.Enabled == false)
+            {
+                EndOffsetUpDown.Value = StartOffsetUpDown.Value;
             }
         }
 
@@ -921,6 +930,37 @@ namespace WinFormsExample
             {
                 // don't reset...
             }
+        }
+        
+        // TODO: UserControl is not serializable, not sure how to proceed
+        private void SaveSeqButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SequenceFileBrowser.InitialDirectory = AppDataDir;
+                SequenceFileBrowser.FileName = "eclipse.sequence";
+                SequenceFileBrowser.Title = "Save sequence file";
+                SequenceFileBrowser.CheckFileExists = false;
+                if (SequenceFileBrowser.ShowDialog() == DialogResult.OK)
+                {
+                    string fpath = SequenceFileBrowser.FileName;
+                    Console.WriteLine(fpath);
+                    // serialize the current sequence and save to disk
+                    IFormatter formatter = new BinaryFormatter();
+                    // debug location
+                    Stream streamDebug = new FileStream("../../test.sequence", FileMode.Create, System.IO.FileAccess.Write);
+                    // production location
+                    Stream stream = new FileStream(fpath, FileMode.Create, System.IO.FileAccess.Write);
+                    // write to debug location
+                    formatter.Serialize(streamDebug, StepList);
+                    streamDebug.Close();
+                    // also write to production location
+                    formatter.Serialize(stream, StepList);
+                    stream.Close();
+                }
+            }
+            catch (Exception ex) { ReportError(ex.Message, false); }
+            
         }
 
         #endregion
@@ -1081,6 +1121,7 @@ namespace WinFormsExample
                 SeqTvListBox.Items.Clear();
                 SeqAvCoBox.Items.Clear();
                 SeqIsoCoBox.Items.Clear();
+                AEBUpDown.Items.Clear();
                 foreach (var Av in AvList) { AvCoBox.Items.Add(Av.StringValue); SeqAvCoBox.Items.Add(Av.StringValue); }
                 foreach (var Tv in TvList) { TvCoBox.Items.Add(Tv.StringValue); SeqTvListBox.Items.Add(Tv.StringValue); }
                 foreach (var ISO in ISOList) { ISOCoBox.Items.Add(ISO.StringValue); SeqIsoCoBox.Items.Add(ISO.DoubleValue); }
@@ -1100,16 +1141,6 @@ namespace WinFormsExample
             }
         }
 
-        private void SaveSeqButton_Click(object sender, EventArgs e)
-        {
-            foreach (StepControl step in StepList)
-            {
-                Console.WriteLine("#### Step List ####\n{0}\n{1}\n{2}", 
-                    step.Phase, 
-                    step.StartRef + step.StartOffset.TotalSeconds.ToString(), 
-                    step.EndRef + step.EndOffset.TotalSeconds.ToString());
-            }
-        }
 
         private void ReportError(string message, bool lockdown)
         {
@@ -1162,7 +1193,7 @@ namespace WinFormsExample
             stream.Close();
         }
 
-        // TODO: employ a file picker for settings load
+        // TODO: change default filename in designer
         private void LoadSettingsButton_Click(object sender, EventArgs e)
         {
             // get the settings file
@@ -1186,9 +1217,12 @@ namespace WinFormsExample
                         else { Console.WriteLine("ValueType mismatch!"); }
                     }
                     ResetPhaseList();
-                    // TODO: change label text to match loaded camera, use regex to drop the ".settings"
+                    String cameraname = Path.GetFileNameWithoutExtension(SettingsPath);
+                    cameraname = cameraname.Replace("_", " ");
                     LoadedCameraSettingsLabel.Visible = true;
-                    LoadedCameraSettingsLabel.Text = "TODO: update this";
+                    LoadedCameraSettingsLabel.Text = cameraname;
+                    AEBList = AEBValue.AEBValues();
+                    for (int i = AEBList.Count - 1; i >= 0; i--) { AEBUpDown.Items.Add(AEBList[i].StringValue); }
                 }
             }
             catch (Exception ex) { ReportError(ex.Message, false); }
@@ -1219,6 +1253,7 @@ namespace WinFormsExample
             double target = baseTv.DoubleValue * Math.Pow(2, offset / 3);  // computes the precise shutter speed, but cameras list nominal values
             Console.WriteLine("offset: {0}\nbaseTv: {1}\ntarget: {2}", offset.ToString(), baseTv.DoubleValue.ToString(), target.ToString());
 
+            // TODO: TvList is null if settings were loaded, change this reference
             for (int i = 0; i < TvList.Count(); i++)
             {
                 double high = TvList[i].DoubleValue;

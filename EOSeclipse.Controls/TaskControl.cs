@@ -11,6 +11,7 @@ using EOSDigital.API;
 
 namespace EOSeclipse.Controls
 {
+    [Serializable]
     public partial class TaskControl : UserControl
     {
         public CameraValue Av { get; set; }
