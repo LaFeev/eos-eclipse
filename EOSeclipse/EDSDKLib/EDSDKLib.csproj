@@ -49,6 +49,7 @@
     <Compile Include="API\Helper\Delegates.cs" />
     <Compile Include="API\Helper\ExceptionHandling.cs" />
     <Compile Include="API\Helper\IO.cs" />
+    <Compile Include="API\Helper\SeIndex.cs" />
     <Compile Include="API\Helper\STAThread.cs" />
     <Compile Include="API\Helper\ValueCollections.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

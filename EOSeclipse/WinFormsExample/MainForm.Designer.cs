@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WinFormsExample
+namespace MainForm
 {
     partial class MainForm
     {
@@ -65,15 +65,15 @@ namespace WinFormsExample
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.EclipseTabPage = new System.Windows.Forms.TabPage();
             this.LocTabPage = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.ElvLabel = new System.Windows.Forms.Label();
             this.LonLabel = new System.Windows.Forms.Label();
             this.LatLabel = new System.Windows.Forms.Label();
-            this.GPSDateTimeTextBox = new System.Windows.Forms.Label();
             this.GPSStatusTextBox = new System.Windows.Forms.Label();
             this.SetLocButton = new System.Windows.Forms.Button();
             this.GetGPSButton = new System.Windows.Forms.Button();
+            this.label18 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
@@ -83,7 +83,76 @@ namespace WinFormsExample
             this.LonTextBox = new System.Windows.Forms.TextBox();
             this.LatTextBox = new System.Windows.Forms.TextBox();
             this.gmap = new GMap.NET.WindowsForms.GMapControl();
+            this.EclipseTabPage = new System.Windows.Forms.TabPage();
+            this.WattsLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.SunMoonRatioLabel = new System.Windows.Forms.Label();
+            this.CoverageLabel = new System.Windows.Forms.Label();
+            this.LibrationCLabel = new System.Windows.Forms.Label();
+            this.LibrationBLabel = new System.Windows.Forms.Label();
+            this.LibrationLLabel = new System.Windows.Forms.Label();
+            this.MagnitudeLabel = new System.Windows.Forms.Label();
+            this.DepthLabel = new System.Windows.Forms.Label();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label34 = new System.Windows.Forms.Label();
+            this.label31 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
+            this.EclipseDepthLabel = new System.Windows.Forms.Label();
+            this.DurationCorrLabel = new System.Windows.Forms.Label();
+            this.DeltaTLabel = new System.Windows.Forms.Label();
+            this.DurationLabel = new System.Windows.Forms.Label();
+            this.TypeLabel = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label55 = new System.Windows.Forms.Label();
+            this.label54 = new System.Windows.Forms.Label();
+            this.label53 = new System.Windows.Forms.Label();
+            this.label39 = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.C3LcLabel = new System.Windows.Forms.Label();
+            this.C2LcLabel = new System.Windows.Forms.Label();
+            this.C4VLabel = new System.Windows.Forms.Label();
+            this.C3VLabel = new System.Windows.Forms.Label();
+            this.MxVLabel = new System.Windows.Forms.Label();
+            this.C2VLabel = new System.Windows.Forms.Label();
+            this.C1VLabel = new System.Windows.Forms.Label();
+            this.C4PLabel = new System.Windows.Forms.Label();
+            this.C3PLabel = new System.Windows.Forms.Label();
+            this.MxPLabel = new System.Windows.Forms.Label();
+            this.C2PLabel = new System.Windows.Forms.Label();
+            this.C1PLabel = new System.Windows.Forms.Label();
+            this.C4AziLabel = new System.Windows.Forms.Label();
+            this.C3AziLabel = new System.Windows.Forms.Label();
+            this.MxAziLabel = new System.Windows.Forms.Label();
+            this.C2AziLabel = new System.Windows.Forms.Label();
+            this.C1AziLabel = new System.Windows.Forms.Label();
+            this.C4AltLabel = new System.Windows.Forms.Label();
+            this.C3AltLabel = new System.Windows.Forms.Label();
+            this.MxAltLabel = new System.Windows.Forms.Label();
+            this.C2AltLabel = new System.Windows.Forms.Label();
+            this.C1AltLabel = new System.Windows.Forms.Label();
+            this.C4DateTimeLabel = new System.Windows.Forms.Label();
+            this.C3DateTimeLabel = new System.Windows.Forms.Label();
+            this.MxDateTimeLabel = new System.Windows.Forms.Label();
+            this.C2DateTimeLabel = new System.Windows.Forms.Label();
+            this.C1DateTimeLabel = new System.Windows.Forms.Label();
+            this.label47 = new System.Windows.Forms.Label();
+            this.label40 = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.SeCalcButton = new System.Windows.Forms.Button();
+            this.label17 = new System.Windows.Forms.Label();
+            this.SeIndexComboBox = new System.Windows.Forms.ComboBox();
+            this.SeWebBrowserPanel = new System.Windows.Forms.Panel();
+            this.SeWebBrowser = new System.Windows.Forms.WebBrowser();
             this.SeqGenTabPage = new System.Windows.Forms.TabPage();
+            this.LoadedCameraSettingsLabel = new System.Windows.Forms.Label();
+            this.LoadSettingsButton = new System.Windows.Forms.Button();
+            this.SaveSettingsButton = new System.Windows.Forms.Button();
             this.SeqSettingsPanel = new System.Windows.Forms.Panel();
             this.label16 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
@@ -129,10 +198,10 @@ namespace WinFormsExample
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.LoadScriptBrowserOLD = new System.Windows.Forms.FolderBrowserDialog();
             this.ScriptFileBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.SaveSettingsButton = new System.Windows.Forms.Button();
-            this.LoadSettingsButton = new System.Windows.Forms.Button();
-            this.LoadedCameraSettingsLabel = new System.Windows.Forms.Label();
             this.SettingsFileBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.SequenceFileBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.label30 = new System.Windows.Forms.Label();
+            this.ComputedLatLngLabel = new System.Windows.Forms.Label();
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
             this.InitGroupBox.SuspendLayout();
@@ -145,6 +214,8 @@ namespace WinFormsExample
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.EclipseTabPage.SuspendLayout();
+            this.SeWebBrowserPanel.SuspendLayout();
             this.SeqGenTabPage.SuspendLayout();
             this.SeqSettingsPanel.SuspendLayout();
             this.AEBGroupBox.SuspendLayout();
@@ -340,8 +411,8 @@ namespace WinFormsExample
             this.SettingsTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.SettingsTabControl.Controls.Add(this.SettingsTabPage);
-            this.SettingsTabControl.Controls.Add(this.EclipseTabPage);
             this.SettingsTabControl.Controls.Add(this.LocTabPage);
+            this.SettingsTabControl.Controls.Add(this.EclipseTabPage);
             this.SettingsTabControl.Controls.Add(this.SeqGenTabPage);
             this.SettingsTabControl.Controls.Add(this.CaptureTabPage);
             this.SettingsTabControl.HotTrack = true;
@@ -572,15 +643,6 @@ namespace WinFormsExample
             this.label2.TabIndex = 3;
             this.label2.Text = "Tv";
             // 
-            // EclipseTabPage
-            // 
-            this.EclipseTabPage.Location = new System.Drawing.Point(4, 22);
-            this.EclipseTabPage.Name = "EclipseTabPage";
-            this.EclipseTabPage.Size = new System.Drawing.Size(398, 193);
-            this.EclipseTabPage.TabIndex = 3;
-            this.EclipseTabPage.Text = "Eclipse";
-            this.EclipseTabPage.UseVisualStyleBackColor = true;
-            // 
             // LocTabPage
             // 
             this.LocTabPage.Controls.Add(this.splitContainer1);
@@ -601,12 +663,13 @@ namespace WinFormsExample
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.ElvLabel);
             this.splitContainer1.Panel1.Controls.Add(this.LonLabel);
             this.splitContainer1.Panel1.Controls.Add(this.LatLabel);
-            this.splitContainer1.Panel1.Controls.Add(this.GPSDateTimeTextBox);
             this.splitContainer1.Panel1.Controls.Add(this.GPSStatusTextBox);
             this.splitContainer1.Panel1.Controls.Add(this.SetLocButton);
             this.splitContainer1.Panel1.Controls.Add(this.GetGPSButton);
+            this.splitContainer1.Panel1.Controls.Add(this.label18);
             this.splitContainer1.Panel1.Controls.Add(this.label7);
             this.splitContainer1.Panel1.Controls.Add(this.label9);
             this.splitContainer1.Panel1.Controls.Add(this.label6);
@@ -628,10 +691,20 @@ namespace WinFormsExample
             this.splitContainer1.SplitterDistance = 133;
             this.splitContainer1.TabIndex = 0;
             // 
+            // ElvLabel
+            // 
+            this.ElvLabel.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.ElvLabel.Location = new System.Drawing.Point(14, 175);
+            this.ElvLabel.Name = "ElvLabel";
+            this.ElvLabel.Size = new System.Drawing.Size(90, 16);
+            this.ElvLabel.TabIndex = 4;
+            this.ElvLabel.Text = "Shooting Elv";
+            this.ElvLabel.Visible = false;
+            // 
             // LonLabel
             // 
             this.LonLabel.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.LonLabel.Location = new System.Drawing.Point(14, 174);
+            this.LonLabel.Location = new System.Drawing.Point(14, 161);
             this.LonLabel.Name = "LonLabel";
             this.LonLabel.Size = new System.Drawing.Size(90, 16);
             this.LonLabel.TabIndex = 4;
@@ -641,22 +714,12 @@ namespace WinFormsExample
             // LatLabel
             // 
             this.LatLabel.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.LatLabel.Location = new System.Drawing.Point(14, 161);
+            this.LatLabel.Location = new System.Drawing.Point(14, 148);
             this.LatLabel.Name = "LatLabel";
             this.LatLabel.Size = new System.Drawing.Size(90, 13);
             this.LatLabel.TabIndex = 4;
             this.LatLabel.Text = "Shooting Lat";
             this.LatLabel.Visible = false;
-            // 
-            // GPSDateTimeTextBox
-            // 
-            this.GPSDateTimeTextBox.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.GPSDateTimeTextBox.Location = new System.Drawing.Point(14, 121);
-            this.GPSDateTimeTextBox.Name = "GPSDateTimeTextBox";
-            this.GPSDateTimeTextBox.Size = new System.Drawing.Size(100, 13);
-            this.GPSDateTimeTextBox.TabIndex = 4;
-            this.GPSDateTimeTextBox.Text = "GPS Date Time";
-            this.GPSDateTimeTextBox.Visible = false;
             // 
             // GPSStatusTextBox
             // 
@@ -670,7 +733,7 @@ namespace WinFormsExample
             // 
             // SetLocButton
             // 
-            this.SetLocButton.Location = new System.Drawing.Point(8, 137);
+            this.SetLocButton.Location = new System.Drawing.Point(8, 124);
             this.SetLocButton.Name = "SetLocButton";
             this.SetLocButton.Size = new System.Drawing.Size(96, 23);
             this.SetLocButton.TabIndex = 4;
@@ -689,6 +752,16 @@ namespace WinFormsExample
             this.GetGPSButton.UseVisualStyleBackColor = true;
             this.GetGPSButton.Click += new System.EventHandler(this.GetGPSButton_Click);
             // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.label18.Location = new System.Drawing.Point(104, 175);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(15, 13);
+            this.label18.TabIndex = 2;
+            this.label18.Text = "m";
+            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -702,7 +775,7 @@ namespace WinFormsExample
             // 
             this.label9.AutoSize = true;
             this.label9.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.label9.Location = new System.Drawing.Point(104, 174);
+            this.label9.Location = new System.Drawing.Point(104, 161);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(25, 13);
             this.label9.TabIndex = 2;
@@ -721,7 +794,7 @@ namespace WinFormsExample
             // 
             this.label8.AutoSize = true;
             this.label8.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.label8.Location = new System.Drawing.Point(104, 161);
+            this.label8.Location = new System.Drawing.Point(104, 148);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(22, 13);
             this.label8.TabIndex = 2;
@@ -784,6 +857,686 @@ namespace WinFormsExample
             this.gmap.Zoom = 0D;
             this.gmap.MouseClick += new System.Windows.Forms.MouseEventHandler(this.gmap_MouseClick);
             // 
+            // EclipseTabPage
+            // 
+            this.EclipseTabPage.AutoScroll = true;
+            this.EclipseTabPage.AutoScrollMargin = new System.Drawing.Size(0, 25);
+            this.EclipseTabPage.Controls.Add(this.ComputedLatLngLabel);
+            this.EclipseTabPage.Controls.Add(this.label30);
+            this.EclipseTabPage.Controls.Add(this.WattsLinkLabel);
+            this.EclipseTabPage.Controls.Add(this.SunMoonRatioLabel);
+            this.EclipseTabPage.Controls.Add(this.CoverageLabel);
+            this.EclipseTabPage.Controls.Add(this.LibrationCLabel);
+            this.EclipseTabPage.Controls.Add(this.LibrationBLabel);
+            this.EclipseTabPage.Controls.Add(this.LibrationLLabel);
+            this.EclipseTabPage.Controls.Add(this.MagnitudeLabel);
+            this.EclipseTabPage.Controls.Add(this.DepthLabel);
+            this.EclipseTabPage.Controls.Add(this.label27);
+            this.EclipseTabPage.Controls.Add(this.label22);
+            this.EclipseTabPage.Controls.Add(this.label34);
+            this.EclipseTabPage.Controls.Add(this.label31);
+            this.EclipseTabPage.Controls.Add(this.label29);
+            this.EclipseTabPage.Controls.Add(this.label24);
+            this.EclipseTabPage.Controls.Add(this.EclipseDepthLabel);
+            this.EclipseTabPage.Controls.Add(this.DurationCorrLabel);
+            this.EclipseTabPage.Controls.Add(this.DeltaTLabel);
+            this.EclipseTabPage.Controls.Add(this.DurationLabel);
+            this.EclipseTabPage.Controls.Add(this.TypeLabel);
+            this.EclipseTabPage.Controls.Add(this.label28);
+            this.EclipseTabPage.Controls.Add(this.label23);
+            this.EclipseTabPage.Controls.Add(this.label21);
+            this.EclipseTabPage.Controls.Add(this.label55);
+            this.EclipseTabPage.Controls.Add(this.label54);
+            this.EclipseTabPage.Controls.Add(this.label53);
+            this.EclipseTabPage.Controls.Add(this.label39);
+            this.EclipseTabPage.Controls.Add(this.label25);
+            this.EclipseTabPage.Controls.Add(this.label20);
+            this.EclipseTabPage.Controls.Add(this.C3LcLabel);
+            this.EclipseTabPage.Controls.Add(this.C2LcLabel);
+            this.EclipseTabPage.Controls.Add(this.C4VLabel);
+            this.EclipseTabPage.Controls.Add(this.C3VLabel);
+            this.EclipseTabPage.Controls.Add(this.MxVLabel);
+            this.EclipseTabPage.Controls.Add(this.C2VLabel);
+            this.EclipseTabPage.Controls.Add(this.C1VLabel);
+            this.EclipseTabPage.Controls.Add(this.C4PLabel);
+            this.EclipseTabPage.Controls.Add(this.C3PLabel);
+            this.EclipseTabPage.Controls.Add(this.MxPLabel);
+            this.EclipseTabPage.Controls.Add(this.C2PLabel);
+            this.EclipseTabPage.Controls.Add(this.C1PLabel);
+            this.EclipseTabPage.Controls.Add(this.C4AziLabel);
+            this.EclipseTabPage.Controls.Add(this.C3AziLabel);
+            this.EclipseTabPage.Controls.Add(this.MxAziLabel);
+            this.EclipseTabPage.Controls.Add(this.C2AziLabel);
+            this.EclipseTabPage.Controls.Add(this.C1AziLabel);
+            this.EclipseTabPage.Controls.Add(this.C4AltLabel);
+            this.EclipseTabPage.Controls.Add(this.C3AltLabel);
+            this.EclipseTabPage.Controls.Add(this.MxAltLabel);
+            this.EclipseTabPage.Controls.Add(this.C2AltLabel);
+            this.EclipseTabPage.Controls.Add(this.C1AltLabel);
+            this.EclipseTabPage.Controls.Add(this.C4DateTimeLabel);
+            this.EclipseTabPage.Controls.Add(this.C3DateTimeLabel);
+            this.EclipseTabPage.Controls.Add(this.MxDateTimeLabel);
+            this.EclipseTabPage.Controls.Add(this.C2DateTimeLabel);
+            this.EclipseTabPage.Controls.Add(this.C1DateTimeLabel);
+            this.EclipseTabPage.Controls.Add(this.label47);
+            this.EclipseTabPage.Controls.Add(this.label40);
+            this.EclipseTabPage.Controls.Add(this.label33);
+            this.EclipseTabPage.Controls.Add(this.label26);
+            this.EclipseTabPage.Controls.Add(this.label19);
+            this.EclipseTabPage.Controls.Add(this.SeCalcButton);
+            this.EclipseTabPage.Controls.Add(this.label17);
+            this.EclipseTabPage.Controls.Add(this.SeIndexComboBox);
+            this.EclipseTabPage.Controls.Add(this.SeWebBrowserPanel);
+            this.EclipseTabPage.Location = new System.Drawing.Point(4, 22);
+            this.EclipseTabPage.Name = "EclipseTabPage";
+            this.EclipseTabPage.Padding = new System.Windows.Forms.Padding(0, 0, 0, 100);
+            this.EclipseTabPage.Size = new System.Drawing.Size(398, 193);
+            this.EclipseTabPage.TabIndex = 3;
+            this.EclipseTabPage.Text = "Eclipse";
+            this.EclipseTabPage.UseVisualStyleBackColor = true;
+            // 
+            // WattsLinkLabel
+            // 
+            this.WattsLinkLabel.AutoSize = true;
+            this.WattsLinkLabel.Location = new System.Drawing.Point(7, 255);
+            this.WattsLinkLabel.Name = "WattsLinkLabel";
+            this.WattsLinkLabel.Size = new System.Drawing.Size(91, 13);
+            this.WattsLinkLabel.TabIndex = 9;
+            this.WattsLinkLabel.TabStop = true;
+            this.WattsLinkLabel.Text = "Lunar Limb Profile";
+            this.WattsLinkLabel.Click += new System.EventHandler(this.WattsLinkLabel_Click);
+            // 
+            // SunMoonRatioLabel
+            // 
+            this.SunMoonRatioLabel.AutoSize = true;
+            this.SunMoonRatioLabel.Location = new System.Drawing.Point(284, 219);
+            this.SunMoonRatioLabel.Name = "SunMoonRatioLabel";
+            this.SunMoonRatioLabel.Size = new System.Drawing.Size(0, 13);
+            this.SunMoonRatioLabel.TabIndex = 8;
+            // 
+            // CoverageLabel
+            // 
+            this.CoverageLabel.AutoSize = true;
+            this.CoverageLabel.Location = new System.Drawing.Point(249, 202);
+            this.CoverageLabel.Name = "CoverageLabel";
+            this.CoverageLabel.Size = new System.Drawing.Size(0, 13);
+            this.CoverageLabel.TabIndex = 8;
+            // 
+            // LibrationCLabel
+            // 
+            this.LibrationCLabel.AutoSize = true;
+            this.LibrationCLabel.Location = new System.Drawing.Point(256, 237);
+            this.LibrationCLabel.MaximumSize = new System.Drawing.Size(55, 13);
+            this.LibrationCLabel.Name = "LibrationCLabel";
+            this.LibrationCLabel.Size = new System.Drawing.Size(0, 13);
+            this.LibrationCLabel.TabIndex = 8;
+            // 
+            // LibrationBLabel
+            // 
+            this.LibrationBLabel.AutoSize = true;
+            this.LibrationBLabel.Location = new System.Drawing.Point(178, 237);
+            this.LibrationBLabel.MaximumSize = new System.Drawing.Size(55, 13);
+            this.LibrationBLabel.Name = "LibrationBLabel";
+            this.LibrationBLabel.Size = new System.Drawing.Size(0, 13);
+            this.LibrationBLabel.TabIndex = 8;
+            // 
+            // LibrationLLabel
+            // 
+            this.LibrationLLabel.AutoSize = true;
+            this.LibrationLLabel.Location = new System.Drawing.Point(108, 237);
+            this.LibrationLLabel.MaximumSize = new System.Drawing.Size(55, 13);
+            this.LibrationLLabel.Name = "LibrationLLabel";
+            this.LibrationLLabel.Size = new System.Drawing.Size(0, 13);
+            this.LibrationLLabel.TabIndex = 8;
+            // 
+            // MagnitudeLabel
+            // 
+            this.MagnitudeLabel.AutoSize = true;
+            this.MagnitudeLabel.Location = new System.Drawing.Point(108, 219);
+            this.MagnitudeLabel.MaximumSize = new System.Drawing.Size(72, 13);
+            this.MagnitudeLabel.Name = "MagnitudeLabel";
+            this.MagnitudeLabel.Size = new System.Drawing.Size(0, 13);
+            this.MagnitudeLabel.TabIndex = 8;
+            // 
+            // DepthLabel
+            // 
+            this.DepthLabel.AutoSize = true;
+            this.DepthLabel.Location = new System.Drawing.Point(108, 202);
+            this.DepthLabel.MaximumSize = new System.Drawing.Size(75, 13);
+            this.DepthLabel.Name = "DepthLabel";
+            this.DepthLabel.Size = new System.Drawing.Size(0, 13);
+            this.DepthLabel.TabIndex = 8;
+            // 
+            // label27
+            // 
+            this.label27.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label27.Location = new System.Drawing.Point(178, 219);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(105, 13);
+            this.label27.TabIndex = 8;
+            this.label27.Text = "Sun/Moon Ratio:";
+            // 
+            // label22
+            // 
+            this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label22.Location = new System.Drawing.Point(178, 202);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(65, 13);
+            this.label22.TabIndex = 8;
+            this.label22.Text = "Coverage:";
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label34.Location = new System.Drawing.Point(239, 237);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(18, 13);
+            this.label34.TabIndex = 8;
+            this.label34.Text = "c:";
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label31.Location = new System.Drawing.Point(161, 237);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(18, 13);
+            this.label31.TabIndex = 8;
+            this.label31.Text = "b:";
+            // 
+            // label29
+            // 
+            this.label29.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label29.Location = new System.Drawing.Point(7, 237);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(105, 13);
+            this.label29.TabIndex = 8;
+            this.label29.Text = "Moon Libration l:";
+            // 
+            // label24
+            // 
+            this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label24.Location = new System.Drawing.Point(7, 219);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(105, 13);
+            this.label24.TabIndex = 8;
+            this.label24.Text = "Magnitude (Mx):";
+            // 
+            // EclipseDepthLabel
+            // 
+            this.EclipseDepthLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.EclipseDepthLabel.Location = new System.Drawing.Point(7, 202);
+            this.EclipseDepthLabel.Name = "EclipseDepthLabel";
+            this.EclipseDepthLabel.Size = new System.Drawing.Size(105, 13);
+            this.EclipseDepthLabel.TabIndex = 8;
+            this.EclipseDepthLabel.Text = "Umbral Depth:";
+            // 
+            // DurationCorrLabel
+            // 
+            this.DurationCorrLabel.Location = new System.Drawing.Point(205, 40);
+            this.DurationCorrLabel.Name = "DurationCorrLabel";
+            this.DurationCorrLabel.Size = new System.Drawing.Size(43, 13);
+            this.DurationCorrLabel.TabIndex = 7;
+            // 
+            // DeltaTLabel
+            // 
+            this.DeltaTLabel.Location = new System.Drawing.Point(324, 40);
+            this.DeltaTLabel.Name = "DeltaTLabel";
+            this.DeltaTLabel.Size = new System.Drawing.Size(37, 13);
+            this.DeltaTLabel.TabIndex = 7;
+            // 
+            // DurationLabel
+            // 
+            this.DurationLabel.Location = new System.Drawing.Point(162, 40);
+            this.DurationLabel.Name = "DurationLabel";
+            this.DurationLabel.Size = new System.Drawing.Size(37, 13);
+            this.DurationLabel.TabIndex = 7;
+            // 
+            // TypeLabel
+            // 
+            this.TypeLabel.AutoSize = true;
+            this.TypeLabel.Location = new System.Drawing.Point(44, 40);
+            this.TypeLabel.Name = "TypeLabel";
+            this.TypeLabel.Size = new System.Drawing.Size(0, 13);
+            this.TypeLabel.TabIndex = 7;
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label28.Location = new System.Drawing.Point(268, 40);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(53, 13);
+            this.label28.TabIndex = 7;
+            this.label28.Text = "Delta T:";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label23.Location = new System.Drawing.Point(106, 40);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(59, 13);
+            this.label23.TabIndex = 7;
+            this.label23.Text = "Duration:";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label21.Location = new System.Drawing.Point(4, 40);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(39, 13);
+            this.label21.TabIndex = 7;
+            this.label21.Text = "Type:";
+            // 
+            // label55
+            // 
+            this.label55.AutoSize = true;
+            this.label55.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label55.Location = new System.Drawing.Point(348, 65);
+            this.label55.Name = "label55";
+            this.label55.Size = new System.Drawing.Size(30, 13);
+            this.label55.TabIndex = 6;
+            this.label55.Text = "L.C.";
+            this.label55.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label54
+            // 
+            this.label54.AutoSize = true;
+            this.label54.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label54.Location = new System.Drawing.Point(314, 65);
+            this.label54.Name = "label54";
+            this.label54.Size = new System.Drawing.Size(15, 13);
+            this.label54.TabIndex = 6;
+            this.label54.Text = "V";
+            this.label54.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label53
+            // 
+            this.label53.AutoSize = true;
+            this.label53.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label53.Location = new System.Drawing.Point(268, 65);
+            this.label53.Name = "label53";
+            this.label53.Size = new System.Drawing.Size(15, 13);
+            this.label53.TabIndex = 6;
+            this.label53.Text = "P";
+            this.label53.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label39.Location = new System.Drawing.Point(216, 65);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(28, 13);
+            this.label39.TabIndex = 6;
+            this.label39.Text = "Azi.";
+            this.label39.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label25.Location = new System.Drawing.Point(172, 65);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(26, 13);
+            this.label25.TabIndex = 6;
+            this.label25.Text = "Alt.";
+            this.label25.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label20.Location = new System.Drawing.Point(61, 65);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(67, 13);
+            this.label20.TabIndex = 6;
+            this.label20.Text = "Date/Time";
+            this.label20.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C3LcLabel
+            // 
+            this.C3LcLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C3LcLabel.Location = new System.Drawing.Point(348, 148);
+            this.C3LcLabel.Name = "C3LcLabel";
+            this.C3LcLabel.Size = new System.Drawing.Size(30, 15);
+            this.C3LcLabel.TabIndex = 5;
+            this.C3LcLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C2LcLabel
+            // 
+            this.C2LcLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C2LcLabel.Location = new System.Drawing.Point(348, 102);
+            this.C2LcLabel.Name = "C2LcLabel";
+            this.C2LcLabel.Size = new System.Drawing.Size(32, 15);
+            this.C2LcLabel.TabIndex = 5;
+            this.C2LcLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C4VLabel
+            // 
+            this.C4VLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C4VLabel.Location = new System.Drawing.Point(302, 171);
+            this.C4VLabel.Name = "C4VLabel";
+            this.C4VLabel.Size = new System.Drawing.Size(40, 15);
+            this.C4VLabel.TabIndex = 5;
+            this.C4VLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C3VLabel
+            // 
+            this.C3VLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C3VLabel.Location = new System.Drawing.Point(302, 148);
+            this.C3VLabel.Name = "C3VLabel";
+            this.C3VLabel.Size = new System.Drawing.Size(40, 15);
+            this.C3VLabel.TabIndex = 5;
+            this.C3VLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // MxVLabel
+            // 
+            this.MxVLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.MxVLabel.Location = new System.Drawing.Point(302, 125);
+            this.MxVLabel.Name = "MxVLabel";
+            this.MxVLabel.Size = new System.Drawing.Size(40, 15);
+            this.MxVLabel.TabIndex = 5;
+            this.MxVLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C2VLabel
+            // 
+            this.C2VLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C2VLabel.Location = new System.Drawing.Point(302, 102);
+            this.C2VLabel.Name = "C2VLabel";
+            this.C2VLabel.Size = new System.Drawing.Size(40, 15);
+            this.C2VLabel.TabIndex = 5;
+            this.C2VLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C1VLabel
+            // 
+            this.C1VLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C1VLabel.Location = new System.Drawing.Point(302, 80);
+            this.C1VLabel.Name = "C1VLabel";
+            this.C1VLabel.Size = new System.Drawing.Size(40, 15);
+            this.C1VLabel.TabIndex = 5;
+            this.C1VLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C4PLabel
+            // 
+            this.C4PLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C4PLabel.Location = new System.Drawing.Point(256, 171);
+            this.C4PLabel.Name = "C4PLabel";
+            this.C4PLabel.Size = new System.Drawing.Size(40, 15);
+            this.C4PLabel.TabIndex = 5;
+            this.C4PLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C3PLabel
+            // 
+            this.C3PLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C3PLabel.Location = new System.Drawing.Point(256, 148);
+            this.C3PLabel.Name = "C3PLabel";
+            this.C3PLabel.Size = new System.Drawing.Size(40, 15);
+            this.C3PLabel.TabIndex = 5;
+            this.C3PLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // MxPLabel
+            // 
+            this.MxPLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.MxPLabel.Location = new System.Drawing.Point(256, 125);
+            this.MxPLabel.Name = "MxPLabel";
+            this.MxPLabel.Size = new System.Drawing.Size(40, 15);
+            this.MxPLabel.TabIndex = 5;
+            this.MxPLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C2PLabel
+            // 
+            this.C2PLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C2PLabel.Location = new System.Drawing.Point(256, 102);
+            this.C2PLabel.Name = "C2PLabel";
+            this.C2PLabel.Size = new System.Drawing.Size(40, 15);
+            this.C2PLabel.TabIndex = 5;
+            this.C2PLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C1PLabel
+            // 
+            this.C1PLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C1PLabel.Location = new System.Drawing.Point(256, 80);
+            this.C1PLabel.Name = "C1PLabel";
+            this.C1PLabel.Size = new System.Drawing.Size(40, 15);
+            this.C1PLabel.TabIndex = 5;
+            this.C1PLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C4AziLabel
+            // 
+            this.C4AziLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C4AziLabel.Location = new System.Drawing.Point(210, 171);
+            this.C4AziLabel.Name = "C4AziLabel";
+            this.C4AziLabel.Size = new System.Drawing.Size(40, 15);
+            this.C4AziLabel.TabIndex = 5;
+            this.C4AziLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C3AziLabel
+            // 
+            this.C3AziLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C3AziLabel.Location = new System.Drawing.Point(210, 148);
+            this.C3AziLabel.Name = "C3AziLabel";
+            this.C3AziLabel.Size = new System.Drawing.Size(40, 15);
+            this.C3AziLabel.TabIndex = 5;
+            this.C3AziLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // MxAziLabel
+            // 
+            this.MxAziLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.MxAziLabel.Location = new System.Drawing.Point(210, 125);
+            this.MxAziLabel.Name = "MxAziLabel";
+            this.MxAziLabel.Size = new System.Drawing.Size(40, 15);
+            this.MxAziLabel.TabIndex = 5;
+            this.MxAziLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C2AziLabel
+            // 
+            this.C2AziLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C2AziLabel.Location = new System.Drawing.Point(210, 102);
+            this.C2AziLabel.Name = "C2AziLabel";
+            this.C2AziLabel.Size = new System.Drawing.Size(40, 15);
+            this.C2AziLabel.TabIndex = 5;
+            this.C2AziLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C1AziLabel
+            // 
+            this.C1AziLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C1AziLabel.Location = new System.Drawing.Point(210, 80);
+            this.C1AziLabel.Name = "C1AziLabel";
+            this.C1AziLabel.Size = new System.Drawing.Size(40, 15);
+            this.C1AziLabel.TabIndex = 5;
+            this.C1AziLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C4AltLabel
+            // 
+            this.C4AltLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C4AltLabel.Location = new System.Drawing.Point(164, 171);
+            this.C4AltLabel.Name = "C4AltLabel";
+            this.C4AltLabel.Size = new System.Drawing.Size(40, 15);
+            this.C4AltLabel.TabIndex = 5;
+            this.C4AltLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C3AltLabel
+            // 
+            this.C3AltLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C3AltLabel.Location = new System.Drawing.Point(164, 148);
+            this.C3AltLabel.Name = "C3AltLabel";
+            this.C3AltLabel.Size = new System.Drawing.Size(40, 15);
+            this.C3AltLabel.TabIndex = 5;
+            this.C3AltLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // MxAltLabel
+            // 
+            this.MxAltLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.MxAltLabel.Location = new System.Drawing.Point(164, 125);
+            this.MxAltLabel.Name = "MxAltLabel";
+            this.MxAltLabel.Size = new System.Drawing.Size(40, 15);
+            this.MxAltLabel.TabIndex = 5;
+            this.MxAltLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C2AltLabel
+            // 
+            this.C2AltLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C2AltLabel.Location = new System.Drawing.Point(164, 102);
+            this.C2AltLabel.Name = "C2AltLabel";
+            this.C2AltLabel.Size = new System.Drawing.Size(40, 15);
+            this.C2AltLabel.TabIndex = 5;
+            this.C2AltLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C1AltLabel
+            // 
+            this.C1AltLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C1AltLabel.Location = new System.Drawing.Point(164, 80);
+            this.C1AltLabel.Name = "C1AltLabel";
+            this.C1AltLabel.Size = new System.Drawing.Size(40, 15);
+            this.C1AltLabel.TabIndex = 5;
+            this.C1AltLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C4DateTimeLabel
+            // 
+            this.C4DateTimeLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C4DateTimeLabel.Location = new System.Drawing.Point(28, 171);
+            this.C4DateTimeLabel.Name = "C4DateTimeLabel";
+            this.C4DateTimeLabel.Size = new System.Drawing.Size(130, 15);
+            this.C4DateTimeLabel.TabIndex = 5;
+            this.C4DateTimeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C3DateTimeLabel
+            // 
+            this.C3DateTimeLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C3DateTimeLabel.Location = new System.Drawing.Point(28, 148);
+            this.C3DateTimeLabel.Name = "C3DateTimeLabel";
+            this.C3DateTimeLabel.Size = new System.Drawing.Size(130, 15);
+            this.C3DateTimeLabel.TabIndex = 5;
+            this.C3DateTimeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // MxDateTimeLabel
+            // 
+            this.MxDateTimeLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.MxDateTimeLabel.Location = new System.Drawing.Point(28, 125);
+            this.MxDateTimeLabel.Name = "MxDateTimeLabel";
+            this.MxDateTimeLabel.Size = new System.Drawing.Size(130, 15);
+            this.MxDateTimeLabel.TabIndex = 5;
+            this.MxDateTimeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C2DateTimeLabel
+            // 
+            this.C2DateTimeLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C2DateTimeLabel.Location = new System.Drawing.Point(28, 102);
+            this.C2DateTimeLabel.Name = "C2DateTimeLabel";
+            this.C2DateTimeLabel.Size = new System.Drawing.Size(130, 15);
+            this.C2DateTimeLabel.TabIndex = 5;
+            this.C2DateTimeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // C1DateTimeLabel
+            // 
+            this.C1DateTimeLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.C1DateTimeLabel.Location = new System.Drawing.Point(28, 80);
+            this.C1DateTimeLabel.Name = "C1DateTimeLabel";
+            this.C1DateTimeLabel.Size = new System.Drawing.Size(130, 15);
+            this.C1DateTimeLabel.TabIndex = 5;
+            this.C1DateTimeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(4, 172);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(23, 13);
+            this.label47.TabIndex = 4;
+            this.label47.Text = "C4:";
+            this.label47.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Location = new System.Drawing.Point(4, 149);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(23, 13);
+            this.label40.TabIndex = 4;
+            this.label40.Text = "C3:";
+            this.label40.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(4, 126);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(24, 13);
+            this.label33.TabIndex = 4;
+            this.label33.Text = "Mx:";
+            this.label33.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(4, 103);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(23, 13);
+            this.label26.TabIndex = 4;
+            this.label26.Text = "C2:";
+            this.label26.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(4, 81);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(23, 13);
+            this.label19.TabIndex = 4;
+            this.label19.Text = "C1:";
+            this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // SeCalcButton
+            // 
+            this.SeCalcButton.Location = new System.Drawing.Point(303, 7);
+            this.SeCalcButton.Name = "SeCalcButton";
+            this.SeCalcButton.Size = new System.Drawing.Size(75, 23);
+            this.SeCalcButton.TabIndex = 3;
+            this.SeCalcButton.Text = "Compute";
+            this.SeCalcButton.UseVisualStyleBackColor = true;
+            this.SeCalcButton.Click += new System.EventHandler(this.SeCalcButton_Click);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(133, 13);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(41, 13);
+            this.label17.TabIndex = 2;
+            this.label17.Text = "Eclipse";
+            // 
+            // SeIndexComboBox
+            // 
+            this.SeIndexComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.SeIndexComboBox.FormattingEnabled = true;
+            this.SeIndexComboBox.Location = new System.Drawing.Point(6, 7);
+            this.SeIndexComboBox.Name = "SeIndexComboBox";
+            this.SeIndexComboBox.Size = new System.Drawing.Size(121, 21);
+            this.SeIndexComboBox.TabIndex = 1;
+            // 
+            // SeWebBrowserPanel
+            // 
+            this.SeWebBrowserPanel.Controls.Add(this.SeWebBrowser);
+            this.SeWebBrowserPanel.Location = new System.Drawing.Point(246, 7);
+            this.SeWebBrowserPanel.Name = "SeWebBrowserPanel";
+            this.SeWebBrowserPanel.Size = new System.Drawing.Size(19, 23);
+            this.SeWebBrowserPanel.TabIndex = 0;
+            this.SeWebBrowserPanel.Visible = false;
+            // 
+            // SeWebBrowser
+            // 
+            this.SeWebBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SeWebBrowser.Location = new System.Drawing.Point(0, 0);
+            this.SeWebBrowser.MinimumSize = new System.Drawing.Size(20, 20);
+            this.SeWebBrowser.Name = "SeWebBrowser";
+            this.SeWebBrowser.Size = new System.Drawing.Size(20, 23);
+            this.SeWebBrowser.TabIndex = 0;
+            this.SeWebBrowser.Visible = false;
+            // 
             // SeqGenTabPage
             // 
             this.SeqGenTabPage.AutoScroll = true;
@@ -812,6 +1565,39 @@ namespace WinFormsExample
             this.SeqGenTabPage.Text = "Sequence Gen";
             this.SeqGenTabPage.UseVisualStyleBackColor = true;
             // 
+            // LoadedCameraSettingsLabel
+            // 
+            this.LoadedCameraSettingsLabel.AutoEllipsis = true;
+            this.LoadedCameraSettingsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LoadedCameraSettingsLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.LoadedCameraSettingsLabel.Location = new System.Drawing.Point(251, 61);
+            this.LoadedCameraSettingsLabel.Name = "LoadedCameraSettingsLabel";
+            this.LoadedCameraSettingsLabel.Size = new System.Drawing.Size(122, 16);
+            this.LoadedCameraSettingsLabel.TabIndex = 16;
+            this.LoadedCameraSettingsLabel.Text = "camera settings loaded";
+            // 
+            // LoadSettingsButton
+            // 
+            this.LoadSettingsButton.AutoSize = true;
+            this.LoadSettingsButton.Location = new System.Drawing.Point(251, 34);
+            this.LoadSettingsButton.Name = "LoadSettingsButton";
+            this.LoadSettingsButton.Size = new System.Drawing.Size(122, 23);
+            this.LoadSettingsButton.TabIndex = 15;
+            this.LoadSettingsButton.Text = "Load Camera Settings";
+            this.LoadSettingsButton.UseVisualStyleBackColor = true;
+            this.LoadSettingsButton.Click += new System.EventHandler(this.LoadSettingsButton_Click);
+            // 
+            // SaveSettingsButton
+            // 
+            this.SaveSettingsButton.AutoSize = true;
+            this.SaveSettingsButton.Location = new System.Drawing.Point(251, 7);
+            this.SaveSettingsButton.Name = "SaveSettingsButton";
+            this.SaveSettingsButton.Size = new System.Drawing.Size(122, 23);
+            this.SaveSettingsButton.TabIndex = 15;
+            this.SaveSettingsButton.Text = "Save Camera Settings";
+            this.SaveSettingsButton.UseVisualStyleBackColor = true;
+            this.SaveSettingsButton.Click += new System.EventHandler(this.SaveSettingsButton_Click);
+            // 
             // SeqSettingsPanel
             // 
             this.SeqSettingsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -824,7 +1610,7 @@ namespace WinFormsExample
             this.SeqSettingsPanel.Controls.Add(this.ExposureGroupBox);
             this.SeqSettingsPanel.Location = new System.Drawing.Point(0, 144);
             this.SeqSettingsPanel.Name = "SeqSettingsPanel";
-            this.SeqSettingsPanel.Size = new System.Drawing.Size(309, 146);
+            this.SeqSettingsPanel.Size = new System.Drawing.Size(190, 146);
             this.SeqSettingsPanel.TabIndex = 14;
             // 
             // label16
@@ -1311,42 +2097,32 @@ namespace WinFormsExample
             // 
             this.ScriptFileBrowser.FileName = "openFileDialog1";
             // 
-            // SaveSettingsButton
-            // 
-            this.SaveSettingsButton.AutoSize = true;
-            this.SaveSettingsButton.Location = new System.Drawing.Point(251, 7);
-            this.SaveSettingsButton.Name = "SaveSettingsButton";
-            this.SaveSettingsButton.Size = new System.Drawing.Size(122, 23);
-            this.SaveSettingsButton.TabIndex = 15;
-            this.SaveSettingsButton.Text = "Save Camera Settings";
-            this.SaveSettingsButton.UseVisualStyleBackColor = true;
-            this.SaveSettingsButton.Click += new System.EventHandler(this.SaveSettingsButton_Click);
-            // 
-            // LoadSettingsButton
-            // 
-            this.LoadSettingsButton.AutoSize = true;
-            this.LoadSettingsButton.Location = new System.Drawing.Point(251, 34);
-            this.LoadSettingsButton.Name = "LoadSettingsButton";
-            this.LoadSettingsButton.Size = new System.Drawing.Size(122, 23);
-            this.LoadSettingsButton.TabIndex = 15;
-            this.LoadSettingsButton.Text = "Load Camera Settings";
-            this.LoadSettingsButton.UseVisualStyleBackColor = true;
-            this.LoadSettingsButton.Click += new System.EventHandler(this.LoadSettingsButton_Click);
-            // 
-            // LoadedCameraSettingsLabel
-            // 
-            this.LoadedCameraSettingsLabel.AutoEllipsis = true;
-            this.LoadedCameraSettingsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LoadedCameraSettingsLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.LoadedCameraSettingsLabel.Location = new System.Drawing.Point(251, 61);
-            this.LoadedCameraSettingsLabel.Name = "LoadedCameraSettingsLabel";
-            this.LoadedCameraSettingsLabel.Size = new System.Drawing.Size(122, 16);
-            this.LoadedCameraSettingsLabel.TabIndex = 16;
-            this.LoadedCameraSettingsLabel.Text = "camera settings loaded";
-            // 
             // SettingsFileBrowser
             // 
-            this.SettingsFileBrowser.FileName = "openFileDialog1";
+            this.SettingsFileBrowser.FileName = "camera.settings";
+            // 
+            // SequenceFileBrowser
+            // 
+            this.SequenceFileBrowser.FileName = "eclipse.sequence";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label30.Location = new System.Drawing.Point(7, 277);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(116, 13);
+            this.label30.TabIndex = 10;
+            this.label30.Text = "Computations good for:";
+            // 
+            // ComputedLatLngLabel
+            // 
+            this.ComputedLatLngLabel.AutoSize = true;
+            this.ComputedLatLngLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.ComputedLatLngLabel.Location = new System.Drawing.Point(130, 277);
+            this.ComputedLatLngLabel.Name = "ComputedLatLngLabel";
+            this.ComputedLatLngLabel.Size = new System.Drawing.Size(0, 13);
+            this.ComputedLatLngLabel.TabIndex = 11;
             // 
             // MainForm
             // 
@@ -1374,6 +2150,9 @@ namespace WinFormsExample
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.EclipseTabPage.ResumeLayout(false);
+            this.EclipseTabPage.PerformLayout();
+            this.SeWebBrowserPanel.ResumeLayout(false);
             this.SeqGenTabPage.ResumeLayout(false);
             this.SeqGenTabPage.PerformLayout();
             this.SeqSettingsPanel.ResumeLayout(false);
@@ -1447,7 +2226,6 @@ namespace WinFormsExample
         private System.Windows.Forms.Button SetLocButton;
         private System.Windows.Forms.Label GPSStatusTextBox;
         private System.Windows.Forms.Label LatLabel;
-        private System.Windows.Forms.Label GPSDateTimeTextBox;
         private System.Windows.Forms.Label LonLabel;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox AltTextBox;
@@ -1503,6 +2281,76 @@ namespace WinFormsExample
         private System.Windows.Forms.Button SaveSettingsButton;
         private System.Windows.Forms.Label LoadedCameraSettingsLabel;
         private System.Windows.Forms.OpenFileDialog SettingsFileBrowser;
+        private System.Windows.Forms.OpenFileDialog SequenceFileBrowser;
+        private System.Windows.Forms.Panel SeWebBrowserPanel;
+        private System.Windows.Forms.WebBrowser SeWebBrowser;
+        private System.Windows.Forms.ComboBox SeIndexComboBox;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label ElvLabel;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Button SeCalcButton;
+        private System.Windows.Forms.Label C1DateTimeLabel;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label C2LcLabel;
+        private System.Windows.Forms.Label MxVLabel;
+        private System.Windows.Forms.Label C2VLabel;
+        private System.Windows.Forms.Label C1VLabel;
+        private System.Windows.Forms.Label MxPLabel;
+        private System.Windows.Forms.Label C2PLabel;
+        private System.Windows.Forms.Label C1PLabel;
+        private System.Windows.Forms.Label MxAziLabel;
+        private System.Windows.Forms.Label C2AziLabel;
+        private System.Windows.Forms.Label C1AziLabel;
+        private System.Windows.Forms.Label MxAltLabel;
+        private System.Windows.Forms.Label C2AltLabel;
+        private System.Windows.Forms.Label C1AltLabel;
+        private System.Windows.Forms.Label MxDateTimeLabel;
+        private System.Windows.Forms.Label C2DateTimeLabel;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label C3LcLabel;
+        private System.Windows.Forms.Label C4VLabel;
+        private System.Windows.Forms.Label C3VLabel;
+        private System.Windows.Forms.Label C4PLabel;
+        private System.Windows.Forms.Label C3PLabel;
+        private System.Windows.Forms.Label C4AziLabel;
+        private System.Windows.Forms.Label C3AziLabel;
+        private System.Windows.Forms.Label C4AltLabel;
+        private System.Windows.Forms.Label C3AltLabel;
+        private System.Windows.Forms.Label C4DateTimeLabel;
+        private System.Windows.Forms.Label C3DateTimeLabel;
+        private System.Windows.Forms.Label label47;
+        private System.Windows.Forms.Label label40;
+        private System.Windows.Forms.Label label55;
+        private System.Windows.Forms.Label label54;
+        private System.Windows.Forms.Label label53;
+        private System.Windows.Forms.Label label39;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Label DurationCorrLabel;
+        private System.Windows.Forms.Label DurationLabel;
+        private System.Windows.Forms.Label TypeLabel;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label EclipseDepthLabel;
+        private System.Windows.Forms.Label DepthLabel;
+        private System.Windows.Forms.Label SunMoonRatioLabel;
+        private System.Windows.Forms.Label CoverageLabel;
+        private System.Windows.Forms.Label MagnitudeLabel;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Label DeltaTLabel;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Label LibrationCLabel;
+        private System.Windows.Forms.Label LibrationBLabel;
+        private System.Windows.Forms.Label LibrationLLabel;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.LinkLabel WattsLinkLabel;
+        private System.Windows.Forms.Label ComputedLatLngLabel;
+        private System.Windows.Forms.Label label30;
     }
 }
 

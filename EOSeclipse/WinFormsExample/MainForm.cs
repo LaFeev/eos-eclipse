@@ -15,8 +15,9 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.InteropServices.ComTypes;
 using System.IO;
+using EDSDKLib.API.Helper;
 
-namespace WinFormsExample
+namespace MainForm
 {
     public partial class MainForm : Form
     {
@@ -28,6 +29,7 @@ namespace WinFormsExample
         CameraValue[] TvList;
         CameraValue[] ISOList;
         List<AEBValue> AEBList;
+        List<SeIndex> SeList;
         List<Camera> CamList;
         bool IsInit = false;
         Bitmap Evf_Bmp;
@@ -45,6 +47,8 @@ namespace WinFormsExample
         private StepControl _editStep;
 
         string AppDataDir;
+        public CalcRaw calcRaw = new CalcRaw();
+        public CalcResult SeResult;
 
         #endregion
 
@@ -67,6 +71,7 @@ namespace WinFormsExample
                 SaveSettingsButton.Enabled = false;
                 LoadedCameraSettingsLabel.Visible = false;
 
+                // Location tab
                 gmap.MapProvider = GMap.NET.MapProviders.GMapProviders.GoogleMap;
                 gmap.Dock = DockStyle.Fill;
                 gmap.DragButton = MouseButtons.Middle;
@@ -75,8 +80,15 @@ namespace WinFormsExample
                 gmap.MinZoom = 1;
                 gmap.MaxZoom = 20;
                 gmap.Zoom = 3;
-                splitContainer1.Panel2.Controls.Add( gmap );
 
+                // Eclipse tab
+                SeList = SeIndex.SeIndices();
+                SeIndexComboBox.Items.Clear();
+                for (int i = 0; i < SeList.Count; i++) { SeIndexComboBox.Items.Add(SeList[i].StringValue); }
+                WattsLinkLabel.Enabled = false;
+
+                // Sequence Panel
+                splitContainer1.Panel2.Controls.Add( gmap );
                 splitContainer2.Panel2Collapsed = true;
 
                 // TODO: load cached session (stage, sequence, location, etc) instead of clearing everything
@@ -84,6 +96,11 @@ namespace WinFormsExample
                 ClearSequence();
                 ScriptTextBox.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Eclipse Scripts");
                 LoadScriptBrowserOLD.Description = "Load Script...";
+
+                // load html content
+                string curDir = Directory.GetCurrentDirectory();
+                SeWebBrowser.Url = new Uri(String.Format("file:///{0}/HTMLcontent/SeCalc.html", curDir));
+                SeWebBrowser.ObjectForScripting = calcRaw;
 
                 // create an app data directory if it doesn't already exist
                 var directory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -357,8 +374,10 @@ namespace WinFormsExample
 
             LatLabel.Text = ShootingLocation.Lat.ToString();
             LonLabel.Text = ShootingLocation.Lng.ToString();
+            ElvLabel.Text = Elevation.ToString();
             LatLabel.Visible = true;
             LonLabel.Visible = true;
+            ElvLabel.Visible = true;
         }
 
         private void gmap_MouseClick(object sender, MouseEventArgs e)
@@ -394,7 +413,7 @@ namespace WinFormsExample
 
                 //TODO: actually parse the returned values and insert in text boxes (not a priority until Canon adds GPS support in SDK)
                 GPSStatusTextBox.Text = "GPS found";
-                GPSDateTimeTextBox.Visible = true;
+                GPSStatusTextBox.Visible = true;
             }
         }
 
@@ -963,6 +982,86 @@ namespace WinFormsExample
             
         }
 
+        #endregion
+
+        #region Eclipse Panel
+        private void SeCalcButton_Click(object sender, EventArgs e)
+        {
+            // TODO: need to parse null results
+
+            // variables
+            String language = "en";
+            String lat;
+            String lon;
+            String alt;
+            SeIndex eclipse_index;
+            // make the calculations in UTC
+            String tzh = "0";
+            String tzm = "0";
+            String tzx = "1";
+            String dst = "0";
+
+            // gather inputs
+            lat = ShootingLocation.Lat.ToString();
+            lon = (ShootingLocation.Lng).ToString();
+            alt = Elevation.ToString();
+            ComputedLatLngLabel.Text = string.Format("{0} lat, {1} lng @ {2}m Elv", lat, lon, alt);
+            // Xavier's code uses "west" longitude, inverse of convention
+            lon = (ShootingLocation.Lng * -1).ToString();
+            eclipse_index = SeIndex.GetValue(SeIndexComboBox.SelectedItem.ToString());
+            Object[] arglist = { language, lat, lon, alt, tzh, tzm, tzx, dst, eclipse_index.IntValue };
+
+            // make the call to the javascript calculator
+            SeWebBrowser.Document.InvokeScript("calc", arglist);
+            SeResult = new CalcResult(calcRaw);
+
+            // display the results to the Eclipse tab
+            TypeLabel.Text = SeResult.ecltype;
+            DurationLabel.Text = SeResult.duration.ToString();
+            DurationCorrLabel.Text = SeResult.duration_corr.ToString();
+            DeltaTLabel.Text = SeResult.deltaT.ToString() + "s";
+            C1DateTimeLabel.Text = SeResult.c1_datetime.ToString();
+            C2DateTimeLabel.Text = SeResult.c2_datetime.ToString();
+            MxDateTimeLabel.Text = SeResult.mid_datetime.ToString();
+            C3DateTimeLabel.Text = SeResult.c3_datetime.ToString();
+            C4DateTimeLabel.Text = SeResult.c4_datetime.ToString();
+            C1AltLabel.Text = SeResult.c1_alt.ToString() + "\xB0";
+            C2AltLabel.Text = SeResult.c2_alt.ToString() + "\xB0";
+            MxAltLabel.Text = SeResult.mid_alt.ToString() + "\xB0";
+            C3AltLabel.Text = SeResult.c3_alt.ToString() + "\xB0";
+            C4AltLabel.Text = SeResult.c4_alt.ToString() + "\xB0";
+            C1AziLabel.Text = SeResult.c1_azi.ToString() + "\xB0";
+            C2AziLabel.Text = SeResult.c2_azi.ToString() + "\xB0";
+            MxAziLabel.Text = SeResult.mid_azi.ToString() + "\xB0";
+            C3AziLabel.Text = SeResult.c3_azi.ToString() + "\xB0";
+            C4AziLabel.Text = SeResult.c4_azi.ToString() + "\xB0";
+            C1PLabel.Text = SeResult.c1_p.ToString() + "\xB0";
+            C2PLabel.Text = SeResult.c2_p.ToString() + "\xB0";
+            MxPLabel.Text = SeResult.mid_p.ToString() + "\xB0";
+            C3PLabel.Text = SeResult.c3_p.ToString() + "\xB0";
+            C4PLabel.Text = SeResult.c4_p.ToString() + "\xB0";
+            C1VLabel.Text = SeResult.c1_v.ToString();
+            C2VLabel.Text = SeResult.c2_v.ToString();
+            MxVLabel.Text = SeResult.mid_v.ToString();
+            C3VLabel.Text = SeResult.c3_v.ToString();
+            C4VLabel.Text = SeResult.c4_v.ToString();
+            C2LcLabel.Text = SeResult.c2_lc.ToString() + "s";
+            C3LcLabel.Text = SeResult.c3_lc.ToString() + "s";
+            EclipseDepthLabel.Text = SeResult.eclipse_depth;
+            DepthLabel.Text = SeResult.depth.ToString() + "%";
+            CoverageLabel.Text = SeResult.coverage.ToString() + "%";
+            MagnitudeLabel.Text = SeResult.mag.ToString();
+            SunMoonRatioLabel.Text = SeResult.sunmoonratio.ToString();
+            LibrationLLabel.Text = SeResult.libl.ToString() + "\xB0";
+            LibrationBLabel.Text = SeResult.libb.ToString() + "\xB0";
+            LibrationCLabel.Text = SeResult.pac.ToString() + "\xB0";
+            WattsLinkLabel.Enabled = true;
+        }
+
+        private void WattsLinkLabel_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(SeResult.watts_chart_link);
+        }
         #endregion
 
         #region Live view
