@@ -1002,11 +1002,12 @@ namespace MainForm
             String dst = "0";
 
             // gather inputs
-            lat = ShootingLocation.Lat.ToString();
-            lon = (ShootingLocation.Lng).ToString();
+            lat = ShootingLocation.Lat.ToString("0.#######");
+            lon = ShootingLocation.Lng.ToString("0.#######");
             alt = Elevation.ToString();
             ComputedLatLngLabel.Text = string.Format("{0} lat, {1} lng @ {2}m Elv", lat, lon, alt);
             // Xavier's code uses "west" longitude, inverse of convention
+            lat = ShootingLocation.Lat.ToString();
             lon = (ShootingLocation.Lng * -1).ToString();
             eclipse_index = SeIndex.GetValue(SeIndexComboBox.SelectedItem.ToString());
             Object[] arglist = { language, lat, lon, alt, tzh, tzm, tzx, dst, eclipse_index.IntValue };
