@@ -859,6 +859,19 @@ namespace MainForm
             step.StartOffset = new TimeSpan(0,0, (int)StartOffsetUpDown.Value);
             step.EndRef = EndRefComboBox.SelectedItem.ToString();
             step.EndOffset = new TimeSpan(0,0, (int)EndOffsetUpDown.Value);
+            //if (SeResult != null)
+            //{
+            //    switch (step.StartRef)
+            //    {
+            //        case "C1":
+            //            step.StartDateTime = SeResult.c1_datetime;
+            //            break;
+            //        case "C2":
+            //            step.StartDateTime = SeResult.c2_datetime;
+            //            break;
+
+            //    }
+            //}
             
             if (IntervalRadioButton.Checked)
             {
@@ -987,8 +1000,6 @@ namespace MainForm
         #region Eclipse Panel
         private void SeCalcButton_Click(object sender, EventArgs e)
         {
-            // TODO: need to parse null results
-
             // variables
             String language = "en";
             String lat;
@@ -1017,51 +1028,51 @@ namespace MainForm
             SeResult = new CalcResult(calcRaw);
 
             // display the results to the Eclipse tab
-            TypeLabel.Text = SeResult.ecltype;
-            DurationLabel.Text = SeResult.duration.ToString();
-            DurationCorrLabel.Text = SeResult.duration_corr.ToString();
-            DeltaTLabel.Text = SeResult.deltaT.ToString() + "s";
-            C1DateTimeLabel.Text = SeResult.c1_datetime.ToString();
-            C2DateTimeLabel.Text = SeResult.c2_datetime.ToString();
-            MxDateTimeLabel.Text = SeResult.mid_datetime.ToString();
-            C3DateTimeLabel.Text = SeResult.c3_datetime.ToString();
-            C4DateTimeLabel.Text = SeResult.c4_datetime.ToString();
-            C1AltLabel.Text = SeResult.c1_alt.ToString() + "\xB0";
-            C2AltLabel.Text = SeResult.c2_alt.ToString() + "\xB0";
-            MxAltLabel.Text = SeResult.mid_alt.ToString() + "\xB0";
-            C3AltLabel.Text = SeResult.c3_alt.ToString() + "\xB0";
-            C4AltLabel.Text = SeResult.c4_alt.ToString() + "\xB0";
-            C1AziLabel.Text = SeResult.c1_azi.ToString() + "\xB0";
-            C2AziLabel.Text = SeResult.c2_azi.ToString() + "\xB0";
-            MxAziLabel.Text = SeResult.mid_azi.ToString() + "\xB0";
-            C3AziLabel.Text = SeResult.c3_azi.ToString() + "\xB0";
-            C4AziLabel.Text = SeResult.c4_azi.ToString() + "\xB0";
-            C1PLabel.Text = SeResult.c1_p.ToString() + "\xB0";
-            C2PLabel.Text = SeResult.c2_p.ToString() + "\xB0";
-            MxPLabel.Text = SeResult.mid_p.ToString() + "\xB0";
-            C3PLabel.Text = SeResult.c3_p.ToString() + "\xB0";
-            C4PLabel.Text = SeResult.c4_p.ToString() + "\xB0";
-            C1VLabel.Text = SeResult.c1_v.ToString();
-            C2VLabel.Text = SeResult.c2_v.ToString();
-            MxVLabel.Text = SeResult.mid_v.ToString();
-            C3VLabel.Text = SeResult.c3_v.ToString();
-            C4VLabel.Text = SeResult.c4_v.ToString();
-            C2LcLabel.Text = SeResult.c2_lc.ToString() + "s";
-            C3LcLabel.Text = SeResult.c3_lc.ToString() + "s";
-            EclipseDepthLabel.Text = SeResult.eclipse_depth;
-            DepthLabel.Text = SeResult.depth.ToString() + "%";
-            CoverageLabel.Text = SeResult.coverage.ToString() + "%";
-            MagnitudeLabel.Text = SeResult.mag.ToString();
-            SunMoonRatioLabel.Text = SeResult.sunmoonratio.ToString();
-            LibrationLLabel.Text = SeResult.libl.ToString() + "\xB0";
-            LibrationBLabel.Text = SeResult.libb.ToString() + "\xB0";
-            LibrationCLabel.Text = SeResult.pac.ToString() + "\xB0";
+            TypeLabel.Text = SeResult.SeType;
+            EclipseDepthLabel.Text = SeResult.EclipseDepth;
+            C1DateTimeLabel.Text = SeResult.Phase("C1").DateTime.DisplayValue;
+            C2DateTimeLabel.Text = SeResult.Phase("C2").DateTime.DisplayValue;
+            MxDateTimeLabel.Text = SeResult.Phase("Mx").DateTime.DisplayValue;
+            C3DateTimeLabel.Text = SeResult.Phase("C3").DateTime.DisplayValue;
+            C4DateTimeLabel.Text = SeResult.Phase("C4").DateTime.DisplayValue;
+            C1AltLabel.Text = SeResult.Phase("C1").Altitude.DisplayValue;
+            C2AltLabel.Text = SeResult.Phase("C2").Altitude.DisplayValue;
+            MxAltLabel.Text = SeResult.Phase("Mx").Altitude.DisplayValue;
+            C3AltLabel.Text = SeResult.Phase("C3").Altitude.DisplayValue;
+            C4AltLabel.Text = SeResult.Phase("C4").Altitude.DisplayValue;
+            C1AziLabel.Text = SeResult.Phase("C1").Azimuth.DisplayValue;
+            C2AziLabel.Text = SeResult.Phase("C2").Azimuth.DisplayValue;
+            MxAziLabel.Text = SeResult.Phase("Mx").Azimuth.DisplayValue;
+            C3AziLabel.Text = SeResult.Phase("C3").Azimuth.DisplayValue;
+            C4AziLabel.Text = SeResult.Phase("C4").Azimuth.DisplayValue;
+            C1PLabel.Text = SeResult.Phase("C1").P.DisplayValue;
+            C2PLabel.Text = SeResult.Phase("C2").P.DisplayValue;
+            MxPLabel.Text = SeResult.Phase("Mx").P.DisplayValue;
+            C3PLabel.Text = SeResult.Phase("C3").P.DisplayValue;
+            C4PLabel.Text = SeResult.Phase("C4").P.DisplayValue;
+            C1VLabel.Text = SeResult.Phase("C1").V.DisplayValue;
+            C2VLabel.Text = SeResult.Phase("C2").V.DisplayValue;
+            MxVLabel.Text = SeResult.Phase("Mx").V.DisplayValue;
+            C3VLabel.Text = SeResult.Phase("C3").V.DisplayValue;
+            C4VLabel.Text = SeResult.Phase("C4").V.DisplayValue;
+            C2LcLabel.Text = SeResult.Phase("C2").LC.DisplayValue;
+            C3LcLabel.Text = SeResult.Phase("C3").LC.DisplayValue;
+            DurationLabel.Text = SeResult.Duration.DisplayValue;
+            DurationCorrLabel.Text = SeResult.DurationCorr.DisplayValue;
+            DeltaTLabel.Text = SeResult.DeltaT.DisplayValue;
+            DepthLabel.Text = SeResult.Depth.DisplayValue;
+            CoverageLabel.Text = SeResult.Coverage.DisplayValue;
+            MagnitudeLabel.Text = SeResult.Magnitude.DisplayValue;
+            SunMoonRatioLabel.Text = SeResult.SunMoonRatio.DisplayValue;
+            LibrationLLabel.Text = SeResult.LibL.DisplayValue;
+            LibrationBLabel.Text = SeResult.LibB.DisplayValue;
+            LibrationCLabel.Text = SeResult.PaC.DisplayValue;
             WattsLinkLabel.Enabled = true;
         }
 
         private void WattsLinkLabel_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(SeResult.watts_chart_link);
+            System.Diagnostics.Process.Start(SeResult.WattsChartLink);
         }
         #endregion
 

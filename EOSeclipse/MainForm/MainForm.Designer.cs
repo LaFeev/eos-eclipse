@@ -84,6 +84,8 @@ namespace MainForm
             this.LatTextBox = new System.Windows.Forms.TextBox();
             this.gmap = new GMap.NET.WindowsForms.GMapControl();
             this.EclipseTabPage = new System.Windows.Forms.TabPage();
+            this.ComputedLatLngLabel = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
             this.WattsLinkLabel = new System.Windows.Forms.LinkLabel();
             this.SunMoonRatioLabel = new System.Windows.Forms.Label();
             this.CoverageLabel = new System.Windows.Forms.Label();
@@ -200,8 +202,6 @@ namespace MainForm
             this.ScriptFileBrowser = new System.Windows.Forms.OpenFileDialog();
             this.SettingsFileBrowser = new System.Windows.Forms.OpenFileDialog();
             this.SequenceFileBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.label30 = new System.Windows.Forms.Label();
-            this.ComputedLatLngLabel = new System.Windows.Forms.Label();
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
             this.InitGroupBox.SuspendLayout();
@@ -935,6 +935,25 @@ namespace MainForm
             this.EclipseTabPage.Text = "Eclipse";
             this.EclipseTabPage.UseVisualStyleBackColor = true;
             // 
+            // ComputedLatLngLabel
+            // 
+            this.ComputedLatLngLabel.AutoSize = true;
+            this.ComputedLatLngLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.ComputedLatLngLabel.Location = new System.Drawing.Point(130, 277);
+            this.ComputedLatLngLabel.Name = "ComputedLatLngLabel";
+            this.ComputedLatLngLabel.Size = new System.Drawing.Size(0, 13);
+            this.ComputedLatLngLabel.TabIndex = 11;
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label30.Location = new System.Drawing.Point(7, 277);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(116, 13);
+            this.label30.TabIndex = 10;
+            this.label30.Text = "Computations good for:";
+            // 
             // WattsLinkLabel
             // 
             this.WattsLinkLabel.AutoSize = true;
@@ -1074,9 +1093,9 @@ namespace MainForm
             // 
             // DurationCorrLabel
             // 
-            this.DurationCorrLabel.Location = new System.Drawing.Point(205, 40);
+            this.DurationCorrLabel.Location = new System.Drawing.Point(212, 40);
             this.DurationCorrLabel.Name = "DurationCorrLabel";
-            this.DurationCorrLabel.Size = new System.Drawing.Size(43, 13);
+            this.DurationCorrLabel.Size = new System.Drawing.Size(48, 13);
             this.DurationCorrLabel.TabIndex = 7;
             // 
             // DeltaTLabel
@@ -1088,9 +1107,9 @@ namespace MainForm
             // 
             // DurationLabel
             // 
-            this.DurationLabel.Location = new System.Drawing.Point(162, 40);
+            this.DurationLabel.Location = new System.Drawing.Point(167, 40);
             this.DurationLabel.Name = "DurationLabel";
-            this.DurationLabel.Size = new System.Drawing.Size(37, 13);
+            this.DurationLabel.Size = new System.Drawing.Size(43, 13);
             this.DurationLabel.TabIndex = 7;
             // 
             // TypeLabel
@@ -1202,7 +1221,7 @@ namespace MainForm
             this.C3LcLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.C3LcLabel.Location = new System.Drawing.Point(348, 148);
             this.C3LcLabel.Name = "C3LcLabel";
-            this.C3LcLabel.Size = new System.Drawing.Size(30, 15);
+            this.C3LcLabel.Size = new System.Drawing.Size(32, 15);
             this.C3LcLabel.TabIndex = 5;
             this.C3LcLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -1503,7 +1522,7 @@ namespace MainForm
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(133, 13);
+            this.label17.Location = new System.Drawing.Point(133, 12);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(41, 13);
             this.label17.TabIndex = 2;
@@ -1610,7 +1629,7 @@ namespace MainForm
             this.SeqSettingsPanel.Controls.Add(this.ExposureGroupBox);
             this.SeqSettingsPanel.Location = new System.Drawing.Point(0, 144);
             this.SeqSettingsPanel.Name = "SeqSettingsPanel";
-            this.SeqSettingsPanel.Size = new System.Drawing.Size(190, 146);
+            this.SeqSettingsPanel.Size = new System.Drawing.Size(173, 146);
             this.SeqSettingsPanel.TabIndex = 14;
             // 
             // label16
@@ -2104,25 +2123,6 @@ namespace MainForm
             // SequenceFileBrowser
             // 
             this.SequenceFileBrowser.FileName = "eclipse.sequence";
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label30.Location = new System.Drawing.Point(7, 277);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(116, 13);
-            this.label30.TabIndex = 10;
-            this.label30.Text = "Computations good for:";
-            // 
-            // ComputedLatLngLabel
-            // 
-            this.ComputedLatLngLabel.AutoSize = true;
-            this.ComputedLatLngLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.ComputedLatLngLabel.Location = new System.Drawing.Point(130, 277);
-            this.ComputedLatLngLabel.Name = "ComputedLatLngLabel";
-            this.ComputedLatLngLabel.Size = new System.Drawing.Size(0, 13);
-            this.ComputedLatLngLabel.TabIndex = 11;
             // 
             // MainForm
             // 
