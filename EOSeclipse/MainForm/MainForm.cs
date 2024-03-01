@@ -106,7 +106,6 @@ namespace MainForm
                 BuildSimulations();
                 MasterTimer.Start();
 
-                // TODO: load cached session (stage, sequence, location, etc) instead of clearing everything
                 ResetStage();
                 ClearSequence();
                 ScriptTextBox.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Eclipse Scripts");
@@ -781,10 +780,11 @@ namespace MainForm
         {
             if (Composer.StepList.Count > 0)
             {
-                for (int i = 0; i < Composer.StepList.Count; i++)
+                for (int i = Composer.StepList.Count - 1; i >= 0; i--)
                 {
                     Composer.DeleteStep(i, true);
                 }
+                Composer.ReloadSequence();
                 ResetPhaseList();
                 // save the Composer state for 'auto session'
                 SaveSession();
@@ -1068,7 +1068,7 @@ namespace MainForm
                 {
                     // Simulated Eclipse!
                     // recompute the sim eclipse results
-                    ComputeSimResults();
+                    BuildSimulations();
                     int simIdx = eclipse_index.IntValue - maxSeIndex - 1;
                     SeResult = SimResults[simIdx];
                 }
@@ -1176,8 +1176,6 @@ namespace MainForm
             // create a simulated eclipse that starts in 1 minute--get your cameras out!
             SeIndex simIdx = new SeIndex(name, index);
 
-            // TODO: move this call somewhere, it adds more items to the list every time the SeCalc button is pressed
-            SeIndexComboBox.Items.Add(simIdx.StringValue);
             CalcRaw simRaw = new CalcRaw();
             DateTime c1 = DateTime.UtcNow + new TimeSpan(0,1,0);
             DateTime c2 = c1 + phaseLength;
@@ -1213,8 +1211,20 @@ namespace MainForm
                 simRaw.c2_date = simRaw.c3_date = "n/a";
             }
             CalcResult simRes = new CalcResult(simRaw);
-            SimResults.Add(simRes);
-            SimIndices.Add(simIdx);
+            // add the index to the Eclipse dropdown (if not present), and (re)save the results and index object
+            int locIdx = GetSimLocalIndex(simIdx.IntValue);
+            if (locIdx == -1)
+            {
+                // this sim is not yet added
+                SeIndexComboBox.Items.Add(simIdx.StringValue);
+                SimResults.Add(simRes);
+                SimIndices.Add(simIdx);
+            }
+            else
+            {
+                // sim already on the list, just update the calcs
+                SimResults[locIdx] = simRes;
+            }
         }
 
         private void BuildSimulations()
@@ -1229,11 +1239,18 @@ namespace MainForm
             CreateSimEclipse("SIM (T) - full length", idx, TimeSpan.Zero, "Total");
         }
 
-        private void ComputeSimResults()
+        private int GetSimLocalIndex(int SeIndexIntValue)
         {
-            SimResults.Clear();
-            SimIndices.Clear();
-            BuildSimulations();
+            // using the stored IntValue of the SeIndex object representing a simulation eclipse, determine this sim's
+            // index in the SimResult and SimIndices lists (i.e. "Local Index").  Returns -1 if the SeIndexIntValue is not found.
+            if (SimIndices.Count() > 0)
+            {
+                for (int i = 0; i < SimIndices.Count(); i++)
+                {
+                    if (SimIndices[i].IntValue == SeIndexIntValue) { return i;}
+                }
+            }
+            return -1;
         }
 
         private void StartCaptureButton_Click(object sender, EventArgs e)
