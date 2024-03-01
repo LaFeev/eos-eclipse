@@ -166,7 +166,6 @@ namespace EOSDigital.API
                 if (tz >= 0) { dateString += "+" + tzh.ToString("D2") + ":" + tzm.ToString("D2"); }
                 else { dateString += tzh.ToString("D2") + ":" + tzm.ToString("D2"); }
 
-                Console.WriteLine("datestring: {0}", dateString);
                 return DateTime.ParseExact(dateString, format, provider);
             }
         }

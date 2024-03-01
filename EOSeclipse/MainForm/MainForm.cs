@@ -1264,6 +1264,12 @@ namespace MainForm
             else
             {
                 SessionIsLive = false;
+                btn.Text = "Start Capture";
+                for (int i = 0; i < SeqFlowPanel.Controls.Count; i++)
+                {
+                    StepControl step = (StepControl)SeqFlowPanel.Controls[i];
+                    step.Stop();
+                }
             }
         }
         #endregion
@@ -1287,12 +1293,12 @@ namespace MainForm
                 DateTime sessionEnd = ((StepControl)SeqFlowPanel.Controls[SeqFlowPanel.Controls.Count - 1]).EndDateTime;
                 if (sessionStart - new TimeSpan(0,1,00) <= now && now <= sessionEnd + new TimeSpan(0,1,0))
                 {
-                    // only evaluate further if current time falls somewhere inside of the event start/end times (with 1min margin on either end)
+                    // only evaluate further if current time falls somewhere inside of the total event start/end times (with 1min margin on either end)
                     for (int i = 0; i < SeqFlowPanel.Controls.Count; i++)
                     {
                         StepControl step = (StepControl)SeqFlowPanel.Controls[i];
-                        // check if "now" is between start time and 5x the timer interval from start time (to ensure we don't miss an event)
-                        if (step.StartDateTime <= now && now <= (step.StartDateTime + new TimeSpan(0, 0, 0, 0, 5 * MasterTimer.Interval)))
+                        // check if "now" is between start time and end time
+                        if (step.StartDateTime <= now && now < step.EndDateTime)
                         {
                             if (!step.IsActive() && SessionIsLive)
                             {
