@@ -188,16 +188,22 @@ namespace MainForm
             this.label10 = new System.Windows.Forms.Label();
             this.PhaseComboBox = new System.Windows.Forms.ComboBox();
             this.CaptureTabPage = new System.Windows.Forms.TabPage();
-            this.TakeNPhotoButton = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.LocalTimeLabel = new System.Windows.Forms.Label();
+            this.UtcTimeLabel = new System.Windows.Forms.Label();
+            this.label35 = new System.Windows.Forms.Label();
+            this.label32 = new System.Windows.Forms.Label();
+            this.StartCaptureButton = new System.Windows.Forms.Button();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.ExpandButton = new System.Windows.Forms.Button();
             this.SequenceGroupBox = new System.Windows.Forms.GroupBox();
+            this.RefreshSequenceButton = new System.Windows.Forms.Button();
             this.ClearSeqButton = new System.Windows.Forms.Button();
             this.LoadSeqButton = new System.Windows.Forms.Button();
             this.SaveSeqButton = new System.Windows.Forms.Button();
             this.SeqFlowPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.SeqSizerPanel = new System.Windows.Forms.Panel();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.MasterTimer = new System.Windows.Forms.Timer(this.components);
             this.LoadScriptBrowserOLD = new System.Windows.Forms.FolderBrowserDialog();
             this.ScriptFileBrowser = new System.Windows.Forms.OpenFileDialog();
             this.SettingsFileBrowser = new System.Windows.Forms.OpenFileDialog();
@@ -227,6 +233,7 @@ namespace MainForm
             ((System.ComponentModel.ISupportInitialize)(this.EndOffsetUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StartOffsetUpDown)).BeginInit();
             this.CaptureTabPage.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
@@ -330,7 +337,7 @@ namespace MainForm
             this.LiveViewPicBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.LiveViewPicBox.Location = new System.Drawing.Point(9, 51);
             this.LiveViewPicBox.Name = "LiveViewPicBox";
-            this.LiveViewPicBox.Size = new System.Drawing.Size(522, 293);
+            this.LiveViewPicBox.Size = new System.Drawing.Size(519, 293);
             this.LiveViewPicBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.LiveViewPicBox.TabIndex = 1;
             this.LiveViewPicBox.TabStop = false;
@@ -479,7 +486,7 @@ namespace MainForm
             // 
             this.SavePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SavePathTextBox.Enabled = false;
-            this.SavePathTextBox.Location = new System.Drawing.Point(5, 112);
+            this.SavePathTextBox.Location = new System.Drawing.Point(2, 112);
             this.SavePathTextBox.Name = "SavePathTextBox";
             this.SavePathTextBox.Size = new System.Drawing.Size(282, 20);
             this.SavePathTextBox.TabIndex = 6;
@@ -498,7 +505,7 @@ namespace MainForm
             // 
             this.SaveBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SaveBrowseButton.Enabled = false;
-            this.SaveBrowseButton.Location = new System.Drawing.Point(293, 110);
+            this.SaveBrowseButton.Location = new System.Drawing.Point(290, 110);
             this.SaveBrowseButton.Name = "SaveBrowseButton";
             this.SaveBrowseButton.Size = new System.Drawing.Size(99, 23);
             this.SaveBrowseButton.TabIndex = 5;
@@ -534,7 +541,7 @@ namespace MainForm
             this.SaveToGroupBox.Controls.Add(this.STBothRdButton);
             this.SaveToGroupBox.Controls.Add(this.STComputerRdButton);
             this.SaveToGroupBox.Controls.Add(this.STCameraRdButton);
-            this.SaveToGroupBox.Location = new System.Drawing.Point(296, 7);
+            this.SaveToGroupBox.Location = new System.Drawing.Point(293, 7);
             this.SaveToGroupBox.Name = "SaveToGroupBox";
             this.SaveToGroupBox.Size = new System.Drawing.Size(96, 100);
             this.SaveToGroupBox.TabIndex = 4;
@@ -583,7 +590,7 @@ namespace MainForm
             // 
             this.TakePhotoButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.TakePhotoButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TakePhotoButton.Location = new System.Drawing.Point(244, 139);
+            this.TakePhotoButton.Location = new System.Drawing.Point(241, 139);
             this.TakePhotoButton.Name = "TakePhotoButton";
             this.TakePhotoButton.Size = new System.Drawing.Size(71, 48);
             this.TakePhotoButton.TabIndex = 2;
@@ -605,7 +612,7 @@ namespace MainForm
             // 
             this.RecordVideoButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.RecordVideoButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.RecordVideoButton.Location = new System.Drawing.Point(321, 139);
+            this.RecordVideoButton.Location = new System.Drawing.Point(318, 139);
             this.RecordVideoButton.Name = "RecordVideoButton";
             this.RecordVideoButton.Size = new System.Drawing.Size(71, 48);
             this.RecordVideoButton.TabIndex = 2;
@@ -1095,7 +1102,7 @@ namespace MainForm
             // 
             this.DurationCorrLabel.Location = new System.Drawing.Point(212, 40);
             this.DurationCorrLabel.Name = "DurationCorrLabel";
-            this.DurationCorrLabel.Size = new System.Drawing.Size(48, 13);
+            this.DurationCorrLabel.Size = new System.Drawing.Size(50, 13);
             this.DurationCorrLabel.TabIndex = 7;
             // 
             // DeltaTLabel
@@ -1536,6 +1543,7 @@ namespace MainForm
             this.SeIndexComboBox.Name = "SeIndexComboBox";
             this.SeIndexComboBox.Size = new System.Drawing.Size(121, 21);
             this.SeIndexComboBox.TabIndex = 1;
+            this.SeIndexComboBox.SelectedIndexChanged += new System.EventHandler(this.SeIndexComboBox_SelectedIndexChanged);
             // 
             // SeWebBrowserPanel
             // 
@@ -1619,8 +1627,6 @@ namespace MainForm
             // 
             // SeqSettingsPanel
             // 
-            this.SeqSettingsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.SeqSettingsPanel.Controls.Add(this.label16);
             this.SeqSettingsPanel.Controls.Add(this.label15);
             this.SeqSettingsPanel.Controls.Add(this.SeqAvCoBox);
@@ -1629,7 +1635,7 @@ namespace MainForm
             this.SeqSettingsPanel.Controls.Add(this.ExposureGroupBox);
             this.SeqSettingsPanel.Location = new System.Drawing.Point(0, 144);
             this.SeqSettingsPanel.Name = "SeqSettingsPanel";
-            this.SeqSettingsPanel.Size = new System.Drawing.Size(173, 146);
+            this.SeqSettingsPanel.Size = new System.Drawing.Size(373, 146);
             this.SeqSettingsPanel.TabIndex = 14;
             // 
             // label16
@@ -1980,7 +1986,8 @@ namespace MainForm
             // 
             // CaptureTabPage
             // 
-            this.CaptureTabPage.Controls.Add(this.TakeNPhotoButton);
+            this.CaptureTabPage.Controls.Add(this.groupBox1);
+            this.CaptureTabPage.Controls.Add(this.StartCaptureButton);
             this.CaptureTabPage.Location = new System.Drawing.Point(4, 22);
             this.CaptureTabPage.Name = "CaptureTabPage";
             this.CaptureTabPage.Size = new System.Drawing.Size(398, 193);
@@ -1988,16 +1995,65 @@ namespace MainForm
             this.CaptureTabPage.Text = "Capture";
             this.CaptureTabPage.UseVisualStyleBackColor = true;
             // 
-            // TakeNPhotoButton
+            // groupBox1
             // 
-            this.TakeNPhotoButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TakeNPhotoButton.Location = new System.Drawing.Point(10, 13);
-            this.TakeNPhotoButton.Name = "TakeNPhotoButton";
-            this.TakeNPhotoButton.Size = new System.Drawing.Size(116, 23);
-            this.TakeNPhotoButton.TabIndex = 9;
-            this.TakeNPhotoButton.Text = "Take N Photos";
-            this.TakeNPhotoButton.UseVisualStyleBackColor = true;
-            this.TakeNPhotoButton.Click += new System.EventHandler(this.TakeNPhotoButton_Click);
+            this.groupBox1.Controls.Add(this.LocalTimeLabel);
+            this.groupBox1.Controls.Add(this.UtcTimeLabel);
+            this.groupBox1.Controls.Add(this.label35);
+            this.groupBox1.Controls.Add(this.label32);
+            this.groupBox1.Location = new System.Drawing.Point(145, 13);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(238, 63);
+            this.groupBox1.TabIndex = 10;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Current Time";
+            // 
+            // LocalTimeLabel
+            // 
+            this.LocalTimeLabel.AutoSize = true;
+            this.LocalTimeLabel.Location = new System.Drawing.Point(49, 40);
+            this.LocalTimeLabel.Name = "LocalTimeLabel";
+            this.LocalTimeLabel.Size = new System.Drawing.Size(41, 13);
+            this.LocalTimeLabel.TabIndex = 1;
+            this.LocalTimeLabel.Text = "label36";
+            // 
+            // UtcTimeLabel
+            // 
+            this.UtcTimeLabel.AutoSize = true;
+            this.UtcTimeLabel.Location = new System.Drawing.Point(49, 21);
+            this.UtcTimeLabel.Name = "UtcTimeLabel";
+            this.UtcTimeLabel.Size = new System.Drawing.Size(41, 13);
+            this.UtcTimeLabel.TabIndex = 1;
+            this.UtcTimeLabel.Text = "label36";
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(7, 40);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(36, 13);
+            this.label35.TabIndex = 0;
+            this.label35.Text = "Local:";
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(11, 21);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(32, 13);
+            this.label32.TabIndex = 0;
+            this.label32.Text = "UTC:";
+            // 
+            // StartCaptureButton
+            // 
+            this.StartCaptureButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.StartCaptureButton.Location = new System.Drawing.Point(10, 13);
+            this.StartCaptureButton.Name = "StartCaptureButton";
+            this.StartCaptureButton.Size = new System.Drawing.Size(116, 23);
+            this.StartCaptureButton.TabIndex = 9;
+            this.StartCaptureButton.Text = "Start Capture";
+            this.StartCaptureButton.UseVisualStyleBackColor = true;
+            this.StartCaptureButton.Click += new System.EventHandler(this.StartCaptureButton_Click);
             // 
             // splitContainer2
             // 
@@ -2043,6 +2099,7 @@ namespace MainForm
             this.SequenceGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.SequenceGroupBox.Controls.Add(this.RefreshSequenceButton);
             this.SequenceGroupBox.Controls.Add(this.ClearSeqButton);
             this.SequenceGroupBox.Controls.Add(this.LoadSeqButton);
             this.SequenceGroupBox.Controls.Add(this.SaveSeqButton);
@@ -2050,10 +2107,21 @@ namespace MainForm
             this.SequenceGroupBox.Location = new System.Drawing.Point(3, 13);
             this.SequenceGroupBox.MinimumSize = new System.Drawing.Size(292, 581);
             this.SequenceGroupBox.Name = "SequenceGroupBox";
-            this.SequenceGroupBox.Size = new System.Drawing.Size(298, 581);
+            this.SequenceGroupBox.Size = new System.Drawing.Size(292, 581);
             this.SequenceGroupBox.TabIndex = 0;
             this.SequenceGroupBox.TabStop = false;
             this.SequenceGroupBox.Text = "Sequence";
+            // 
+            // RefreshSequenceButton
+            // 
+            this.RefreshSequenceButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RefreshSequenceButton.Location = new System.Drawing.Point(23, 75);
+            this.RefreshSequenceButton.Name = "RefreshSequenceButton";
+            this.RefreshSequenceButton.Size = new System.Drawing.Size(31, 23);
+            this.RefreshSequenceButton.TabIndex = 9;
+            this.RefreshSequenceButton.Text = "↻";
+            this.RefreshSequenceButton.UseVisualStyleBackColor = true;
+            this.RefreshSequenceButton.Click += new System.EventHandler(this.RefreshSequenceButton_Click);
             // 
             // ClearSeqButton
             // 
@@ -2112,6 +2180,10 @@ namespace MainForm
             this.SeqSizerPanel.Size = new System.Drawing.Size(128, 0);
             this.SeqSizerPanel.TabIndex = 0;
             // 
+            // MasterTimer
+            // 
+            this.MasterTimer.Tick += new System.EventHandler(this.MasterTimer_Tick);
+            // 
             // ScriptFileBrowser
             // 
             this.ScriptFileBrowser.FileName = "openFileDialog1";
@@ -2134,6 +2206,7 @@ namespace MainForm
             this.Text = "EOS Eclipse";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.LiveViewGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).EndInit();
             this.InitGroupBox.ResumeLayout(false);
@@ -2169,6 +2242,8 @@ namespace MainForm
             ((System.ComponentModel.ISupportInitialize)(this.EndOffsetUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.StartOffsetUpDown)).EndInit();
             this.CaptureTabPage.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
@@ -2215,7 +2290,7 @@ namespace MainForm
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TabPage SeqGenTabPage;
-        private System.Windows.Forms.Button TakeNPhotoButton;
+        private System.Windows.Forms.Button StartCaptureButton;
         private System.Windows.Forms.TabPage LocTabPage;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TextBox LonTextBox;
@@ -2241,7 +2316,7 @@ namespace MainForm
         private System.Windows.Forms.ComboBox PhaseComboBox;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.ComboBox StartRefComboBox;
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer MasterTimer;
         private System.Windows.Forms.NumericUpDown StartOffsetUpDown;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.RadioButton IntervalRadioButton;
@@ -2351,6 +2426,12 @@ namespace MainForm
         private System.Windows.Forms.LinkLabel WattsLinkLabel;
         private System.Windows.Forms.Label ComputedLatLngLabel;
         private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.Button RefreshSequenceButton;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label LocalTimeLabel;
+        private System.Windows.Forms.Label UtcTimeLabel;
+        private System.Windows.Forms.Label label35;
+        private System.Windows.Forms.Label label32;
     }
 }
 

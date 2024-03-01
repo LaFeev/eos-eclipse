@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace EDSDKLib.API.Helper
 {
+    [Serializable]
     public class SeIndex
     {
         public string StringValue { get; set; }
@@ -73,6 +74,17 @@ namespace EDSDKLib.API.Helper
                 else throw new KeyNotFoundException("There is no SeIndex that matches this criteria");
             }
             else { return arr[0]; }
+        }
+
+        public static int GetMaxIndex()
+        {
+            int maxIdx = 0;
+            List<SeIndex> values = SeIndices();
+            for (int i = values.Count - 1;  i >= 0; i--)
+            {
+                if (values[i].IntValue > maxIdx) maxIdx = values[i].IntValue;
+            }
+            return maxIdx;
         }
 
         public static List<SeIndex> SeIndices()

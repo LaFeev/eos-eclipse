@@ -498,6 +498,23 @@ namespace EOSDigital.API
         }
 
         /// <summary>
+        /// Takes a photo with the current camera settings with the PressShutterButton command - Continuous mode
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">Camera is disposed</exception>
+        /// <exception cref="CameraSessionException">Session is closed</exception>
+        /// <exception cref="SDKStateException">Canon SDK is not initialized</exception>
+        public async Task TakePhotoShutterContAsync(int burstDur = 0)
+        {
+
+            SendCommandCont(CameraCommand.PressShutterButton, (int)ShutterButton.Completely, 50);
+            if (burstDur > 0)
+            {
+                await Task.Delay(burstDur);
+            }
+            SendCommand(CameraCommand.PressShutterButton, (int)ShutterButton.OFF);
+        }
+
+        /// <summary>
         /// Takes a photo with the current camera settings asynchronously with the PressShutterButton command
         /// </summary>
         /// <exception cref="ObjectDisposedException">Camera is disposed</exception>

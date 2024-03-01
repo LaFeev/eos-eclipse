@@ -16,6 +16,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.InteropServices.ComTypes;
 using System.IO;
 using EDSDKLib.API.Helper;
+using System.Xml.Serialization;
+using Newtonsoft.Json;
+using System.Data.Entity.Infrastructure;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace MainForm
 {
@@ -40,15 +44,20 @@ namespace MainForm
         object ErrLock = new object();
         object LvLock = new object();
         PointLatLng ShootingLocation;
-        Double Elevation;
+        Double Elevation = -9999;
         GMapOverlay markersOverlay = new GMapOverlay("markers");
 
-        List<StepControl> StepList = new List<StepControl>();
+        StepComposer Composer = new StepComposer();
         private StepControl _editStep;
+        private TimeSpan _averageTaskTime = new TimeSpan(0, 0, 0, 0, 700);
+        private int _burstLength = 500;     // TODO: offer a way to congifure this in settings. It should equal roughly (1000/[camera fps] * 3.5).  This gives the ~average between a 3 and 4 shot burst in milliseconds.
 
         string AppDataDir;
         public CalcRaw calcRaw = new CalcRaw();
         public CalcResult SeResult;
+        public List<CalcResult> SimResults = new List<CalcResult>();
+        public List<SeIndex> SimIndices = new List<SeIndex>();
+        public bool SessionIsLive = false;
 
         #endregion
 
@@ -86,10 +95,16 @@ namespace MainForm
                 SeIndexComboBox.Items.Clear();
                 for (int i = 0; i < SeList.Count; i++) { SeIndexComboBox.Items.Add(SeList[i].StringValue); }
                 WattsLinkLabel.Enabled = false;
+                SeCalcButton.Enabled = false;
 
                 // Sequence Panel
                 splitContainer1.Panel2.Controls.Add( gmap );
                 splitContainer2.Panel2Collapsed = true;
+                RefreshSequenceButton.Visible = false;
+
+                // Control tab
+                BuildSimulations();
+                MasterTimer.Start();
 
                 // TODO: load cached session (stage, sequence, location, etc) instead of clearing everything
                 ResetStage();
@@ -111,12 +126,13 @@ namespace MainForm
                     if (Directory.Exists(AppDataDir))
                     {
                         Console.WriteLine("EOSeclipse app data directory already exists.");
-                        return;
                     }
-
-                    // Try to create the directory.
-                    DirectoryInfo di = Directory.CreateDirectory(AppDataDir);
-                    Console.WriteLine("App data directory was created successfully at {0}.", Directory.GetCreationTime(AppDataDir));
+                    else
+                    {
+                        // Try to create the directory.
+                        DirectoryInfo di = Directory.CreateDirectory(AppDataDir);
+                        Console.WriteLine("App data directory was created successfully at {0}.", Directory.GetCreationTime(AppDataDir));
+                    }
                 }
                 catch (Exception e)
                 {
@@ -140,9 +156,17 @@ namespace MainForm
             // TODO: add a dialog to confirm form closing a la:
             // https://stackoverflow.com/a/9231770/22854232
         }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             //
+        }
+
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            // load the auto-saved session if present
+            LoadSession();
+            
         }
 
 
@@ -355,6 +379,68 @@ namespace MainForm
 
         #endregion
 
+        #region Camera Control
+        private async Task TakeBurst(int burstDuration, TaskControl task)
+        {
+            // make the setting changes
+            MainCamera.SetSettingCont(PropertyID.Tv, task.Tv.IntValue);
+            MainCamera.SetSettingCont(PropertyID.Av, task.Av.IntValue);
+            MainCamera.SetSettingCont(PropertyID.ISO, task.ISO.IntValue);
+            // fire the burst
+            await MainCamera.TakePhotoShutterContAsync(burstDuration);
+        }
+
+        private async Task TakePhoto(TaskControl task)
+        {
+            // make the setting changes
+            MainCamera.SetSettingCont(PropertyID.Tv, task.Tv.IntValue);
+            MainCamera.SetSettingCont(PropertyID.Av, task.Av.IntValue);
+            MainCamera.SetSettingCont(PropertyID.ISO, task.ISO.IntValue);
+            // fire the shot
+            MainCamera.TakePhotoShutterAsync();
+        }
+
+        private async Task FireTask(TaskControl task)
+        {
+            if (MainCamera != null)
+            {
+                // responsible for determining what methods to call depending on the content of the TaskControl
+                if (task.Script != null)
+                {
+                    // script deploy
+                    Console.WriteLine("TODO: deploy script in FireTask()");
+                }
+                else if (task.AEBMinus != TvValues.Auto)
+                {
+                    // AEB mode activated
+                    // TODO: check if AEB is set on camera and flag the UI if it is not
+                    await TakeBurst(_burstLength, task);
+                }
+                else
+                {
+                    // assume we're taking a single shot - if another option arises this will need to be updated
+                    await TakePhoto(task);
+                }
+            }
+            else
+            {
+                // no camera attached, fire debug messages
+                if (task.Script != null)
+                    Console.WriteLine("{0} FIRE - script: {1}", DateTime.Now.ToString(), task.Script);
+                else if (task.AEBMinus != TvValues.Auto)
+                {
+                    Console.WriteLine("{0} FIRE - burst: {1} Tv; {2} Av; {3} ISO", DateTime.Now, task.Tv.StringValue, task.Av.StringValue, task.ISO.StringValue);
+                    await Task.Delay(_averageTaskTime);
+                }
+                else
+                {
+                    Console.WriteLine("{0} FIRE - shoot: {1} Tv; {2} Av; {3} ISO", DateTime.Now, task.Tv.StringValue, task.Av.StringValue, task.ISO.StringValue);
+                    await Task.Delay(_averageTaskTime);
+                }
+            }
+        }
+        #endregion
+
         #region Location
         private void SetLocButton_Click(object sender, EventArgs e)
         {
@@ -378,6 +464,12 @@ namespace MainForm
             LatLabel.Visible = true;
             LonLabel.Visible = true;
             ElvLabel.Visible = true;
+
+            // Invalidate the sequence panel if these location settings differ from those stored in the Composer.
+            //  The user will need to hit the sequence refresh button to enable the sequence (if they want
+            //  to accept this new location)
+            EnableSequence(VerifyComposer());
+            SaveSession();
         }
 
         private void gmap_MouseClick(object sender, MouseEventArgs e)
@@ -472,10 +564,11 @@ namespace MainForm
                         EndOffsetUpDown.Enabled = true;
 
                         // TODO: need to test this change.  Add both BB stages, and then try to edit one.
+                        // TODO: this doesn't work, the button text has not changed yet.  Need to rework how BB is handled anyways, remainingPhases() is not working.
                         if (AddStageButton.Text == "Add Stage")
                         {
                             // if one of the two baily's beads stages has been configured, remove it from the start/end reference options
-                            foreach (StepControl step in StepList)
+                            foreach (StepControl step in Composer.GetStepControls())
                             {
                                 if (step.Phase == "Baily's Beads")
                                 {
@@ -512,7 +605,7 @@ namespace MainForm
                         EndOffsetUpDown.Value = -10;
 
                         // if either baily's beads events are already configured, use their start/end offsets to define totality and disable edit
-                        foreach (StepControl step in StepList)
+                        foreach (StepControl step in Composer.GetStepControls())
                         {
                             if (step.Phase == "Baily's Beads" && step.StartRef == "C2")
                             {
@@ -686,23 +779,26 @@ namespace MainForm
 
         private void ClearSequence()
         {
-            if (StepList.Count > 0)
+            if (Composer.StepList.Count > 0)
             {
-                foreach (StepControl step in StepList)
+                for (int i = 0; i < Composer.StepList.Count; i++)
                 {
-                    SeqFlowPanel.Controls.Remove(step);
+                    Composer.DeleteStep(i, true);
                 }
-                StepList.Clear();
                 ResetPhaseList();
+                // save the Composer state for 'auto session'
+                SaveSession();
             }
         }
 
         private void RemoveStep(StepControl step) 
         {
-            if (StepList.Count > 0)
+            int idx = SeqFlowPanel.Controls.IndexOf(step);
+            if (idx != -1)
             {
-                SeqFlowPanel.Controls.Remove(step);
-                StepList.Remove(step);
+                Composer.DeleteStep(idx);
+                // save the Composer state for 'auto session'
+                SaveSession();
                 ResetPhaseList();
             }
         }
@@ -712,21 +808,10 @@ namespace MainForm
             PhaseComboBox.Items.Clear();
             // reset the phase combo box selection
             PhaseComboBox.SelectedIndex = -1;
-            PhaseComboBox.Items.AddRange(new object[] { "Partial", "Baily's Beads", "Totality", "Max Eclipse", "C1", "C2", "C3", "C4", "Script", "Other" });
-            
-            // now cycle through any existing StepControls and remove, if necessary, the phase from phase list
-            bool otherBead = false;
-            foreach (StepControl step in StepList)
+            foreach (string ph in Composer.GetRemainingPhases())
             {
-                if (step.Phase == "Baily's Beads")
-                {
-                    if (otherBead) { PhaseComboBox.Items.Remove(step.Phase); }
-                    else { otherBead = true; }
-                }
-                else if ((step.Phase != "Script") & (step.Phase != "Other"))
-                {
-                    PhaseComboBox.Items.Remove(step.Phase);
-                }
+                PhaseComboBox.Items.Add(ph);
+
             }
         }
 
@@ -842,108 +927,106 @@ namespace MainForm
         private void AddStageButton_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
-            StepControl step;
-            if (btn.Text != "Add Stage")
-            {
-                // grab the reference to the step which triggered the edit event
-                step = _editStep;
-            }
-            else
-            {
-                // create the step
-                step = new StepControl();
-            }
-            
-            step.Phase = PhaseComboBox.SelectedItem.ToString();
-            step.StartRef = StartRefComboBox.SelectedItem.ToString();
-            step.StartOffset = new TimeSpan(0,0, (int)StartOffsetUpDown.Value);
-            step.EndRef = EndRefComboBox.SelectedItem.ToString();
-            step.EndOffset = new TimeSpan(0,0, (int)EndOffsetUpDown.Value);
-            //if (SeResult != null)
-            //{
-            //    switch (step.StartRef)
-            //    {
-            //        case "C1":
-            //            step.StartDateTime = SeResult.c1_datetime;
-            //            break;
-            //        case "C2":
-            //            step.StartDateTime = SeResult.c2_datetime;
-            //            break;
 
-            //    }
-            //}
-            
-            if (IntervalRadioButton.Checked)
-            {
-                step.Interval = new TimeSpan(0, (int)IntervalMinUpDown.Value, (int)IntervalSecUpDown.Value);
-            }
-            else if (ContinuousRadioButton.Checked) { step.Interval = TimeSpan.Zero; }
-            else { step.Interval = new TimeSpan(-99,-99, -99); }
-            
-            // clear tasks (relevant for edit mode)
-            step.ClearTasks();
+            string Phase = PhaseComboBox.SelectedItem.ToString();
+            string StartRef = StartRefComboBox.SelectedItem.ToString();
+            TimeSpan StartOffset = new TimeSpan(0, 0, (int)StartOffsetUpDown.Value);
+            string EndRef = EndRefComboBox.SelectedItem.ToString();
+            TimeSpan EndOffset = new TimeSpan(0, 0, (int)EndOffsetUpDown.Value);
+            CameraValue ISO = new CameraValue((double)SeqIsoCoBox.SelectedItem, PropertyID.ISO);
+            CameraValue Av = new CameraValue(SeqAvCoBox.SelectedItem.ToString(), PropertyID.Av);
+            string Script = ScriptTextBox.Text;
+            DateTime StartDateTime = DateTime.MinValue;
+            DateTime EndDateTime = DateTime.MinValue;
 
-            int i = 0;
-            // create tasks
-            if (step.Phase == "Script")
+            // check for existing eclipse calc results
+            if (SeResult != null)
             {
-                TaskControl task = new TaskControl();
-                task.Script = ScriptTextBox.Text;
-                step.AddTask(task);
-            }
-            else
-            {
-                foreach (string Tv in SeqTvListBox.SelectedItems)
+                if (!SeResult.Phase(StartRef).DateTime.IsNull)
                 {
-                    TaskControl task = new TaskControl();
-                    task.Tv = new CameraValue(Tv, PropertyID.Tv);
-                    task.ISO = new CameraValue((double)SeqIsoCoBox.SelectedItem, PropertyID.ISO);
-                    task.Av = new CameraValue(SeqAvCoBox.SelectedItem.ToString(), PropertyID.Av);
-                    // TODO: assign AEBminus and AEBPlus values
-
-                    if (AEBRadioButton.Checked)
-                    {
-                        task.AEB = new AEBValue(AEBUpDown.SelectedItem.ToString());
-                        task.AEBMinus = GetAEB(task.Tv, new AEBValue(AEBUpDown.SelectedItem.ToString()), false);
-                        task.AEBPlus = GetAEB(task.Tv, new AEBValue(AEBUpDown.SelectedItem.ToString()), true);
-                    }
-                    else { task.AEBMinus = task.AEBPlus = TvValues.Auto; }
-
-                    // for debug only
-                    Console.WriteLine("##### task {0} ######", i);
-                    Console.WriteLine("Tv: {0}\nAv: {1}\nISO: {2}\nAEB+ {3}\nAEB- {4}",
-                        task.Tv.StringValue, task.Av.StringValue, task.ISO.DoubleValue.ToString(),
-                        task.AEBPlus.StringValue, task.AEBMinus.StringValue);
-
-                    // add task to step
-                    step.AddTask(task);
-                    i++;
+                    StartDateTime = SeResult.Phase(StartRef).DateTime.ComputeValue + StartOffset;
+                }
+                else
+                {
+                    // TODO: pop up a dialog saying there is no valid event time for that phase (not happening for the location calculated)
+                }
+                if (!SeResult.Phase(EndRef).DateTime.IsNull)
+                {
+                    EndDateTime = SeResult.Phase(EndRef).DateTime.ComputeValue + EndOffset;
+                }
+                else
+                {
+                    // TODO: pop up a dialog saying there is no valid event time for that phase (not happening for the location calculated)
                 }
             }
+            if (EndDateTime < StartDateTime)
+            {
+                MessageBox.Show("The start time cannot be later than the end time ('T minus n-seconds' refers to the point in time n-seconds prior to event time T).",
+                "Input warning",
+                MessageBoxButtons.OK);
+                return;
+            }
 
+            TimeSpan Interval;
+            if (IntervalRadioButton.Checked)
+            {
+                Interval = new TimeSpan(0, (int)IntervalMinUpDown.Value, (int)IntervalSecUpDown.Value);
+            }
+            else if (ContinuousRadioButton.Checked) { Interval = TimeSpan.Zero; }
+            else { Interval = new TimeSpan(-99, -99, -99); }
+
+            AEBValue AEB = new AEBValue();
+            List<CameraValue> Tvs = new List<CameraValue>();
+            List<CameraValue> AEBMinus = new List<CameraValue>();
+            List<CameraValue> AEBPlus = new List<CameraValue>();
+
+            foreach (string _tv in SeqTvListBox.SelectedItems)
+            {
+                CameraValue Tv = new CameraValue(_tv, PropertyID.Tv);
+                Tvs.Add(Tv);
+
+                if (AEBRadioButton.Checked)
+                {
+                    AEB = new AEBValue(AEBUpDown.SelectedItem.ToString());
+                    AEBMinus.Add(GetAEB(Tv, AEB, false));
+                    AEBPlus.Add(GetAEB(Tv, AEB, true));
+                }
+            }
+            
             // if -not- in edit mode
             if (btn.Text == "Add Stage")
             {
-                // add the step to the step list
-                StepList.Add(step);
-
-                // add the step to the sequence panel
-                SeqFlowPanel.Controls.Add(step);
-
-                // add the event listeners
-                step.EditStage += new EventHandler(EventHandler_EditStage);
-                step.DeleteStage += new EventHandler(EventHandler_DeleteStage);
+                // add the StepBuilder to the StepComposer
+                if (AEBRadioButton.Checked)
+                {
+                    Composer.AddStep(Phase, StartRef, StartOffset, EndRef, EndOffset, Interval, Script, Tvs, Av, ISO, AEB, AEBPlus, AEBMinus);
+                }
+                else
+                {
+                    Composer.AddStep(Phase, StartRef, StartOffset, EndRef, EndOffset, Interval, Script, Tvs, Av, ISO);
+                }
             }
             else
             {
-                step.EditRefresh();
+                // edit mode, edit the StepBuilder at the affected index
+                int idx = SeqFlowPanel.Controls.IndexOf(_editStep);
+                if (AEBRadioButton.Checked)
+                {
+                    Composer.DeleteStep(idx);
+                    Composer.AddStep(Phase, StartRef, StartOffset, EndRef, EndOffset, Interval, Script, Tvs, Av, ISO, AEB, AEBPlus, AEBMinus);
+                }
+                else
+                {
+                    Composer.DeleteStep(idx);
+                    Composer.AddStep(Phase, StartRef, StartOffset, EndRef, EndOffset, Interval, Script, Tvs, Av, ISO);
+                }
             }
-
+            // save the Composer state for 'auto session'
+            SaveSession();
             // remove the phase from the phase list (if necessary)
             ResetPhaseList();
             ResetStage();
         }
-
         #endregion
 
         #region Sequence Panel
@@ -967,32 +1050,7 @@ namespace MainForm
         // TODO: UserControl is not serializable, not sure how to proceed
         private void SaveSeqButton_Click(object sender, EventArgs e)
         {
-            try
-            {
-                SequenceFileBrowser.InitialDirectory = AppDataDir;
-                SequenceFileBrowser.FileName = "eclipse.sequence";
-                SequenceFileBrowser.Title = "Save sequence file";
-                SequenceFileBrowser.CheckFileExists = false;
-                if (SequenceFileBrowser.ShowDialog() == DialogResult.OK)
-                {
-                    string fpath = SequenceFileBrowser.FileName;
-                    Console.WriteLine(fpath);
-                    // serialize the current sequence and save to disk
-                    IFormatter formatter = new BinaryFormatter();
-                    // debug location
-                    Stream streamDebug = new FileStream("../../test.sequence", FileMode.Create, System.IO.FileAccess.Write);
-                    // production location
-                    Stream stream = new FileStream(fpath, FileMode.Create, System.IO.FileAccess.Write);
-                    // write to debug location
-                    formatter.Serialize(streamDebug, StepList);
-                    streamDebug.Close();
-                    // also write to production location
-                    formatter.Serialize(stream, StepList);
-                    stream.Close();
-                }
-            }
-            catch (Exception ex) { ReportError(ex.Message, false); }
-            
+            //
         }
 
         #endregion
@@ -1000,79 +1058,241 @@ namespace MainForm
         #region Eclipse Panel
         private void SeCalcButton_Click(object sender, EventArgs e)
         {
-            // variables
-            String language = "en";
-            String lat;
-            String lon;
-            String alt;
-            SeIndex eclipse_index;
-            // make the calculations in UTC
-            String tzh = "0";
-            String tzm = "0";
-            String tzx = "1";
-            String dst = "0";
+            if (Elevation != -9999)
+            {
+                List<SeIndex> indices = SeIndex.SeIndices();
+                indices.AddRange(SimIndices);
+                SeIndex eclipse_index = SeIndex.GetValue(SeIndexComboBox.SelectedItem.ToString(), indices);
+                int maxSeIndex = SeIndex.GetMaxIndex();
+                if (eclipse_index.IntValue > maxSeIndex)
+                {
+                    // Simulated Eclipse!
+                    // recompute the sim eclipse results
+                    ComputeSimResults();
+                    int simIdx = eclipse_index.IntValue - maxSeIndex - 1;
+                    SeResult = SimResults[simIdx];
+                }
+                else
+                {
+                    // variables
+                    String language = "en";
+                    String lat;
+                    String lon;
+                    String alt;
+                    // make the calculations in UTC
+                    String tzh = "0";
+                    String tzm = "0";
+                    String tzx = "1";
+                    String dst = "0";
 
-            // gather inputs
-            lat = ShootingLocation.Lat.ToString("0.#######");
-            lon = ShootingLocation.Lng.ToString("0.#######");
-            alt = Elevation.ToString();
-            ComputedLatLngLabel.Text = string.Format("{0} lat, {1} lng @ {2}m Elv", lat, lon, alt);
-            // Xavier's code uses "west" longitude, inverse of convention
-            lat = ShootingLocation.Lat.ToString();
-            lon = (ShootingLocation.Lng * -1).ToString();
-            eclipse_index = SeIndex.GetValue(SeIndexComboBox.SelectedItem.ToString());
-            Object[] arglist = { language, lat, lon, alt, tzh, tzm, tzx, dst, eclipse_index.IntValue };
+                    // gather inputs
+                    lat = ShootingLocation.Lat.ToString("0.#######");
+                    lon = ShootingLocation.Lng.ToString("0.#######");
+                    alt = Elevation.ToString();
+                    ComputedLatLngLabel.Text = string.Format("{0} lat, {1} lng @ {2}m Elv", lat, lon, alt);
+                    // Xavier's code uses "west" longitude, inverse of convention
+                    lat = ShootingLocation.Lat.ToString();
+                    lon = (ShootingLocation.Lng * -1).ToString();
+                    Object[] arglist = { language, lat, lon, alt, tzh, tzm, tzx, dst, eclipse_index.IntValue };
 
-            // make the call to the javascript calculator
-            SeWebBrowser.Document.InvokeScript("calc", arglist);
-            SeResult = new CalcResult(calcRaw);
+                    // make the call to the javascript calculator
+                    SeWebBrowser.Document.InvokeScript("calc", arglist);
+                    SeResult = new CalcResult(calcRaw);
+                }
 
-            // display the results to the Eclipse tab
-            TypeLabel.Text = SeResult.SeType;
-            EclipseDepthLabel.Text = SeResult.EclipseDepth;
-            C1DateTimeLabel.Text = SeResult.Phase("C1").DateTime.DisplayValue;
-            C2DateTimeLabel.Text = SeResult.Phase("C2").DateTime.DisplayValue;
-            MxDateTimeLabel.Text = SeResult.Phase("Mx").DateTime.DisplayValue;
-            C3DateTimeLabel.Text = SeResult.Phase("C3").DateTime.DisplayValue;
-            C4DateTimeLabel.Text = SeResult.Phase("C4").DateTime.DisplayValue;
-            C1AltLabel.Text = SeResult.Phase("C1").Altitude.DisplayValue;
-            C2AltLabel.Text = SeResult.Phase("C2").Altitude.DisplayValue;
-            MxAltLabel.Text = SeResult.Phase("Mx").Altitude.DisplayValue;
-            C3AltLabel.Text = SeResult.Phase("C3").Altitude.DisplayValue;
-            C4AltLabel.Text = SeResult.Phase("C4").Altitude.DisplayValue;
-            C1AziLabel.Text = SeResult.Phase("C1").Azimuth.DisplayValue;
-            C2AziLabel.Text = SeResult.Phase("C2").Azimuth.DisplayValue;
-            MxAziLabel.Text = SeResult.Phase("Mx").Azimuth.DisplayValue;
-            C3AziLabel.Text = SeResult.Phase("C3").Azimuth.DisplayValue;
-            C4AziLabel.Text = SeResult.Phase("C4").Azimuth.DisplayValue;
-            C1PLabel.Text = SeResult.Phase("C1").P.DisplayValue;
-            C2PLabel.Text = SeResult.Phase("C2").P.DisplayValue;
-            MxPLabel.Text = SeResult.Phase("Mx").P.DisplayValue;
-            C3PLabel.Text = SeResult.Phase("C3").P.DisplayValue;
-            C4PLabel.Text = SeResult.Phase("C4").P.DisplayValue;
-            C1VLabel.Text = SeResult.Phase("C1").V.DisplayValue;
-            C2VLabel.Text = SeResult.Phase("C2").V.DisplayValue;
-            MxVLabel.Text = SeResult.Phase("Mx").V.DisplayValue;
-            C3VLabel.Text = SeResult.Phase("C3").V.DisplayValue;
-            C4VLabel.Text = SeResult.Phase("C4").V.DisplayValue;
-            C2LcLabel.Text = SeResult.Phase("C2").LC.DisplayValue;
-            C3LcLabel.Text = SeResult.Phase("C3").LC.DisplayValue;
-            DurationLabel.Text = SeResult.Duration.DisplayValue;
-            DurationCorrLabel.Text = SeResult.DurationCorr.DisplayValue;
-            DeltaTLabel.Text = SeResult.DeltaT.DisplayValue;
-            DepthLabel.Text = SeResult.Depth.DisplayValue;
-            CoverageLabel.Text = SeResult.Coverage.DisplayValue;
-            MagnitudeLabel.Text = SeResult.Magnitude.DisplayValue;
-            SunMoonRatioLabel.Text = SeResult.SunMoonRatio.DisplayValue;
-            LibrationLLabel.Text = SeResult.LibL.DisplayValue;
-            LibrationBLabel.Text = SeResult.LibB.DisplayValue;
-            LibrationCLabel.Text = SeResult.PaC.DisplayValue;
-            WattsLinkLabel.Enabled = true;
+                // display the results to the Eclipse tab
+                TypeLabel.Text = SeResult.SeType;
+                EclipseDepthLabel.Text = SeResult.EclipseDepth;
+                C1DateTimeLabel.Text = SeResult.Phase("C1").DateTime.DisplayValue;
+                C2DateTimeLabel.Text = SeResult.Phase("C2").DateTime.DisplayValue;
+                MxDateTimeLabel.Text = SeResult.Phase("Mx").DateTime.DisplayValue;
+                C3DateTimeLabel.Text = SeResult.Phase("C3").DateTime.DisplayValue;
+                C4DateTimeLabel.Text = SeResult.Phase("C4").DateTime.DisplayValue;
+                C1AltLabel.Text = SeResult.Phase("C1").Altitude.DisplayValue;
+                C2AltLabel.Text = SeResult.Phase("C2").Altitude.DisplayValue;
+                MxAltLabel.Text = SeResult.Phase("Mx").Altitude.DisplayValue;
+                C3AltLabel.Text = SeResult.Phase("C3").Altitude.DisplayValue;
+                C4AltLabel.Text = SeResult.Phase("C4").Altitude.DisplayValue;
+                C1AziLabel.Text = SeResult.Phase("C1").Azimuth.DisplayValue;
+                C2AziLabel.Text = SeResult.Phase("C2").Azimuth.DisplayValue;
+                MxAziLabel.Text = SeResult.Phase("Mx").Azimuth.DisplayValue;
+                C3AziLabel.Text = SeResult.Phase("C3").Azimuth.DisplayValue;
+                C4AziLabel.Text = SeResult.Phase("C4").Azimuth.DisplayValue;
+                C1PLabel.Text = SeResult.Phase("C1").P.DisplayValue;
+                C2PLabel.Text = SeResult.Phase("C2").P.DisplayValue;
+                MxPLabel.Text = SeResult.Phase("Mx").P.DisplayValue;
+                C3PLabel.Text = SeResult.Phase("C3").P.DisplayValue;
+                C4PLabel.Text = SeResult.Phase("C4").P.DisplayValue;
+                C1VLabel.Text = SeResult.Phase("C1").V.DisplayValue;
+                C2VLabel.Text = SeResult.Phase("C2").V.DisplayValue;
+                MxVLabel.Text = SeResult.Phase("Mx").V.DisplayValue;
+                C3VLabel.Text = SeResult.Phase("C3").V.DisplayValue;
+                C4VLabel.Text = SeResult.Phase("C4").V.DisplayValue;
+                C2LcLabel.Text = SeResult.Phase("C2").LC.DisplayValue;
+                C3LcLabel.Text = SeResult.Phase("C3").LC.DisplayValue;
+                DurationLabel.Text = SeResult.Duration.DisplayValue;
+                DurationCorrLabel.Text = SeResult.DurationCorr.DisplayValue;
+                DeltaTLabel.Text = SeResult.DeltaT.DisplayValue;
+                DepthLabel.Text = SeResult.Depth.DisplayValue;
+                CoverageLabel.Text = SeResult.Coverage.DisplayValue;
+                MagnitudeLabel.Text = SeResult.Magnitude.DisplayValue;
+                SunMoonRatioLabel.Text = SeResult.SunMoonRatio.DisplayValue;
+                LibrationLLabel.Text = SeResult.LibL.DisplayValue;
+                LibrationBLabel.Text = SeResult.LibB.DisplayValue;
+                LibrationCLabel.Text = SeResult.PaC.DisplayValue;
+                WattsLinkLabel.Enabled = true;
+
+                // TODO: cache the C2 and C3 limb corrections if available (tie them to the compute location)
+
+                // Invalidate the sequence panel if these calc results differ from the circumstances stored in the Composer.
+                //  The user will need to hit the sequence refresh button to enable the sequence (if they want
+                //  to accept these calc results)
+                EnableSequence(VerifyComposer());
+                SaveSession();
+            }
+            else
+            {
+                MessageBox.Show("You must set a shooting location (on Location tab) prior to computing eclipse circumstances.");
+            }
         }
 
         private void WattsLinkLabel_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start(SeResult.WattsChartLink);
+        }
+
+        private void SeIndexComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (SeIndexComboBox.SelectedIndex != -1)
+            {
+                SeCalcButton.Enabled = true;
+            }
+        }
+        #endregion
+
+        #region Control Tab
+        private void CreateSimEclipse(string name, int index, TimeSpan phaseLength, string eclType)
+        {
+            // create a simulated eclipse that starts in 1 minute--get your cameras out!
+            SeIndex simIdx = new SeIndex(name, index);
+
+            // TODO: move this call somewhere, it adds more items to the list every time the SeCalc button is pressed
+            SeIndexComboBox.Items.Add(simIdx.StringValue);
+            CalcRaw simRaw = new CalcRaw();
+            DateTime c1 = DateTime.UtcNow + new TimeSpan(0,1,0);
+            DateTime c2 = c1 + phaseLength;
+            DateTime mx = c2 + phaseLength;
+            DateTime c3 = mx + phaseLength;
+            DateTime c4 = c3 + phaseLength;
+            if (phaseLength == TimeSpan.Zero)
+            {
+                // Simulate a full duration eclipse using approximate durations from the Apr 8, 2024 eclipse in Rio Frio, TX.
+                // TODO: add a function that copies the real CalcResult durations from an eclipse and uses those values instead
+                c2 = c1 + new TimeSpan(1, 17, 17);
+                mx = c2 + new TimeSpan(0, 2, 13);
+                c3 = mx + new TimeSpan(0, 2, 13);
+                c4 = c3 + new TimeSpan(1, 19, 9);
+            }
+            // populate the eclipse results
+            simRaw.ecltype = eclType;
+            simRaw.eclipse_depth = name;
+            simRaw.watts_chart_link = "www.google.com";
+            simRaw.tz = "0.0";
+            simRaw.c1_date = c1.Date.ToString("yyyy/MM/dd");
+            simRaw.c1_time = c1.ToString("HH:mm:ss.f");
+            simRaw.c2_date = c2.Date.ToString("yyyy/MM/dd");
+            simRaw.c2_time = c2.ToString("HH:mm:ss.f");
+            simRaw.mid_date = mx.Date.ToString("yyyy/MM/dd");
+            simRaw.mid_time = mx.ToString("HH:mm:ss.f");
+            simRaw.c3_date = c3.Date.ToString("yyyy/MM/dd");
+            simRaw.c3_time = c3.ToString("HH:mm:ss.f");
+            simRaw.c4_date = c4.Date.ToString("yyyy/MM/dd");
+            simRaw.c4_time = c4.ToString("HH:mm:ss.f");
+            if (eclType == "Partial")
+            {
+                simRaw.c2_date = simRaw.c3_date = "n/a";
+            }
+            CalcResult simRes = new CalcResult(simRaw);
+            SimResults.Add(simRes);
+            SimIndices.Add(simIdx);
+        }
+
+        private void BuildSimulations()
+        {
+            // add some generic simulations
+            // TODO: add an interface so user can add additional sims
+            int idx = SeIndex.GetMaxIndex() + 1;
+            CreateSimEclipse("SIM (T) - short (1min)", idx, new TimeSpan(0, 1, 0), "Total");
+            idx++;
+            CreateSimEclipse("SIM (T) - medium (5min)", idx, new TimeSpan(0, 5, 0), "Total");
+            idx++; 
+            CreateSimEclipse("SIM (T) - full length", idx, TimeSpan.Zero, "Total");
+        }
+
+        private void ComputeSimResults()
+        {
+            SimResults.Clear();
+            SimIndices.Clear();
+            BuildSimulations();
+        }
+
+        private void StartCaptureButton_Click(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+            if (btn.Text == "Start Capture")
+            {
+                SessionIsLive = true;
+                btn.Text = "Stop Capture";
+            }
+            else
+            {
+                SessionIsLive = false;
+            }
+        }
+        #endregion
+
+        #region Time Keeper
+        private void MasterTimer_Tick(object sender, EventArgs e)
+        {
+            // ticks every 100ms
+            DateTime now = DateTime.Now;
+            // update the clocks on the Control Tab
+            UtcTimeLabel.Text = DateTime.UtcNow.ToString();
+            LocalTimeLabel.Text = DateTime.Now.ToString();
+
+            // update the phase reference timers on the Sequence Pane
+            // TODO
+
+            // check for any phase starts
+            if (SeqFlowPanel.Controls.Count > 0)
+            {
+                DateTime sessionStart = ((StepControl)SeqFlowPanel.Controls[0]).StartDateTime;
+                DateTime sessionEnd = ((StepControl)SeqFlowPanel.Controls[SeqFlowPanel.Controls.Count - 1]).EndDateTime;
+                if (sessionStart - new TimeSpan(0,1,00) <= now && now <= sessionEnd + new TimeSpan(0,1,0))
+                {
+                    // only evaluate further if current time falls somewhere inside of the event start/end times (with 1min margin on either end)
+                    for (int i = 0; i < SeqFlowPanel.Controls.Count; i++)
+                    {
+                        StepControl step = (StepControl)SeqFlowPanel.Controls[i];
+                        // check if "now" is between start time and 5x the timer interval from start time (to ensure we don't miss an event)
+                        if (step.StartDateTime <= now && now <= (step.StartDateTime + new TimeSpan(0, 0, 0, 0, 5 * MasterTimer.Interval)))
+                        {
+                            if (!step.IsActive() && SessionIsLive)
+                            {
+                                // If we're live, start the step if it isn't active, and break the forloop to stop evaluating the rest of the steps (steps cannot be parallel)
+                                step.Start();
+                                break;
+                            }
+                            else if (!step.IsRunning())
+                            {
+                                // run the step if it isn't running
+                                step.RunStep();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
         #endregion
 
@@ -1278,6 +1498,80 @@ namespace MainForm
             }
         }
 
+        private void SaveSession(string fpath=null)
+        {
+            // serialize the current session (shooting location, eclipse, steps)
+            if (fpath == null) fpath = Path.Combine(AppDataDir, @"auto.session");
+
+            Stream stream = new FileStream(fpath, FileMode.Create, System.IO.FileAccess.Write);
+            
+            var streamWriter = new StreamWriter(stream);
+            var jsonWriter = new JsonTextWriter(streamWriter);
+            var serializer = new JsonSerializer();
+            // write to file
+            serializer.Serialize(jsonWriter, Composer);
+            jsonWriter.Flush();
+            streamWriter.Flush();
+            stream.Seek(0, System.IO.SeekOrigin.Begin);
+            stream.Dispose();
+        }
+
+        private void LoadSession(string fpath=null)
+        {
+            // point to the auto session if an alternative was not provided
+            if (fpath == null) fpath = Path.Combine(AppDataDir, @"auto.session");
+
+            if (File.Exists(fpath))
+            {
+                try
+                {
+                    // deserialize the session and populate the related fields
+                    Stream stream = new FileStream(fpath, FileMode.Open, System.IO.FileAccess.Read);
+                    var streamReader = new StreamReader(stream);
+                    var jsonReader = new JsonTextReader(streamReader);
+                    var serializer = new JsonSerializer();
+                    Composer = serializer.Deserialize<StepComposer>(jsonReader);
+                    streamReader.Close();
+                    jsonReader.Close();
+                    stream.Dispose();
+
+                    // subscribe the event listeners to the StepComposer events
+                    Composer.SequenceUpdated += new EventHandler(EventHandler_SequenceUpdated);
+                    Composer.CircumstancesRequested += new EventHandler(EventHandler_CircumstancesRequested);
+                    // restore lat/lng/elv
+                    if (Composer.ShootingElv != -9999)
+                    {
+                        LatTextBox.Text = Composer.ShootingLat.ToString();
+                        LonTextBox.Text = Composer.ShootingLng.ToString();
+                        AltTextBox.Text = Composer.ShootingElv.ToString();
+                        SettingsTabControl.SelectedTab = LocTabPage;
+                        SetLocButton.PerformClick();
+                    }
+                    // restore eclipse selection/calculations
+                    if (Composer.Eclipse != null)
+                    {
+                        SeIndexComboBox.SelectedItem = Composer.Eclipse.StringValue;
+                        SettingsTabControl.SelectedTab = EclipseTabPage;
+                        SeCalcButton.PerformClick();
+                    }
+                    SettingsTabControl.SelectedTab = SettingsTabPage;
+                    // restore the step sequence, if present
+                    Composer.ReloadSequence();
+                    // Invalidate the sequence panel if the location/eclipse info differ from the circumstances stored in the Composer.
+                    //  The user will need to hit the sequence refresh button to enable the sequence (if they want
+                    //  to accept these calc results)
+                    EnableSequence(VerifyComposer());
+                }
+                catch (Exception ex) { ReportError(ex.Message, false); }
+            }
+            else
+            {
+                // no auto session present, subscribe the event listeners to the StepComposer events
+                Composer.SequenceUpdated += new EventHandler(EventHandler_SequenceUpdated);
+                Composer.CircumstancesRequested += new EventHandler(EventHandler_CircumstancesRequested);
+            }
+        }
+
         private void SaveSettingsButton_Click(object sender, EventArgs e)
         {
             // serialize the current Tv, Av, and ISO settings and save to file.
@@ -1334,6 +1628,7 @@ namespace MainForm
                     LoadedCameraSettingsLabel.Text = cameraname;
                     AEBList = AEBValue.AEBValues();
                     for (int i = AEBList.Count - 1; i >= 0; i--) { AEBUpDown.Items.Add(AEBList[i].StringValue); }
+                    stream.Close();
                 }
             }
             catch (Exception ex) { ReportError(ex.Message, false); }
@@ -1391,7 +1686,6 @@ namespace MainForm
         private void EventHandler_EditStage(object sender, EventArgs e)
         {
             StepControl step = (StepControl)sender;
-            Console.WriteLine("Edit Step: {0}", StepList.IndexOf(step));
 
             SettingsTabControl.SelectedTab = SeqGenTabPage;
             PhaseComboBox.Items.Clear();
@@ -1441,9 +1735,10 @@ namespace MainForm
                 }
             }
 
+            // ?
             // TODO: handle the script field
 
-            // save the index of this step so it can be written to later
+            // create a refernce to this step so it can be written to later
             _editStep = step;
         }
 
@@ -1461,6 +1756,214 @@ namespace MainForm
             else
             {
                 // don't reset...
+            }
+        }
+
+        private void RefreshSequenceButton_Click(object sender, EventArgs e)
+        {
+            DialogResult confirmResult = MessageBox.Show("Refreshing the sequence will update the stages with the dates and times currently shown on the Eclipse tab.  This may result in stages being adjusted or removed depending on the presence and/or duration of eclipse phases at the current specified shooting location.\nThis cannot be undone!",
+                "Caution",
+                MessageBoxButtons.OKCancel);
+
+            if (confirmResult == DialogResult.OK)
+            {
+                Composer.Refresh();
+                SaveSession();
+            }
+            else
+            {
+                // don't reset...
+            }
+            // recheck the composer and toggle the sequence on if it's valid
+            EnableSequence(VerifyComposer());
+        }
+
+        private void EventHandler_SequenceUpdated(object sender, EventArgs e)
+        {
+            SeqFlowPanel.Controls.Clear();
+            List<StepControl> steps = Composer.GetStepControls();
+            foreach (StepControl step in steps)
+            {
+                // add the event listeners
+                step.EditStage += new EventHandler(EventHandler_EditStage);
+                step.DeleteStage += new EventHandler(EventHandler_DeleteStage);
+                step.TaskFired += EventHandler_TaskFired;
+                // add the step to the flow panel
+                SeqFlowPanel.Controls.Add(step);
+            }
+        }
+
+        private async void EventHandler_TaskFired(object sender, TaskFiredEventArgs e)
+        {
+            StepControl step = (StepControl)sender;
+            StepControl nextStep = null;
+            int nextStepIdx = SeqFlowPanel.Controls.IndexOf(step) + 1;
+            if (SeqFlowPanel.Controls.Count > nextStepIdx)
+            {
+            nextStep = (StepControl)SeqFlowPanel.Controls[nextStepIdx];
+            }
+
+            if (e.Repeat)
+            {
+                // continuous
+                if (nextStep != null)
+                {
+                    // try not to bleed over into nextStep's timeframe
+                    while (DateTime.Now <= step.EndDateTime - _averageTaskTime)
+                    {
+                        foreach (TaskControl task in step.GetTasks())
+                        {
+                            if (DateTime.Now > step.EndDateTime - _averageTaskTime) break;
+                            await FireTask(task);
+                        }
+                    }
+                }
+                else
+                {
+                    // last step, not worried about bleedover (will complete the entire task list on the
+                    // final pass, regardless of endtime)
+                    while (DateTime.Now <= e.IntervalEndTime)
+                    {
+                        foreach (TaskControl task in step.GetTasks())
+                        {
+                            await FireTask(task);
+                        }
+                    }
+                }
+            }
+            else if (e.IntervalStartTime >= step.EndDateTime)
+            {
+                // single
+                // the start/end times are defined as equal, so the firing time may actually be
+                // slightly later than the end time.  This task still needs to be fired one time though.
+                // These "single" tasks do not get skipped if the IntervalStartTime has bled into the next
+                // Step's timeframe
+                foreach (TaskControl task in step.GetTasks())
+                {
+                    await FireTask(task);
+                }
+            }
+            else
+            {
+                // interval
+                if (nextStep != null)
+                {
+                    // try not to bleed over into nextStep's timeframe
+                    foreach (TaskControl task in step.GetTasks())
+                    {
+                        if (DateTime.Now > step.EndDateTime - _averageTaskTime) break;
+                        await FireTask(task);
+                    }
+                }
+                else
+                {
+                    // last step, not worried about bleedover (will complete the entire task list on the
+                    // final pass, regardless of endtime)
+                    foreach (TaskControl task in step.GetTasks())
+                    {
+                        await FireTask(task);
+                    }
+                }
+            }
+        }
+
+        private void EventHandler_CircumstancesRequested(object sender, EventArgs e)
+        {
+            // update circumstances
+            if (SeResult != null)
+            {
+                // inject the latest circumstances into the StepComposer
+                List<SeIndex> indices = SeIndex.SeIndices();
+                indices.AddRange(SimIndices);
+                Composer.Eclipse = SeIndex.GetValue(SeIndexComboBox.SelectedItem.ToString(), indices);
+                Composer.C1 = SeResult.Phase("C1").DateTime;
+                Composer.C2 = SeResult.Phase("C2").DateTime;
+                Composer.Mx = SeResult.Phase("Mx").DateTime;
+                Composer.C3 = SeResult.Phase("C3").DateTime;
+                Composer.C4 = SeResult.Phase("C4").DateTime;
+            }
+            else
+            {
+                // inject some default datetimes that will allow for generic sequence generation
+                Composer.Eclipse = null;
+                TimeSpan onehour = new TimeSpan(1, 0, 0);
+                Composer.C1 = new SeDateTime(DateTime.Now + new TimeSpan(100*365,0,0,0));
+                Composer.C2 = new SeDateTime(Composer.C1.ComputeValue + onehour);
+                Composer.Mx = new SeDateTime(Composer.C2.ComputeValue + onehour);
+                Composer.C3 = new SeDateTime(Composer.Mx.ComputeValue + onehour);
+                Composer.C4 = new SeDateTime(Composer.C3.ComputeValue + onehour);
+            }
+
+            // update location
+            if (ShootingLocation != null)
+            {
+                Composer.ShootingLat = ShootingLocation.Lat;
+                Composer.ShootingLng = ShootingLocation.Lng;
+                Composer.ShootingElv = Elevation;
+            }
+            else
+            {
+                Composer.ShootingLat = 0;
+                Composer.ShootingLng = 0;
+                Composer.ShootingElv = -9999;
+            }
+        }
+
+        private bool VerifyComposer()
+        {
+            if (Composer.StepList.Count() == 0) return true;
+            if (SeResult != null)
+            {
+                if (Elevation != -9999)
+                {
+                    List<SeIndex> indices = SeIndex.SeIndices();
+                    indices.AddRange(SimIndices);
+                    SeIndex eclipse_index = SeIndex.GetValue(SeIndexComboBox.SelectedItem.ToString(), indices);
+                    // location and eclipse set and calculated, check property equality
+                    if (ShootingLocation.Lat == Composer.ShootingLat &&
+                        ShootingLocation.Lng == Composer.ShootingLng &&
+                        Elevation == Composer.ShootingElv &&
+                        eclipse_index.IntValue == Composer.Eclipse.IntValue) 
+                    {
+                        // check each circumstance datetime
+                        List<string> references = new List<string> { "C1", "C2", "Mx", "C3", "C4" };
+                        foreach (string reference in references)
+                        {
+                            SeDateTime composerTime = (SeDateTime)typeof(StepComposer).GetProperty(reference).GetValue(Composer);
+                            if (SeResult.Phase(reference).DateTime.ComputeValue != composerTime.ComputeValue) 
+                                return false;
+                        }
+                        // if we reached this point, all circumstance times match, return true
+                        return true;
+                    }
+                }
+            }
+            else
+            {
+                if (Elevation == -9999)
+                    // both shooting location and eclipse are unset, return true to allow creation of generic sequences
+                    return true;
+                else
+                    // shooting location is set, but eclipse is not, the sequence is no longer generic, but cannot yet be validated
+                    return false;
+            }
+            return false;
+        }
+
+        private void EnableSequence(bool ComposerVerified)
+        {
+            // disable the sequence panel if ComposerVerified is false, otherwise, enable it
+            if (ComposerVerified)
+            {
+                SeqFlowPanel.Enabled = true;
+                SeqGenTabPage.Enabled = true;
+                RefreshSequenceButton.Visible = false;
+            }
+            else
+            {
+                SeqFlowPanel.Enabled =false;
+                SeqGenTabPage.Enabled = false;
+                RefreshSequenceButton.Visible = true;
             }
         }
 

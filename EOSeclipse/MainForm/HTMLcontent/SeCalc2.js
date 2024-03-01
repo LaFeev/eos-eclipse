@@ -2711,6 +2711,7 @@ function getnumUTdate( circumstances, numDate )
 
 //
 // Get the local time of an event
+// ARL - commenting out the last bit that adds an asterisk when the altitude at this time is below horizon.  Maybe implement this later
 function gettime( circumstances, language )
 {
   var ans = "";
@@ -2738,8 +2739,8 @@ function gettime( circumstances, language )
     ans += ".";
   ans += Math.floor(10.0 * (t - Math.floor(t)));
   // Add an asterix if the altitude is less than zero (take refraction into account)
-  if (circumstances[32] <= gRefractionHeight)
-    ans += "*";
+  // if (circumstances[32] <= gRefractionHeight)
+  //   ans += "*";
 
   return ans;
 }

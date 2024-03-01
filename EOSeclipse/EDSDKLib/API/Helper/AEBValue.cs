@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace EOSDigital.API
 {
+    [Serializable]
     public class AEBValue
     {
         public string StringValue { get; set; }
         public int IntValue { get; set; }
 
-        protected AEBValue()
+        public AEBValue()
         {
             StringValue = string.Empty;
             IntValue = unchecked((int)0xFFFFFFFF);

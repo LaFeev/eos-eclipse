@@ -1,4 +1,5 @@
 ﻿using EOSDigital.SDK;
+using Newtonsoft.Json;
 using System;
 
 namespace EOSDigital.API
@@ -12,18 +13,22 @@ namespace EOSDigital.API
         /// <summary>
         /// The value as a string
         /// </summary>
+        [JsonProperty]
         public string StringValue { get; protected set; }
         /// <summary>
         /// The value as an UInt
         /// </summary>
+        [JsonProperty]
         public int IntValue { get; protected set; }
         /// <summary>
         /// The value as a double
         /// </summary>
+        [JsonProperty]
         public double DoubleValue { get; protected set; }
         /// <summary>
         /// The property ID of this value
         /// </summary>
+        [JsonProperty]
         public PropertyID ValueType { get; protected set; }
 
         /// <summary>

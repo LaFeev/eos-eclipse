@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 
-namespace MainForm
+namespace EOSDigital.API
 {
     
     public class CalcResult
@@ -167,6 +166,7 @@ namespace MainForm
                 if (tz >= 0) { dateString += "+" + tzh.ToString("D2") + ":" + tzm.ToString("D2"); }
                 else { dateString += tzh.ToString("D2") + ":" + tzm.ToString("D2"); }
 
+                Console.WriteLine("datestring: {0}", dateString);
                 return DateTime.ParseExact(dateString, format, provider);
             }
         }
@@ -231,11 +231,11 @@ namespace MainForm
         public String c4_azi;
         public String c4_p;
         public String c4_v;
-        public string libl;
-        public string libb;
-        public string pac;
-        public string watts_chart_link;
-        public string tz;
+        public String libl;
+        public String libb;
+        public String pac;
+        public String watts_chart_link;
+        public String tz;
     }
 
     public class SePhase
@@ -289,6 +289,7 @@ namespace MainForm
         }
     }
 
+    [Serializable]
     public class SeDateTime
     {
         public string DisplayValue { get; set; }

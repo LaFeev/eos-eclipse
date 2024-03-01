@@ -38,6 +38,12 @@ namespace EOSeclipse.Controls
         private void StepControl_Load(object sender, EventArgs e)
         {
             StepControl_Refresh();
+
+            // labels for debugging times
+            startDtLabel.Text = StartDateTime.ToString();
+            endDtLabel.Text = EndDateTime.ToString();
+            startDtLabel.Visible = false;
+            endDtLabel.Visible = false;
         }
 
 
@@ -46,6 +52,8 @@ namespace EOSeclipse.Controls
         public event EventHandler EditStage;
 
         public event EventHandler DeleteStage;
+
+        public event EventHandler<TaskFiredEventArgs> TaskFired;
 
         #endregion
 
@@ -125,14 +133,17 @@ namespace EOSeclipse.Controls
             if (CheckInStep())
             {
                 _active = true;
-                ToggleEnabled();
+
+                // make sure step is running (will also ToggleEnabled)
+                RunStep();
 
                 if (Interval > TimeSpan.Zero)
                 {
                     IntervalTimer.Interval = (int)Interval.TotalMilliseconds;
                     IntervalTimer.Start();
                 }
-
+                // Fire one task at the start (will be the only firing for single/continuous steps)
+                IntervalTimer_Tick(this, new EventArgs());
             }
             
         }
@@ -143,6 +154,16 @@ namespace EOSeclipse.Controls
             IntervalTimer.Stop();
             PartialRefresh_IntervalTimerLabel();
             ToggleEnabled();
+        }
+
+        public bool IsActive()
+        {
+            return _active;
+        }
+
+        public bool IsRunning()
+        {
+            return StepTimer.Enabled;
         }
 
         public void RunStep()
@@ -264,7 +285,7 @@ namespace EOSeclipse.Controls
             else if (_active)
             {
                 // interval timer is running
-                ts = Interval - (DateTime.UtcNow - _intervalStartTime);
+                ts = Interval - (DateTime.Now - _intervalStartTime);
             }
             else
             {
@@ -277,7 +298,8 @@ namespace EOSeclipse.Controls
 
         private bool CheckInStep()
         {
-            if (DateTime.UtcNow >= StartDateTime && DateTime.UtcNow < EndDateTime) return true;
+            //Console.WriteLine("Checking InStep {3}\nNow: {0}\nStart: {1}\nEnd: {2}", DateTime.Now.ToString(), StartDateTime.ToString(), EndDateTime.ToString(), Phase);
+            if (DateTime.Now >= StartDateTime && DateTime.Now < EndDateTime) return true;
             return false;
         }
 
@@ -286,10 +308,10 @@ namespace EOSeclipse.Controls
             if (CheckInStep())
             {
                 int inc = GetStepIncrement();
-                double elapsed = (DateTime.UtcNow - StartDateTime).TotalMilliseconds;
+                double elapsed = (DateTime.Now - StartDateTime).TotalMilliseconds;
                 return (int)(elapsed / inc) ;
             }
-            else if (DateTime.UtcNow < StartDateTime)
+            else if (DateTime.Now < StartDateTime)
             {
                 return 0;
             }
@@ -310,9 +332,9 @@ namespace EOSeclipse.Controls
             TimeSpan ts;
             if (CheckInStep())
             {
-                ts = DateTime.UtcNow - StartDateTime; 
+                ts = DateTime.Now - StartDateTime; 
             }
-            else if (DateTime.UtcNow < StartDateTime)
+            else if (DateTime.Now < StartDateTime)
             {
                 ts = TimeSpan.Zero;
             }
@@ -331,9 +353,9 @@ namespace EOSeclipse.Controls
             TimeSpan ts;
             if (CheckInStep())
             {
-                ts = EndDateTime - DateTime.UtcNow;
+                ts = EndDateTime - DateTime.Now;
             }
-            else if (DateTime.UtcNow >= EndDateTime)
+            else if (DateTime.Now >= EndDateTime)
             {
                 ts = TimeSpan.Zero;
             }
@@ -364,12 +386,36 @@ namespace EOSeclipse.Controls
 
         private void IntervalTimer_Tick(object sender, EventArgs e)
         {
-            _intervalStartTime = DateTime.UtcNow;
+            _intervalStartTime = DateTime.Now;
 
             // Execute the Task series here
-            //
-            // ...take pictures...
-            //
+            // raise a TaskFired event with payload
+            TaskFiredEventArgs args = new TaskFiredEventArgs();
+            args.IntervalStartTime = _intervalStartTime;
+            if (Interval < TimeSpan.Zero)
+            {
+                // single fire
+                args.Repeat = false;
+                args.IntervalEndTime = EndDateTime;
+            }
+            else if (Interval == TimeSpan.Zero)
+            {
+                // continuous
+                args.Repeat = true;
+                args.IntervalEndTime = EndDateTime;
+            }
+            else
+            {
+                // interval
+                args.Repeat = false;
+                args.IntervalEndTime = _intervalStartTime + Interval;
+            }
+
+            EventHandler<TaskFiredEventArgs> handler = TaskFired;
+            if (handler != null)
+            {
+                handler(this, args);
+            }
         }
 
         private void EditStageMenuItem_Click(object sender, EventArgs e)
@@ -390,6 +436,15 @@ namespace EOSeclipse.Controls
                 DeleteStage(this, new EventArgs());
             }
         }
+
         #endregion
+    }
+
+    public class TaskFiredEventArgs : EventArgs
+    {
+        public DateTime IntervalStartTime { get; set; }
+        public DateTime IntervalEndTime { get; set; }
+
+        public bool Repeat { get; set; }
     }
 }
