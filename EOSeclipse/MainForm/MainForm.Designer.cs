@@ -208,6 +208,13 @@ namespace MainForm
             this.ScriptFileBrowser = new System.Windows.Forms.OpenFileDialog();
             this.SettingsFileBrowser = new System.Windows.Forms.OpenFileDialog();
             this.SequenceFileBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.SolarFilterIpTextBox = new System.Windows.Forms.TextBox();
+            this.label36 = new System.Windows.Forms.Label();
+            this.SolarFilterStatusLabel = new System.Windows.Forms.Label();
+            this.label38 = new System.Windows.Forms.Label();
+            this.SolarFilterButton = new System.Windows.Forms.Button();
+            this.SolarFilterWebBrowser = new System.Windows.Forms.WebBrowser();
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
             this.InitGroupBox.SuspendLayout();
@@ -240,6 +247,7 @@ namespace MainForm
             this.splitContainer2.SuspendLayout();
             this.SequenceGroupBox.SuspendLayout();
             this.SeqFlowPanel.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // LiveViewGroupBox
@@ -1986,6 +1994,7 @@ namespace MainForm
             // 
             // CaptureTabPage
             // 
+            this.CaptureTabPage.Controls.Add(this.groupBox2);
             this.CaptureTabPage.Controls.Add(this.groupBox1);
             this.CaptureTabPage.Controls.Add(this.StartCaptureButton);
             this.CaptureTabPage.Location = new System.Drawing.Point(4, 22);
@@ -2196,6 +2205,77 @@ namespace MainForm
             // 
             this.SequenceFileBrowser.FileName = "eclipse.sequence";
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.SolarFilterWebBrowser);
+            this.groupBox2.Controls.Add(this.SolarFilterButton);
+            this.groupBox2.Controls.Add(this.label38);
+            this.groupBox2.Controls.Add(this.SolarFilterStatusLabel);
+            this.groupBox2.Controls.Add(this.SolarFilterIpTextBox);
+            this.groupBox2.Controls.Add(this.label36);
+            this.groupBox2.Location = new System.Drawing.Point(145, 82);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(238, 64);
+            this.groupBox2.TabIndex = 11;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Solar Filter";
+            // 
+            // SolarFilterIpTextBox
+            // 
+            this.SolarFilterIpTextBox.Location = new System.Drawing.Point(29, 19);
+            this.SolarFilterIpTextBox.Name = "SolarFilterIpTextBox";
+            this.SolarFilterIpTextBox.Size = new System.Drawing.Size(164, 20);
+            this.SolarFilterIpTextBox.TabIndex = 0;
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(6, 22);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(20, 13);
+            this.label36.TabIndex = 1;
+            this.label36.Text = "IP:";
+            // 
+            // SolarFilterStatusLabel
+            // 
+            this.SolarFilterStatusLabel.AutoSize = true;
+            this.SolarFilterStatusLabel.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.SolarFilterStatusLabel.Location = new System.Drawing.Point(45, 42);
+            this.SolarFilterStatusLabel.Name = "SolarFilterStatusLabel";
+            this.SolarFilterStatusLabel.Size = new System.Drawing.Size(38, 13);
+            this.SolarFilterStatusLabel.TabIndex = 2;
+            this.SolarFilterStatusLabel.Text = "closed";
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label38.Location = new System.Drawing.Point(6, 42);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(40, 13);
+            this.label38.TabIndex = 3;
+            this.label38.Text = "Status:";
+            // 
+            // SolarFilterButton
+            // 
+            this.SolarFilterButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SolarFilterButton.Location = new System.Drawing.Point(199, 17);
+            this.SolarFilterButton.Name = "SolarFilterButton";
+            this.SolarFilterButton.Size = new System.Drawing.Size(31, 23);
+            this.SolarFilterButton.TabIndex = 10;
+            this.SolarFilterButton.Text = "↻";
+            this.SolarFilterButton.UseVisualStyleBackColor = true;
+            this.SolarFilterButton.Click += new System.EventHandler(this.SolarFilterButton_Click);
+            // 
+            // SolarFilterWebBrowser
+            // 
+            this.SolarFilterWebBrowser.Location = new System.Drawing.Point(210, 42);
+            this.SolarFilterWebBrowser.MinimumSize = new System.Drawing.Size(20, 20);
+            this.SolarFilterWebBrowser.Name = "SolarFilterWebBrowser";
+            this.SolarFilterWebBrowser.Size = new System.Drawing.Size(20, 20);
+            this.SolarFilterWebBrowser.TabIndex = 12;
+            this.SolarFilterWebBrowser.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.SolarFilterWebBrowser_DocumentCompleted);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2250,6 +2330,8 @@ namespace MainForm
             this.splitContainer2.ResumeLayout(false);
             this.SequenceGroupBox.ResumeLayout(false);
             this.SeqFlowPanel.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2432,6 +2514,13 @@ namespace MainForm
         private System.Windows.Forms.Label UtcTimeLabel;
         private System.Windows.Forms.Label label35;
         private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.TextBox SolarFilterIpTextBox;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.Label SolarFilterStatusLabel;
+        private System.Windows.Forms.Label label36;
+        private System.Windows.Forms.Button SolarFilterButton;
+        private System.Windows.Forms.WebBrowser SolarFilterWebBrowser;
     }
 }
 

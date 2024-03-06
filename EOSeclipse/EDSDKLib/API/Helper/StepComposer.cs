@@ -32,9 +32,7 @@ namespace EDSDKLib.API.Helper
         public SeDateTime C3 { get; set; }
         public SeDateTime C4 { get; set; }
         public SeDateTime Mx { get; set; }
-        // TODO: need a method that checks the stored shooting location and SeIndex match the params currently set in GUI.
-        //  If they don't match, need to call a method that takes the circumstances and updates all the datetimes in the
-        //  StepList, and then verifies the StepList (ensure there are no overlaps in time, and if there are, trim/fix them).
+        public string SolarFilterIP { get; set; }
 
         [field: NonSerialized]
         public event EventHandler SequenceUpdated;

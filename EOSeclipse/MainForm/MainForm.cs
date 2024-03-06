@@ -105,6 +105,8 @@ namespace MainForm
                 // Control tab
                 BuildSimulations();
                 MasterTimer.Start();
+                SolarFilterStatusLabel.Visible = false;
+                SolarFilterWebBrowser.Visible = false;
 
                 ResetStage();
                 ClearSequence();
@@ -382,21 +384,21 @@ namespace MainForm
         private async Task TakeBurst(int burstDuration, TaskControl task)
         {
             // make the setting changes
-            MainCamera.SetSettingCont(PropertyID.Tv, task.Tv.IntValue);
-            MainCamera.SetSettingCont(PropertyID.Av, task.Av.IntValue);
-            MainCamera.SetSettingCont(PropertyID.ISO, task.ISO.IntValue);
+            await Task.Run(() => MainCamera.SetSettingCont(PropertyID.Tv, task.Tv.IntValue));
+            await Task.Run(() => MainCamera.SetSettingCont(PropertyID.Av, task.Av.IntValue));
+            await Task.Run(() => MainCamera.SetSettingCont(PropertyID.ISO, task.ISO.IntValue));
             // fire the burst
-            await MainCamera.TakePhotoShutterContAsync(burstDuration);
+            await Task.Run(() => MainCamera.TakePhotoShutterContAsync(burstDuration));
         }
 
         private async Task TakePhoto(TaskControl task)
         {
             // make the setting changes
-            MainCamera.SetSettingCont(PropertyID.Tv, task.Tv.IntValue);
-            MainCamera.SetSettingCont(PropertyID.Av, task.Av.IntValue);
-            MainCamera.SetSettingCont(PropertyID.ISO, task.ISO.IntValue);
+            await Task.Run(() => MainCamera.SetSettingCont(PropertyID.Tv, task.Tv.IntValue));
+            await Task.Run(() => MainCamera.SetSettingCont(PropertyID.Av, task.Av.IntValue));
+            await Task.Run(() => MainCamera.SetSettingCont(PropertyID.ISO, task.ISO.IntValue));
             // fire the shot
-            MainCamera.TakePhotoShutterAsync();
+            await Task.Run(() => MainCamera.TakePhotoShutterAsync());
         }
 
         private async Task FireTask(TaskControl task)
@@ -1170,7 +1172,7 @@ namespace MainForm
         }
         #endregion
 
-        #region Control Tab
+        #region Capture Tab
         private void CreateSimEclipse(string name, int index, TimeSpan phaseLength, string eclType)
         {
             // create a simulated eclipse that starts in 1 minute--get your cameras out!
@@ -1272,6 +1274,58 @@ namespace MainForm
                 }
             }
         }
+
+        private void SolarFilterButton_Click(object sender, EventArgs e)
+        {
+            string filterOpen = "/FILTER=OPEN";
+            string filterClose = "/FILTER=CLOSE";
+            Button btn = ( Button )sender;
+            HtmlDocument doc;
+            string filterStatus;
+            string url = Composer.SolarFilterIP = SolarFilterIpTextBox.Text;
+            SaveSession();
+
+            if ( btn.Text == "\x21BB")
+            {
+                // refresh
+                SolarFilterStatusLabel.Text = ". . .";
+                SolarFilterStatusLabel.Visible = true;
+                SolarFilterWebBrowser.Navigate(url);
+                
+               
+            }
+            else if ( btn.Text == "\x21C5")
+            {
+                // toggle filter position
+                SolarFilterStatusLabel.Text = ". . .";
+                doc = SolarFilterWebBrowser.Document;
+                filterStatus = doc.GetElementById("filterStatus").InnerText;
+                if (filterStatus == "OPEN") url += filterClose;
+                if (filterStatus == "CLOSED") url += filterOpen;
+                SolarFilterWebBrowser.Navigate(url);
+
+            }
+            else
+            {
+                //
+            }
+        }
+
+        private void SolarFilterWebBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            HtmlDocument doc = SolarFilterWebBrowser.Document;
+            if (doc.GetElementById("filterStatus") != null)
+            {
+                SolarFilterStatusLabel.Text = doc.GetElementById("filterStatus").InnerText;
+                SolarFilterButton.Text = "\x21C5";
+            }
+            else
+            {
+                SolarFilterStatusLabel.Text = "Failed to connect...";
+                SolarFilterButton.Text = "\x21BB";
+            }
+        }
+
         #endregion
 
         #region Time Keeper
@@ -1584,6 +1638,8 @@ namespace MainForm
                     //  The user will need to hit the sequence refresh button to enable the sequence (if they want
                     //  to accept these calc results)
                     EnableSequence(VerifyComposer());
+                    // restore the Solar Filter IP if present
+                    SolarFilterIpTextBox.Text = Composer.SolarFilterIP;
                 }
                 catch (Exception ex) { ReportError(ex.Message, false); }
             }
@@ -1834,11 +1890,16 @@ namespace MainForm
                     // try not to bleed over into nextStep's timeframe
                     while (DateTime.Now <= step.EndDateTime - _averageTaskTime)
                     {
+                        TimeSpan intervalT1 = step.GetStepTime();
+                        DateTime t1 = DateTime.Now;
                         foreach (TaskControl task in step.GetTasks())
                         {
                             if (DateTime.Now > step.EndDateTime - _averageTaskTime) break;
                             await FireTask(task);
                         }
+                        TimeSpan intervalT2 = step.GetStepTime();
+                        DateTime t2 = DateTime.Now;
+                        Console.WriteLine("realtime: {0}  -  steptime: {1}", (t2 - t1).ToString(), (intervalT2 - intervalT1).ToString());
                     }
                 }
                 else
@@ -1847,10 +1908,15 @@ namespace MainForm
                     // final pass, regardless of endtime)
                     while (DateTime.Now <= e.IntervalEndTime)
                     {
+                        TimeSpan intervalT1 = step.GetStepTime();
+                        DateTime t1 = DateTime.Now;
                         foreach (TaskControl task in step.GetTasks())
                         {
                             await FireTask(task);
                         }
+                        TimeSpan intervalT2 = step.GetStepTime();
+                        DateTime t2 = DateTime.Now;
+                        Console.WriteLine("realtime: {0}  -  steptime: {1}", (t2 - t1).ToString(), (intervalT2 - intervalT1).ToString());
                     }
                 }
             }
@@ -1872,20 +1938,30 @@ namespace MainForm
                 if (nextStep != null)
                 {
                     // try not to bleed over into nextStep's timeframe
+                    TimeSpan intervalT1 = step.GetStepTime();
+                    DateTime t1 = DateTime.Now;
                     foreach (TaskControl task in step.GetTasks())
                     {
                         if (DateTime.Now > step.EndDateTime - _averageTaskTime) break;
                         await FireTask(task);
                     }
+                    TimeSpan intervalT2 = step.GetStepTime();
+                    DateTime t2 = DateTime.Now;
+                    Console.WriteLine("realtime: {0}  -  steptime: {1}", (t2 - t1).ToString(), (intervalT2 - intervalT1).ToString());
                 }
                 else
                 {
                     // last step, not worried about bleedover (will complete the entire task list on the
                     // final pass, regardless of endtime)
+                    TimeSpan intervalT1 = step.GetStepTime();
+                    DateTime t1 = DateTime.Now;
                     foreach (TaskControl task in step.GetTasks())
                     {
                         await FireTask(task);
                     }
+                    TimeSpan intervalT2 = step.GetStepTime();
+                    DateTime t2 = DateTime.Now;
+                    Console.WriteLine("realtime: {0}  -  steptime: {1}", (t2 - t1).ToString(), (intervalT2 - intervalT1).ToString());
                 }
             }
         }

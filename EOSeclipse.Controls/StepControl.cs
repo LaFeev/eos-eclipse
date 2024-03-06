@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using EOSeclipse.Controls;
+using System.Globalization;
 
 namespace EOSeclipse.Controls
 {
@@ -435,6 +436,11 @@ namespace EOSeclipse.Controls
             {
                 DeleteStage(this, new EventArgs());
             }
+        }
+
+        public TimeSpan GetStepTime()
+        {
+            return TimeSpan.ParseExact(StepElapsedTimeLabel.Text, "mm\\:ss\\.f", CultureInfo.InvariantCulture);
         }
 
         #endregion
