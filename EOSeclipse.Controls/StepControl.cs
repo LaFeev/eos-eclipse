@@ -16,6 +16,7 @@ namespace EOSeclipse.Controls
     public partial class StepControl: UserControl//, INotifyPropertyChanged
     {
         private bool _active { get; set; }
+        private bool _finished { get; set; }
         public TimeSpan Interval { get; set; }
         private DateTime _intervalStartTime { get; set; }
         public DateTime StartDateTime { get; set; }
@@ -128,12 +129,13 @@ namespace EOSeclipse.Controls
         #endregion
 
         #region Controls
-        public void Start()
+        public void Start(bool forceStart=false)
         {
             // only 'start' if we are within the step start/end times
-            if (CheckInStep())
+            if (CheckInStep() || forceStart)
             {
                 _active = true;
+                _finished = false;
 
                 // make sure step is running (will also ToggleEnabled)
                 RunStep();
@@ -160,6 +162,10 @@ namespace EOSeclipse.Controls
         public bool IsActive()
         {
             return _active;
+        }
+        public bool IsFinished()
+        {
+            return _finished;
         }
 
         public bool IsRunning()
@@ -191,6 +197,7 @@ namespace EOSeclipse.Controls
             PartialRefresh_ProgressBar();
             PartialRefresh_ProgressTimes();
             ToggleEnabled();
+            _finished = true;
         }
 
         public void AddTask(TaskControl task)
@@ -202,10 +209,24 @@ namespace EOSeclipse.Controls
             Tasks.Add(task);
             StepFlowLayoutPanel.Controls.Add(task);
 
-            // TODO: turn this height adjustment into a subroutine function that can be called on resize events
-            if (StepFlowLayoutPanel.HorizontalScroll.Visible)
+            AdjustStepControlHeight();
+        }
+
+        public void AdjustStepControlHeight()
+        {
+            int padding = 50;
+            int containedWidth = 0;
+            foreach (TaskControl task in Tasks)
+            {
+                containedWidth += task.Width;
+            }
+            if (containedWidth >= StepFlowLayoutPanel.Width - padding) 
             {
                 this.Height = _heightHigh;
+            }
+            else
+            {
+                this.Height = _heightLow;
             }
         }
 

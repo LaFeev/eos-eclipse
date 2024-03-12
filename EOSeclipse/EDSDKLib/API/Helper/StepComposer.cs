@@ -33,6 +33,7 @@ namespace EDSDKLib.API.Helper
         public SeDateTime C4 { get; set; }
         public SeDateTime Mx { get; set; }
         public string SolarFilterIP { get; set; }
+        public string FocuserIP { get; set; }
 
         [field: NonSerialized]
         public event EventHandler SequenceUpdated;
@@ -132,70 +133,6 @@ namespace EDSDKLib.API.Helper
             for (int i = 0; i < tv.Count(); i++) aeblist.Add(TvValues.Auto);
 
             AddStep(phase, startRef, startOffset, endRef, endOffset, interval, script, tv, av, iso, null, aeblist, aeblist);
-            //StepBuilder stepBuilder = new StepBuilder();
-            //// create the taskbuilder list
-            //if (phase == "Script")
-            //{
-            //    TaskBuilder task = new TaskBuilder();
-            //    task.Script = script;
-            //    stepBuilder.TaskList.Add(task);
-            //}
-            //else
-            //{
-            //    for (int i = 0; i < tv.Count(); i++)
-            //    {
-            //        TaskBuilder task = new TaskBuilder();
-            //        task.Tv = tv[i];
-            //        task.ISO = iso;
-            //        task.Av = av;
-            //        task.AEBMinus = task.AEBPlus = TvValues.Auto;
-            //        // add task to step
-            //        stepBuilder.TaskList.Add(task);
-            //    }
-            //}
-
-            //// set the remainder of the StepBuilder properties
-            //stepBuilder.Phase = phase;
-            //stepBuilder.StartRef = startRef;
-            //stepBuilder.StartOffset = startOffset;
-            //stepBuilder.StartDateTime = startDateTime;
-            //stepBuilder.EndRef = endRef;
-            //stepBuilder.EndOffset = endOffset;
-            //stepBuilder.EndDateTime = endDateTime;
-            //stepBuilder.Interval = interval;
-
-            //// add the step to StepList
-            //if (StepList.Count() == 0)
-            //{
-            //    StepList.Add(stepBuilder);
-            //    Refresh();
-            //    return;
-            //}
-            //else
-            //{
-            //    for (int i = 0; i < StepList.Count; i++)
-            //    {
-            //        if (StepList[i].StartDateTime < stepBuilder.StartDateTime)
-            //        {
-            //            if (StepList[i].EndDateTime > stepBuilder.StartDateTime)
-            //            {
-            //                // overlapping times, drop the new sb in behind the overlapping step
-            //                StepList.Insert(i + 1, stepBuilder);
-            //                UpdateSequence();
-            //                return;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            // the first step that is equal to or later than the new sb's start time
-            //            StepList.Insert(i, stepBuilder);
-            //            UpdateSequence();
-            //            return;
-            //        }
-            //    }
-            //    StepList.Add(stepBuilder);
-            //    UpdateSequence();
-            //}
         }
 
         public void Refresh()
@@ -331,6 +268,11 @@ namespace EDSDKLib.API.Helper
                 {
                     step.StartDateTime = GetDateTime(step.StartRef, step.StartOffset);
                     step.EndDateTime = GetDateTime(step.EndRef, step.EndOffset);
+                    //if (step.Interval == new TimeSpan(-99, -99, -99))
+                    //{
+                    //    Console.WriteLine("setting endtime for a Single-interval step");
+                    //    step.EndDateTime += new TimeSpan(0, 0, 0, 0, 200);
+                    //}
                 }
             }
         }
@@ -478,21 +420,24 @@ namespace EDSDKLib.API.Helper
             {
                 foreach (string ph in GetPhases())
                 {
-                    foreach (StepBuilder sb in StepList)
+                    if (ph != "Script" && ph != "Other")
                     {
-                        if (sb.Phase == ph)
+                        foreach (StepBuilder sb in StepList)
                         {
-                            if (sb.Phase == "Baily's Beads")
+                            if (sb.Phase == ph)
                             {
-                                if (sb.StartRef == "C2") c2bb = true;
-                                if (sb.StartRef == "C3") c3bb = true;
+                                if (sb.Phase == "Baily's Beads")
+                                {
+                                    if (sb.StartRef == "C2") c2bb = true;
+                                    if (sb.StartRef == "C3") c3bb = true;
 
-                                if (c2bb && c3bb) remainingPhases.Remove(ph); break;
-                            }
-                            else
-                            {
-                                remainingPhases.Remove(ph);
-                                break;
+                                    if (c2bb && c3bb) remainingPhases.Remove(ph); break;
+                                }
+                                else
+                                {
+                                    remainingPhases.Remove(ph);
+                                    break;
+                                }
                             }
                         }
                     }

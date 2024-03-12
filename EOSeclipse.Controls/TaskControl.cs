@@ -62,6 +62,7 @@ namespace EOSeclipse.Controls
                 AvLabel.Visible = false;
                 AEBMinusLabel.Visible = false;
                 AEBPlusLabel.Visible = false;
+                label1.Visible = false;   // the word "ISO"
                 ScriptLabel.Visible = true;
             }
             else

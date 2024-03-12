@@ -18,8 +18,6 @@ using System.IO;
 using EDSDKLib.API.Helper;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
-using System.Data.Entity.Infrastructure;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace MainForm
 {
@@ -58,6 +56,7 @@ namespace MainForm
         public List<CalcResult> SimResults = new List<CalcResult>();
         public List<SeIndex> SimIndices = new List<SeIndex>();
         public bool SessionIsLive = false;
+        public bool FocuserConnected = false;
 
         #endregion
 
@@ -79,6 +78,9 @@ namespace MainForm
                 IsInit = true;
                 SaveSettingsButton.Enabled = false;
                 LoadedCameraSettingsLabel.Visible = false;
+                // Settings tab
+                FocuserWebBrowser.Visible = false;
+                FocuserStatusLabel.Visible = false;
 
                 // Location tab
                 gmap.MapProvider = GMap.NET.MapProviders.GMapProviders.GoogleMap;
@@ -185,11 +187,11 @@ namespace MainForm
             catch (Exception ex) { ReportError(ex.Message, false); }
         }
         
-        private void MainCamera_ProgressChanged(object sender, int progress)
-        {
-            try { Invoke((Action)delegate { MainProgressBar.Value = progress; }); }
-            catch (Exception ex) { ReportError(ex.Message, false); }
-        }
+        //private void MainCamera_ProgressChanged(object sender, int progress)
+        //{
+        //    try { Invoke((Action)delegate { MainProgressBar.Value = progress; }); }
+        //    catch (Exception ex) { ReportError(ex.Message, false); }
+        //}
 
         private void MainCamera_LiveViewUpdated(Camera sender, Stream img)
         {
@@ -212,7 +214,7 @@ namespace MainForm
                 string dir = null;
                 Invoke((Action)delegate { dir = SavePathTextBox.Text; });
                 sender.DownloadFile(Info, dir);
-                Invoke((Action)delegate { MainProgressBar.Value = 0; });
+                //Invoke((Action)delegate { MainProgressBar.Value = 0; });
             }
             catch (Exception ex) { ReportError(ex.Message, false); }
         }
@@ -401,6 +403,33 @@ namespace MainForm
             await Task.Run(() => MainCamera.TakePhotoShutterAsync());
         }
 
+        private async Task FireScript(TaskControl task)
+        {
+            if (task.Script.ToUpper() == "FILTER-OPEN")
+            {
+                // open the filter
+                if (Composer.SolarFilterIP != null && Composer.SolarFilterIP != string.Empty)
+                {
+                    await Task.Run(() => SolarFilter_Open());
+                    Console.WriteLine("SolarFiler_Open task complete");
+                }
+            }
+            else if (task.Script.ToUpper() == "FILTER-CLOSE")
+            {
+                // close the filter
+                if (Composer.SolarFilterIP != null && Composer.SolarFilterIP != string.Empty)
+                {
+                    await Task.Run(() => SolarFilter_Close());
+                }
+            }
+            else
+            {
+                // other script processing
+                // TODO
+            }
+
+        }
+
         private async Task FireTask(TaskControl task)
         {
             if (MainCamera != null)
@@ -409,7 +438,7 @@ namespace MainForm
                 if (task.Script != null)
                 {
                     // script deploy
-                    Console.WriteLine("TODO: deploy script in FireTask()");
+                    await FireScript(task);
                 }
                 else if (task.AEBMinus != TvValues.Auto)
                 {
@@ -427,7 +456,10 @@ namespace MainForm
             {
                 // no camera attached, fire debug messages
                 if (task.Script != null)
+                {
                     Console.WriteLine("{0} FIRE - script: {1}", DateTime.Now.ToString(), task.Script);
+                    await FireScript(task);
+                }
                 else if (task.AEBMinus != TvValues.Auto)
                 {
                     Console.WriteLine("{0} FIRE - burst: {1} Tv; {2} Av; {3} ISO", DateTime.Now, task.Tv.StringValue, task.Av.StringValue, task.ISO.StringValue);
@@ -440,6 +472,80 @@ namespace MainForm
                 }
             }
         }
+
+        private void FocuserButton_Click(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+            string url = Composer.FocuserIP = FocuserIpTextBox.Text;
+            SaveSession();
+
+            if (btn.Text == "\x21BB")
+            {
+                // refresh
+                FocuserStatusLabel.Text = ". . .";
+                FocuserStatusLabel.Visible = true;
+                FocuserWebBrowser.Navigate(url);
+            }
+            else if (btn.Text == "\x2573")
+            {
+                // disconnect
+                FocuserStatusLabel.Text = "disconnected";
+                Composer.FocuserIP = null;
+                FocuserButton.Text = "\x21BB";
+            }
+            else
+            {
+                //
+            }
+        }
+
+        private void Focuser_Near(int stepSize=1)
+        {
+            string url = Composer.FocuserIP;
+            url += "/control";
+            System.Text.Encoding encoding = System.Text.Encoding.UTF8;
+            string cmd = "focus=INx1";
+            if (stepSize == 2) cmd = "focus=INx2";
+            if (stepSize == 3) cmd = "focus=INx3";
+            byte[] postData = encoding.GetBytes(cmd);
+            FocuserWebBrowser.Navigate(url, string.Empty, postData, "Content-Type: application/x-www-form-urlencoded");
+        }
+
+        private void Focuser_Far(int stepSize=1)
+        {
+            string url = Composer.FocuserIP;
+            url += "/control";
+            System.Text.Encoding encoding = System.Text.Encoding.UTF8;
+            string cmd = "focus=OUTx1";
+            if (stepSize == 2) cmd = "focus=OUTx2";
+            if (stepSize == 3) cmd = "focus=OUTx3";
+            byte[] postData = encoding.GetBytes(cmd);
+            FocuserWebBrowser.Navigate(url, string.Empty, postData, "Content-Type: application/x-www-form-urlencoded");
+        }
+
+        private void FocuserWebBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            HtmlDocument doc = FocuserWebBrowser.Document;
+            if (doc.GetElementById("focuserName") != null)
+            {
+                FocuserConnected = true;
+                FocuserStatusLabel.Text = "Connected to " + doc.GetElementById("FocuserName").InnerText;
+                FocuserButton.Text = "\x2573";
+            }
+            else if (doc.GetElementById("focusMove") != null)
+            {
+                FocuserConnected = true;
+                FocuserStatusLabel.Text = doc.GetElementById("focusMove").InnerText;
+                FocuserButton.Text = "\x2573";
+            }
+            else
+            {
+                FocuserConnected = false;
+                FocuserStatusLabel.Text = "Failed to connect...";
+                FocuserButton.Text = "\x21BB";
+            }
+        }
+
         #endregion
 
         #region Location
@@ -798,7 +904,8 @@ namespace MainForm
             int idx = SeqFlowPanel.Controls.IndexOf(step);
             if (idx != -1)
             {
-                Composer.DeleteStep(idx);
+                // recall that there is a hidden panel in the SeqFlowPanel, so the first StepControl has an index of 1 in the panel, but an index of 0 in the StepComposer.
+                Composer.DeleteStep(idx-1);
                 // save the Composer state for 'auto session'
                 SaveSession();
                 ResetPhaseList();
@@ -935,8 +1042,32 @@ namespace MainForm
             TimeSpan StartOffset = new TimeSpan(0, 0, (int)StartOffsetUpDown.Value);
             string EndRef = EndRefComboBox.SelectedItem.ToString();
             TimeSpan EndOffset = new TimeSpan(0, 0, (int)EndOffsetUpDown.Value);
-            CameraValue ISO = new CameraValue((double)SeqIsoCoBox.SelectedItem, PropertyID.ISO);
-            CameraValue Av = new CameraValue(SeqAvCoBox.SelectedItem.ToString(), PropertyID.Av);
+            //if (SingleRadioButton.Checked)
+            //    EndOffset = new TimeSpan(0, 0, 0, 0, 200);
+            CameraValue ISO = new CameraValue(0, PropertyID.ISO);
+            CameraValue Av = new CameraValue(0, PropertyID.Av);
+            AEBValue AEB = new AEBValue();
+            List<CameraValue> Tvs = new List<CameraValue>();
+            List<CameraValue> AEBMinus = new List<CameraValue>();
+            List<CameraValue> AEBPlus = new List<CameraValue>();
+            if (Phase != "Script")
+            {
+                ISO = new CameraValue((double)SeqIsoCoBox.SelectedItem, PropertyID.ISO);
+                Av = new CameraValue(SeqAvCoBox.SelectedItem.ToString(), PropertyID.Av);
+
+                foreach (string _tv in SeqTvListBox.SelectedItems)
+                {
+                    CameraValue Tv = new CameraValue(_tv, PropertyID.Tv);
+                    Tvs.Add(Tv);
+
+                    if (AEBRadioButton.Checked)
+                    {
+                        AEB = new AEBValue(AEBUpDown.SelectedItem.ToString());
+                        AEBMinus.Add(GetAEB(Tv, AEB, false));
+                        AEBPlus.Add(GetAEB(Tv, AEB, true));
+                    }
+                }
+            }
             string Script = ScriptTextBox.Text;
             DateTime StartDateTime = DateTime.MinValue;
             DateTime EndDateTime = DateTime.MinValue;
@@ -977,24 +1108,6 @@ namespace MainForm
             else if (ContinuousRadioButton.Checked) { Interval = TimeSpan.Zero; }
             else { Interval = new TimeSpan(-99, -99, -99); }
 
-            AEBValue AEB = new AEBValue();
-            List<CameraValue> Tvs = new List<CameraValue>();
-            List<CameraValue> AEBMinus = new List<CameraValue>();
-            List<CameraValue> AEBPlus = new List<CameraValue>();
-
-            foreach (string _tv in SeqTvListBox.SelectedItems)
-            {
-                CameraValue Tv = new CameraValue(_tv, PropertyID.Tv);
-                Tvs.Add(Tv);
-
-                if (AEBRadioButton.Checked)
-                {
-                    AEB = new AEBValue(AEBUpDown.SelectedItem.ToString());
-                    AEBMinus.Add(GetAEB(Tv, AEB, false));
-                    AEBPlus.Add(GetAEB(Tv, AEB, true));
-                }
-            }
-            
             // if -not- in edit mode
             if (btn.Text == "Add Stage")
             {
@@ -1011,7 +1124,8 @@ namespace MainForm
             else
             {
                 // edit mode, edit the StepBuilder at the affected index
-                int idx = SeqFlowPanel.Controls.IndexOf(_editStep);
+                // remember there is a hidden panel in the SeqFlowPanel, so adjust the index by 1 to match the StepComposer list
+                int idx = SeqFlowPanel.Controls.IndexOf(_editStep) - 1;
                 if (AEBRadioButton.Checked)
                 {
                     Composer.DeleteStep(idx);
@@ -1048,11 +1162,35 @@ namespace MainForm
                 // don't reset...
             }
         }
-        
-        // TODO: UserControl is not serializable, not sure how to proceed
+
         private void SaveSeqButton_Click(object sender, EventArgs e)
         {
-            //
+            String SavePath;
+            try
+            {
+                if (File.Exists(AppDataDir)) SequenceSaveFileDialog.InitialDirectory = AppDataDir;
+                if (SequenceSaveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    SavePath = SequenceSaveFileDialog.FileName;
+                    SaveSession(SavePath);
+                }
+            }
+            catch (Exception ex) { ReportError(ex.Message, false); }
+        }
+
+        private void LoadSeqButton_Click(object sender, EventArgs e)
+        {
+            String LoadPath;
+            try
+            {
+                if (File.Exists(AppDataDir)) SequenceOpenFileDialog.InitialDirectory = AppDataDir;
+                if (SequenceOpenFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    LoadPath = SequenceOpenFileDialog.FileName;
+                    LoadSession(LoadPath);
+                }
+            }
+            catch (Exception ex) { ReportError(ex.Message, false); }
         }
 
         #endregion
@@ -1073,6 +1211,9 @@ namespace MainForm
                     BuildSimulations();
                     int simIdx = eclipse_index.IntValue - maxSeIndex - 1;
                     SeResult = SimResults[simIdx];
+                    SeResult.Lat = ShootingLocation.Lat;
+                    SeResult.Lng = ShootingLocation.Lng;
+                    SeResult.Elv = Elevation;
                 }
                 else
                 {
@@ -1100,6 +1241,9 @@ namespace MainForm
                     // make the call to the javascript calculator
                     SeWebBrowser.Document.InvokeScript("calc", arglist);
                     SeResult = new CalcResult(calcRaw);
+                    SeResult.Lat = ShootingLocation.Lat;
+                    SeResult.Lng = ShootingLocation.Lng;
+                    SeResult.Elv = Elevation;
                 }
 
                 // display the results to the Eclipse tab
@@ -1146,6 +1290,8 @@ namespace MainForm
 
                 // TODO: cache the C2 and C3 limb corrections if available (tie them to the compute location)
 
+                // reset the background color, in case it had been changed
+                EclipseTabPage.BackColor = Color.White;
                 // Invalidate the sequence panel if these calc results differ from the circumstances stored in the Composer.
                 //  The user will need to hit the sequence refresh button to enable the sequence (if they want
                 //  to accept these calc results)
@@ -1269,16 +1415,20 @@ namespace MainForm
                 btn.Text = "Start Capture";
                 for (int i = 0; i < SeqFlowPanel.Controls.Count; i++)
                 {
-                    StepControl step = (StepControl)SeqFlowPanel.Controls[i];
-                    step.Stop();
+                    if (SeqFlowPanel.Controls[i].GetType() == typeof(StepControl))
+                    {
+                        StepControl step = (StepControl)SeqFlowPanel.Controls[i];
+                        step.Stop();
+                    }
                 }
+                // if a sequence gets invalidated while running, the Stop Capture button is left enabled, but
+                // should be disabled upon stopping, to prevent starting capture on an invalid sequence.
+                EnableSequence(VerifyComposer());
             }
         }
 
         private void SolarFilterButton_Click(object sender, EventArgs e)
         {
-            string filterOpen = "/FILTER=OPEN";
-            string filterClose = "/FILTER=CLOSE";
             Button btn = ( Button )sender;
             HtmlDocument doc;
             string filterStatus;
@@ -1291,24 +1441,42 @@ namespace MainForm
                 SolarFilterStatusLabel.Text = ". . .";
                 SolarFilterStatusLabel.Visible = true;
                 SolarFilterWebBrowser.Navigate(url);
-                
-               
             }
             else if ( btn.Text == "\x21C5")
             {
                 // toggle filter position
                 SolarFilterStatusLabel.Text = ". . .";
                 doc = SolarFilterWebBrowser.Document;
+                // get current position
                 filterStatus = doc.GetElementById("filterStatus").InnerText;
-                if (filterStatus == "OPEN") url += filterClose;
-                if (filterStatus == "CLOSED") url += filterOpen;
-                SolarFilterWebBrowser.Navigate(url);
-
+                // until the index.html page includes a value for filterStatus:
+                if (filterStatus == string.Empty || filterStatus == null) filterStatus = "CLOSED";
+                // toggle/invert position
+                if (filterStatus == "OPEN") SolarFilter_Close();
+                if (filterStatus == "CLOSED") SolarFilter_Open();
             }
             else
             {
                 //
             }
+        }
+
+        private void SolarFilter_Open()
+        {
+            string url = Composer.SolarFilterIP;
+            url += "/control";
+            System.Text.Encoding encoding = System.Text.Encoding.UTF8;
+            byte[] postData = encoding.GetBytes("filter=OPEN");
+            SolarFilterWebBrowser.Navigate(url, string.Empty, postData, "Content-Type: application/x-www-form-urlencoded");
+        }
+
+        private void SolarFilter_Close()
+        {
+            string url = Composer.SolarFilterIP;
+            url += "/control";
+            System.Text.Encoding encoding = System.Text.Encoding.UTF8;
+            byte[] postData = encoding.GetBytes("filter=CLOSE");
+            SolarFilterWebBrowser.Navigate(url, string.Empty, postData, "Content-Type: application/x-www-form-urlencoded");
         }
 
         private void SolarFilterWebBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
@@ -1341,30 +1509,43 @@ namespace MainForm
             // TODO
 
             // check for any phase starts
-            if (SeqFlowPanel.Controls.Count > 0)
+            // remember SeqFlowPanel has a SeqSizer panel hidden at index 0
+            if (SeqFlowPanel.Controls.Count > 1)
             {
-                DateTime sessionStart = ((StepControl)SeqFlowPanel.Controls[0]).StartDateTime;
+                DateTime sessionStart = ((StepControl)SeqFlowPanel.Controls[1]).StartDateTime;
                 DateTime sessionEnd = ((StepControl)SeqFlowPanel.Controls[SeqFlowPanel.Controls.Count - 1]).EndDateTime;
-                if (sessionStart - new TimeSpan(0,1,00) <= now && now <= sessionEnd + new TimeSpan(0,1,0))
+                if (sessionStart - new TimeSpan(0, 1, 00) <= now && now <= sessionEnd + new TimeSpan(0, 1, 0))
                 {
                     // only evaluate further if current time falls somewhere inside of the total event start/end times (with 1min margin on either end)
-                    for (int i = 0; i < SeqFlowPanel.Controls.Count; i++)
+                    for (int i = 1; i < SeqFlowPanel.Controls.Count; i++)
                     {
                         StepControl step = (StepControl)SeqFlowPanel.Controls[i];
                         // check if "now" is between start time and end time
-                        if (step.StartDateTime <= now && now < step.EndDateTime)
+                        if (step.StartDateTime <= now)
                         {
-                            if (!step.IsActive() && SessionIsLive)
+                            // past the start time
+                            if (now < step.EndDateTime)
                             {
-                                // If we're live, start the step if it isn't active, and break the forloop to stop evaluating the rest of the steps (steps cannot be parallel)
-                                step.Start();
-                                break;
+                                // before the end time
+                                if (!step.IsActive() && SessionIsLive)
+                                {
+                                    // If we're live, start the step if it isn't active, and break the forloop to stop evaluating the rest of the steps (steps cannot be parallel)
+                                    Console.WriteLine("step starting: {0}", step.Phase);
+                                    step.Start();
+                                    break;
+                                }
+                                else if (!step.IsRunning())
+                                {
+                                    // run the step if it isn't running
+                                    step.RunStep();
+                                    break;
+                                }
                             }
-                            else if (!step.IsRunning())
+                            else if (!step.IsFinished() && !step.IsActive() && SessionIsLive)
                             {
-                                // run the step if it isn't running
-                                step.RunStep();
-                                break;
+                                // past the start and end time, but was never activated
+                                Console.WriteLine("step late-starting: {0}", step.Phase);
+                                step.Start(true);
                             }
                         }
                     }
@@ -1427,38 +1608,62 @@ namespace MainForm
 
         private void FocusNear3Button_Click(object sender, EventArgs e)
         {
-            try { MainCamera.SendCommand(CameraCommand.DriveLensEvf, (int)DriveLens.Near3); }
-            catch (Exception ex) { ReportError(ex.Message, false); }
+            if (FocuserConnected) Focuser_Near(3);
+            else
+            {
+                try { MainCamera.SendCommand(CameraCommand.DriveLensEvf, (int)DriveLens.Near3); }
+                catch (Exception ex) { ReportError(ex.Message, false); }
+            }
         }
 
         private void FocusNear2Button_Click(object sender, EventArgs e)
         {
-            try { MainCamera.SendCommand(CameraCommand.DriveLensEvf, (int)DriveLens.Near2); }
-            catch (Exception ex) { ReportError(ex.Message, false); }
+            if (FocuserConnected) Focuser_Near(2);
+            else
+            {
+                try { MainCamera.SendCommand(CameraCommand.DriveLensEvf, (int)DriveLens.Near2); }
+                catch (Exception ex) { ReportError(ex.Message, false); }
+            }
         }
 
         private void FocusNear1Button_Click(object sender, EventArgs e)
         {
-            try { MainCamera.SendCommand(CameraCommand.DriveLensEvf, (int)DriveLens.Near1); }
-            catch (Exception ex) { ReportError(ex.Message, false); }
+            if (FocuserConnected) Focuser_Near();
+            else
+            {
+                try { MainCamera.SendCommand(CameraCommand.DriveLensEvf, (int)DriveLens.Near1); }
+                catch (Exception ex) { ReportError(ex.Message, false); }
+            }
         }
 
         private void FocusFar1Button_Click(object sender, EventArgs e)
         {
-            try { MainCamera.SendCommand(CameraCommand.DriveLensEvf, (int)DriveLens.Far1); }
-            catch (Exception ex) { ReportError(ex.Message, false); }
+            if (FocuserConnected) Focuser_Far();
+            else
+            {
+                try { MainCamera.SendCommand(CameraCommand.DriveLensEvf, (int)DriveLens.Far1); }
+                catch (Exception ex) { ReportError(ex.Message, false); }
+            }
         }
 
         private void FocusFar2Button_Click(object sender, EventArgs e)
         {
-            try { MainCamera.SendCommand(CameraCommand.DriveLensEvf, (int)DriveLens.Far2); }
-            catch (Exception ex) { ReportError(ex.Message, false); }
+            if (FocuserConnected) Focuser_Far(2);
+            else
+            {
+                try { MainCamera.SendCommand(CameraCommand.DriveLensEvf, (int)DriveLens.Far2); }
+                catch (Exception ex) { ReportError(ex.Message, false); }
+            }
         }
 
         private void FocusFar3Button_Click(object sender, EventArgs e)
         {
-            try { MainCamera.SendCommand(CameraCommand.DriveLensEvf, (int)DriveLens.Far3); }
-            catch (Exception ex) { ReportError(ex.Message, false); }
+            if (FocuserConnected) Focuser_Far(3);
+            else
+            {
+                try { MainCamera.SendCommand(CameraCommand.DriveLensEvf, (int)DriveLens.Far3); }
+                catch (Exception ex) { ReportError(ex.Message, false); }
+            }
         }
 
         #endregion
@@ -1516,7 +1721,7 @@ namespace MainForm
                 MainCamera = CamList[CameraListBox.SelectedIndex];
                 MainCamera.OpenSession();
                 MainCamera.LiveViewUpdated += MainCamera_LiveViewUpdated;
-                MainCamera.ProgressChanged += MainCamera_ProgressChanged;
+                //MainCamera.ProgressChanged += MainCamera_ProgressChanged;
                 MainCamera.StateChanged += MainCamera_StateChanged;
                 MainCamera.DownloadReady += MainCamera_DownloadReady;
 
@@ -1578,7 +1783,7 @@ namespace MainForm
         private void SaveSession(string fpath=null)
         {
             // serialize the current session (shooting location, eclipse, steps)
-            if (fpath == null) fpath = Path.Combine(AppDataDir, @"auto.session");
+            if (fpath == null) fpath = Path.Combine(AppDataDir, @"auto_session.json");
 
             Stream stream = new FileStream(fpath, FileMode.Create, System.IO.FileAccess.Write);
             
@@ -1596,7 +1801,7 @@ namespace MainForm
         private void LoadSession(string fpath=null)
         {
             // point to the auto session if an alternative was not provided
-            if (fpath == null) fpath = Path.Combine(AppDataDir, @"auto.session");
+            if (fpath == null) fpath = Path.Combine(AppDataDir, @"auto_session.json");
 
             if (File.Exists(fpath))
             {
@@ -1638,8 +1843,9 @@ namespace MainForm
                     //  The user will need to hit the sequence refresh button to enable the sequence (if they want
                     //  to accept these calc results)
                     EnableSequence(VerifyComposer());
-                    // restore the Solar Filter IP if present
+                    // restore the Solar Filter and Focuser IPs if present
                     SolarFilterIpTextBox.Text = Composer.SolarFilterIP;
+                    FocuserIpTextBox.Text = Composer.FocuserIP;
                 }
                 catch (Exception ex) { ReportError(ex.Message, false); }
             }
@@ -1656,7 +1862,6 @@ namespace MainForm
             // serialize the current Tv, Av, and ISO settings and save to file.
             string fname = MainCamera.DeviceName.Replace(" ", "_");
             fname += ".settings";
-            Console.WriteLine(fname);
             IFormatter formatter = new BinaryFormatter();
             // debug location
             Stream streamDebug = new FileStream("../../test.settings", FileMode.Create, System.IO.FileAccess.Write);
@@ -1664,11 +1869,8 @@ namespace MainForm
             Stream stream = new FileStream(Path.Combine(AppDataDir, fname), FileMode.Create, System.IO.FileAccess.Write);
 
             List<CameraValue> valueList = AvList.ToList<CameraValue>();
-            Console.WriteLine(valueList.Count);
             valueList.AddRange(TvList);
-            Console.WriteLine(valueList.Count);
             valueList.AddRange(ISOList);
-            Console.WriteLine(valueList.Count);
             // write to debug location
             formatter.Serialize(streamDebug, valueList);
             streamDebug.Close();
@@ -1723,6 +1925,16 @@ namespace MainForm
             if (SeqFlowPanel.VerticalScroll.Visible) { offset = 32; }
                 
             SeqSizerPanel.Width = SeqFlowPanel.Width - offset;
+
+            // now adjust height of each step control
+            foreach (Object control in SeqFlowPanel.Controls)
+            {
+                if (control.GetType() == typeof(StepControl))
+                {
+                    StepControl step = (StepControl)control;
+                    step.AdjustStepControlHeight();
+                }
+            }
         }
 
         private CameraValue GetAEB(CameraValue baseTv, AEBValue AEB, bool plus)
@@ -1814,9 +2026,6 @@ namespace MainForm
                 }
             }
 
-            // ?
-            // TODO: handle the script field
-
             // create a refernce to this step so it can be written to later
             _editStep = step;
         }
@@ -1859,7 +2068,9 @@ namespace MainForm
 
         private void EventHandler_SequenceUpdated(object sender, EventArgs e)
         {
-            SeqFlowPanel.Controls.Clear();
+            // cannot simply "clear" the whole flow panel because there is a hidden SeqSizer panel that we don't want to delete
+            // Do not use: SeqFlowPanel.Controls.Clear();
+            ClearSeqPanel();
             List<StepControl> steps = Composer.GetStepControls();
             foreach (StepControl step in steps)
             {
@@ -1869,6 +2080,19 @@ namespace MainForm
                 step.TaskFired += EventHandler_TaskFired;
                 // add the step to the flow panel
                 SeqFlowPanel.Controls.Add(step);
+            }
+        }
+
+        private void ClearSeqPanel()
+        {
+            // This clears the actual FlowPanel control without clearing the StepBuilder list within StepComposer (as ClearSequence() does)
+            // There is a hidden panel at the top of the FlowPanel for use in resizing, we must preserve it.
+            for (int i = SeqFlowPanel.Controls.Count - 1; i >= 0; i--)
+            {
+                if (SeqFlowPanel.Controls[i].GetType() == typeof(StepControl)) 
+                {
+                    SeqFlowPanel.Controls.RemoveAt(i);
+                }
             }
         }
 
@@ -1920,7 +2144,7 @@ namespace MainForm
                     }
                 }
             }
-            else if (e.IntervalStartTime >= step.EndDateTime)
+            else if ((step.EndDateTime - e.IntervalStartTime) <= new TimeSpan(0,0,1 ))
             {
                 // single
                 // the start/end times are defined as equal, so the firing time may actually be
@@ -2051,19 +2275,59 @@ namespace MainForm
 
         private void EnableSequence(bool ComposerVerified)
         {
-            // disable the sequence panel if ComposerVerified is false, otherwise, enable it
-            if (ComposerVerified)
+            bool calcsAreGood = VerifyCalcs();
+            // disable the sequence panel if ComposerVerified is false or calcs aren't good, otherwise, enable it
+            if (ComposerVerified && calcsAreGood)
             {
                 SeqFlowPanel.Enabled = true;
                 SeqGenTabPage.Enabled = true;
                 RefreshSequenceButton.Visible = false;
+                StartCaptureButton.Enabled = true;
+            }
+            else if (!calcsAreGood)
+            {
+                SeqFlowPanel.Enabled = false;
+                SeqGenTabPage.Enabled = false;
+                RefreshSequenceButton.Visible = true;
+                RefreshSequenceButton.Enabled = false;
+                SettingsTabControl.SelectedTab = EclipseTabPage;
+                EclipseTabPage.BackColor = Color.Coral;
+                if (StartCaptureButton.Text == "Start Capture")
+                {
+                    StartCaptureButton.Enabled = false;
+                }
             }
             else
             {
                 SeqFlowPanel.Enabled =false;
                 SeqGenTabPage.Enabled = false;
                 RefreshSequenceButton.Visible = true;
+                RefreshSequenceButton.Enabled = true;
+                if (StartCaptureButton.Text == "Start Capture")
+                {
+                    StartCaptureButton.Enabled = false;
+                }
             }
+        }
+
+        private bool VerifyCalcs()
+        {
+            if (SeResult != null)
+            {
+                if (ShootingLocation.Lat == SeResult.Lat)
+                {
+                    if (ShootingLocation.Lng == SeResult.Lng)
+                    {
+                        if (Elevation == SeResult.Elv)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            return true;
+            
         }
 
         #endregion        

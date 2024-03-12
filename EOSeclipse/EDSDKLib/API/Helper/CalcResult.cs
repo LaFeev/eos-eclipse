@@ -22,6 +22,9 @@ namespace EOSDigital.API
         public SeDecimal LibL { set; get; }
         public SeDecimal LibB { set; get; }
         public SeDecimal PaC { set; get; }
+        public double Lat {  set; get; }
+        public double Lng { set; get; }
+        public double Elv { set; get; }
         #endregion
 
         public CalcResult(CalcRaw raw)

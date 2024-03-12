@@ -50,11 +50,10 @@
             this.MainPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.MainPanel.Controls.Add(this.panel2);
             this.MainPanel.Controls.Add(this.panel1);
-            this.MainPanel.Controls.Add(this.ScriptLabel);
             this.MainPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainPanel.Location = new System.Drawing.Point(0, 0);
             this.MainPanel.Name = "MainPanel";
-            this.MainPanel.Size = new System.Drawing.Size(67, 46);
+            this.MainPanel.Size = new System.Drawing.Size(70, 46);
             this.MainPanel.TabIndex = 0;
             // 
             // panel2
@@ -107,6 +106,7 @@
             // panel1
             // 
             this.panel1.AutoSize = true;
+            this.panel1.Controls.Add(this.ScriptLabel);
             this.panel1.Controls.Add(this.AEBMinusLabel);
             this.panel1.Controls.Add(this.AEBPlusLabel);
             this.panel1.Controls.Add(this.TvLabel);
@@ -114,7 +114,7 @@
             this.panel1.Location = new System.Drawing.Point(30, 0);
             this.panel1.MinimumSize = new System.Drawing.Size(30, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(35, 44);
+            this.panel1.Size = new System.Drawing.Size(38, 44);
             this.panel1.TabIndex = 2;
             // 
             // AEBMinusLabel
@@ -158,7 +158,7 @@
             // 
             this.ScriptLabel.AutoSize = true;
             this.ScriptLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ScriptLabel.Location = new System.Drawing.Point(6, 14);
+            this.ScriptLabel.Location = new System.Drawing.Point(-2, 15);
             this.ScriptLabel.Name = "ScriptLabel";
             this.ScriptLabel.Size = new System.Drawing.Size(37, 13);
             this.ScriptLabel.TabIndex = 1;
@@ -173,7 +173,7 @@
             this.Controls.Add(this.MainPanel);
             this.MinimumSize = new System.Drawing.Size(60, 46);
             this.Name = "TaskControl";
-            this.Size = new System.Drawing.Size(67, 46);
+            this.Size = new System.Drawing.Size(70, 46);
             this.Load += new System.EventHandler(this.TaskControl_Load);
             this.MainPanel.ResumeLayout(false);
             this.MainPanel.PerformLayout();
