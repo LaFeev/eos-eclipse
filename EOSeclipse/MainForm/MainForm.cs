@@ -25,6 +25,7 @@ namespace MainForm
     {
         #region Variables
 
+        string Version = "0.1.0";
         CanonAPI APIHandler;
         Camera MainCamera;
         CameraValue[] AvList;
@@ -37,6 +38,7 @@ namespace MainForm
         Bitmap Evf_Bmp;
         int LVBw, LVBh, w, h;
         float LVBratio, LVration;
+        bool PreviewOn = false;
 
         int ErrCount;
         object ErrLock = new object();
@@ -49,6 +51,9 @@ namespace MainForm
         private StepControl _editStep;
         private TimeSpan _averageTaskTime = new TimeSpan(0, 0, 0, 0, 700);
         private int _burstLength = 500;     // TODO: offer a way to congifure this in settings. It should equal roughly (1000/[camera fps] * 3.5).  This gives the ~average between a 3 and 4 shot burst in milliseconds.
+        private bool _debug = false;
+        DateTime _lastAction;
+        bool _AebRequired = false;
 
         string AppDataDir;
         public CalcRaw calcRaw = new CalcRaw();
@@ -65,6 +70,9 @@ namespace MainForm
             try
             {
                 InitializeComponent();
+
+                Composer.Version = Version;
+
                 APIHandler = new CanonAPI();
                 APIHandler.CameraAdded += APIHandler_CameraAdded;
                 ErrorHandler.SevereErrorHappened += ErrorHandler_SevereErrorHappened;
@@ -78,6 +86,8 @@ namespace MainForm
                 IsInit = true;
                 SaveSettingsButton.Enabled = false;
                 LoadedCameraSettingsLabel.Visible = false;
+                NotificationLabel.Visible = false;
+
                 // Settings tab
                 FocuserWebBrowser.Visible = false;
                 FocuserStatusLabel.Visible = false;
@@ -109,7 +119,11 @@ namespace MainForm
                 MasterTimer.Start();
                 SolarFilterStatusLabel.Visible = false;
                 SolarFilterWebBrowser.Visible = false;
+                if (!_debug)
+                    StartCaptureButton.Enabled = false;
+                BurstLengthUpDown.Value = _burstLength;
 
+                // Sequence Gen tab
                 ResetStage();
                 ClearSequence();
                 ScriptTextBox.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Eclipse Scripts");
@@ -255,39 +269,40 @@ namespace MainForm
             {
                 if ((string)TvCoBox.SelectedItem == "Bulb") MainCamera.TakePhotoBulbAsync((int)BulbUpDo.Value);
                 else MainCamera.TakePhotoShutterAsync();
+                _lastAction = DateTime.Now;
             }
             catch (Exception ex) { ReportError(ex.Message, false); }
         }
 
-        private async void TakeNPhotoButton_Click(object sender, EventArgs e)
-        {
-            String s1 = "1/20 (1/3)";
-            String s2 = "1/15";
+        //private async void TakeNPhotoButton_Click(object sender, EventArgs e)
+        //{
+        //    String s1 = "1/20 (1/3)";
+        //    String s2 = "1/15";
 
-            // cycle thru the 6 shot sequence 4 times to stress test the buffer
-            Console.WriteLine("start sequence");
-            var timer = System.Diagnostics.Stopwatch.StartNew();
-            var lapTimer = System.Diagnostics.Stopwatch.StartNew();
-            for (int i = 0; i < 8; i++)
-            {
-                // take a burst of 3 bracketed images, change the base shutter speed and take another 3 shot burst
-                if (i > 0) Console.WriteLine("burst dT: {0}s", lapTimer.Elapsed.ToString("ss'.'fff"));
-                Console.WriteLine("== burst {0} ==", i);
-                lapTimer.Restart();
-                Console.WriteLine("setting Tv: {0}", s1);
-                MainCamera.SetSettingCont(PropertyID.Tv, TvValues.GetValue(s1).IntValue);
-                MainCamera.TakePhotoShutterCont(500);
-                Console.WriteLine("setting Tv: {0}", s2);
-                MainCamera.SetSettingCont(PropertyID.Tv, TvValues.GetValue(s2).IntValue);
-                MainCamera.TakePhotoShutterCont(500);
-            }
-            lapTimer.Stop();
-            timer.Stop();
+        //    // cycle thru the 6 shot sequence 4 times to stress test the buffer
+        //    Console.WriteLine("start sequence");
+        //    var timer = System.Diagnostics.Stopwatch.StartNew();
+        //    var lapTimer = System.Diagnostics.Stopwatch.StartNew();
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        // take a burst of 3 bracketed images, change the base shutter speed and take another 3 shot burst
+        //        if (i > 0) Console.WriteLine("burst dT: {0}s", lapTimer.Elapsed.ToString("ss'.'fff"));
+        //        Console.WriteLine("== burst {0} ==", i);
+        //        lapTimer.Restart();
+        //        Console.WriteLine("setting Tv: {0}", s1);
+        //        MainCamera.SetSettingContAsync(PropertyID.Tv, TvValues.GetValue(s1).IntValue);
+        //        MainCamera.TakePhotoShutterCont(500);
+        //        Console.WriteLine("setting Tv: {0}", s2);
+        //        MainCamera.SetSettingContAsync(PropertyID.Tv, TvValues.GetValue(s2).IntValue);
+        //        MainCamera.TakePhotoShutterCont(500);
+        //    }
+        //    lapTimer.Stop();
+        //    timer.Stop();
 
-            Console.WriteLine("burst dT: {0}s", lapTimer.Elapsed.ToString("ss'.'fff"));
-            Console.WriteLine("end sequence");
-            Console.WriteLine("dT = {0}s", timer.Elapsed.ToString("ss'.'fff"));
-        }
+        //    Console.WriteLine("burst dT: {0}s", lapTimer.Elapsed.ToString("ss'.'fff"));
+        //    Console.WriteLine("end sequence");
+        //    Console.WriteLine("dT = {0}s", timer.Elapsed.ToString("ss'.'fff"));
+        //}
 
         private void RecordVideoButton_Click(object sender, EventArgs e)
         {
@@ -304,6 +319,7 @@ namespace MainForm
                     bool save = STComputerRdButton.Checked || STBothRdButton.Checked;
                     MainCamera.StopFilming(save);
                     RecordVideoButton.Text = "Record Video";
+                    _lastAction = DateTime.Now;
                 }
             }
             catch (Exception ex) { ReportError(ex.Message, false); }
@@ -386,21 +402,24 @@ namespace MainForm
         private async Task TakeBurst(int burstDuration, TaskControl task)
         {
             // make the setting changes
-            await Task.Run(() => MainCamera.SetSettingCont(PropertyID.Tv, task.Tv.IntValue));
-            await Task.Run(() => MainCamera.SetSettingCont(PropertyID.Av, task.Av.IntValue));
-            await Task.Run(() => MainCamera.SetSettingCont(PropertyID.ISO, task.ISO.IntValue));
+            Console.WriteLine("set Tv: {0}", task.Tv.StringValue);
+            await MainCamera.SetSettingContAsync(PropertyID.Tv, task.Tv.IntValue, 0, 75, 20);
+            await MainCamera.SetSettingContAsync(PropertyID.Av, task.Av.IntValue, 0, 75, 20);
+            await MainCamera.SetSettingContAsync(PropertyID.ISO, task.ISO.IntValue, 0, 75, 20);
             // fire the burst
-            await Task.Run(() => MainCamera.TakePhotoShutterContAsync(burstDuration));
+            await Task.Run(() => MainCamera.TakePhotoShutterContAsync(burstDuration, 50, 20));
+            _lastAction = DateTime.Now;
         }
 
         private async Task TakePhoto(TaskControl task)
         {
             // make the setting changes
-            await Task.Run(() => MainCamera.SetSettingCont(PropertyID.Tv, task.Tv.IntValue));
-            await Task.Run(() => MainCamera.SetSettingCont(PropertyID.Av, task.Av.IntValue));
-            await Task.Run(() => MainCamera.SetSettingCont(PropertyID.ISO, task.ISO.IntValue));
+            await Task.Run(() => MainCamera.SetSettingContAsync(PropertyID.Tv, task.Tv.IntValue));
+            await Task.Run(() => MainCamera.SetSettingContAsync(PropertyID.Av, task.Av.IntValue));
+            await Task.Run(() => MainCamera.SetSettingContAsync(PropertyID.ISO, task.ISO.IntValue));
             // fire the shot
             await Task.Run(() => MainCamera.TakePhotoShutterAsync());
+            _lastAction = DateTime.Now;
         }
 
         private async Task FireScript(TaskControl task)
@@ -444,7 +463,9 @@ namespace MainForm
                 {
                     // AEB mode activated
                     // TODO: check if AEB is set on camera and flag the UI if it is not
-                    await TakeBurst(_burstLength, task);
+                    double dblBurst = task.Tv.DoubleValue + task.AEBMinus.DoubleValue + task.AEBPlus.DoubleValue;
+                    int intBurst = (int)Math.Round(dblBurst * 1000);
+                    await TakeBurst(Math.Max(intBurst, _burstLength), task);
                 }
                 else
                 {
@@ -544,6 +565,14 @@ namespace MainForm
                 FocuserStatusLabel.Text = "Failed to connect...";
                 FocuserButton.Text = "\x21BB";
             }
+        }
+
+        private void NudgeCamera()
+        {
+            // read a setting from camera to keep connection alive
+            _ = GetLastThumbnail();
+            _lastAction = DateTime.Now;
+            Console.WriteLine("nudge - {0}", _lastAction.ToString("HH:mm:ss.f"));
         }
 
         #endregion
@@ -1408,11 +1437,15 @@ namespace MainForm
             {
                 SessionIsLive = true;
                 btn.Text = "Stop Capture";
+                LivePanel1.BackColor = Color.Green;
+                LiveLabel.ForeColor = Color.Green;
             }
             else
             {
                 SessionIsLive = false;
                 btn.Text = "Start Capture";
+                LivePanel1.BackColor = System.Drawing.SystemColors.ControlLight;
+                LiveLabel.ForeColor = System.Drawing.SystemColors.ControlLight;
                 for (int i = 0; i < SeqFlowPanel.Controls.Count; i++)
                 {
                     if (SeqFlowPanel.Controls[i].GetType() == typeof(StepControl))
@@ -1494,6 +1527,12 @@ namespace MainForm
             }
         }
 
+        private void BurstLengthUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            _burstLength = (int)BurstLengthUpDown.Value;
+            BurstLengthUpDown.Value = _burstLength;
+        }
+
         #endregion
 
         #region Time Keeper
@@ -1506,7 +1545,91 @@ namespace MainForm
             LocalTimeLabel.Text = DateTime.Now.ToString();
 
             // update the phase reference timers on the Sequence Pane
-            // TODO
+            if (SeResult != null)
+            {
+                DateTime c1 = SeResult.Phase("C1").DateTime.ComputeValue;
+                DateTime c2 = SeResult.Phase("C2").DateTime.ComputeValue;
+                DateTime mx = SeResult.Phase("Mx").DateTime.ComputeValue;
+                DateTime c3 = SeResult.Phase("C3").DateTime.ComputeValue;
+                DateTime c4 = SeResult.Phase("C4").DateTime.ComputeValue;
+                String format = @"d\:mm\:ss\.f";
+
+                if (now < c1)
+                {
+                    // prior to ecliplse start
+                    PhaseTimeRefLabel1.Visible = true;
+                    PhaseTimeOffsetLabel1.Visible = true;
+                    PhaseTimeRefLabel2.Visible = false;
+                    PhaseTimeOffsetLabel2.Visible = false;
+                    PhaseTimeRefLabel1.Text = "C1 -";
+                    PhaseTimeOffsetLabel1.Text = (c1 - now).ToString(format);
+                }
+                else if (now < c2)
+                {
+                    // between C1 - C2
+                    PhaseTimeRefLabel1.Visible = true;
+                    PhaseTimeOffsetLabel1.Visible = true;
+                    PhaseTimeRefLabel2.Visible = true;
+                    PhaseTimeOffsetLabel2.Visible = true;
+                    PhaseTimeRefLabel1.Text = "C2 -";
+                    PhaseTimeOffsetLabel1.Text = (c2 - now).ToString(format);
+                    PhaseTimeRefLabel2.Text = "C1 +";
+                    PhaseTimeOffsetLabel2.Text = (now - c1).ToString(format);
+                }
+                else if (now < mx)
+                {
+                    // between C2 - Mx
+                    PhaseTimeRefLabel1.Visible = true;
+                    PhaseTimeOffsetLabel1.Visible = true;
+                    PhaseTimeRefLabel2.Visible = true;
+                    PhaseTimeOffsetLabel2.Visible = true;
+                    PhaseTimeRefLabel1.Text = "Mx -";
+                    PhaseTimeOffsetLabel1.Text = (mx - now).ToString(format);
+                    PhaseTimeRefLabel2.Text = "C2 +";
+                    PhaseTimeOffsetLabel2.Text = (now - c2).ToString(format);
+                }
+                else if (now < c3)
+                {
+                    // between Mx - C3
+                    PhaseTimeRefLabel1.Visible = true;
+                    PhaseTimeOffsetLabel1.Visible = true;
+                    PhaseTimeRefLabel2.Visible = true;
+                    PhaseTimeOffsetLabel2.Visible = true;
+                    PhaseTimeRefLabel1.Text = "C3 -";
+                    PhaseTimeOffsetLabel1.Text = (c3 - now).ToString(format);
+                    PhaseTimeRefLabel2.Text = "Mx +";
+                    PhaseTimeOffsetLabel2.Text = (now - mx).ToString(format);
+                }
+                else if (now < c4)
+                {
+                    // between C3 - C4
+                    PhaseTimeRefLabel1.Visible = true;
+                    PhaseTimeOffsetLabel1.Visible = true;
+                    PhaseTimeRefLabel2.Visible = true;
+                    PhaseTimeOffsetLabel2.Visible = true;
+                    PhaseTimeRefLabel1.Text = "C4 -";
+                    PhaseTimeOffsetLabel1.Text = (c4 - now).ToString(format);
+                    PhaseTimeRefLabel2.Text = "C3 +";
+                    PhaseTimeOffsetLabel2.Text = (now - c3).ToString(format);
+                }
+                else
+                {
+                    // after eclipse finish
+                    PhaseTimeRefLabel1.Visible = false;
+                    PhaseTimeOffsetLabel1.Visible = false;
+                    PhaseTimeRefLabel2.Visible = true;
+                    PhaseTimeOffsetLabel2.Visible = true;
+                    PhaseTimeRefLabel2.Text = "C4 +";
+                    PhaseTimeOffsetLabel2.Text = (now - c4).ToString(format);
+                }
+            }
+            else
+            {
+                PhaseTimeRefLabel2.Visible = false;
+                PhaseTimeOffsetLabel2.Visible = false;
+                PhaseTimeRefLabel1.Visible = false;
+                PhaseTimeOffsetLabel1.Visible = false;
+            }
 
             // check for any phase starts
             // remember SeqFlowPanel has a SeqSizer panel hidden at index 0
@@ -1550,6 +1673,37 @@ namespace MainForm
                         }
                     }
                 }
+            }
+
+            // check for last activity on camera and nudge it to stay awake, if needed
+            if ((now - _lastAction) > new TimeSpan(0,5,0))
+            {
+                NudgeCamera();
+            }
+
+            // Check for issues
+            if (SessionIsLive)
+            {
+                bool AebActive = IsAebActive();
+                if (!AebActive && _AebRequired)
+                {
+                    NotificationLabel.Text = "AE Bracketing is NOT set in camera!";
+                    NotificationLabel.ForeColor = Color.Red;
+                    NotificationLabel.Visible = true;
+                }
+                else if (AebActive && !_AebRequired)
+                {
+                    NotificationLabel.Text = "AE Bracketing is set in camera, but is not used in the sequence!";
+                    NotificationLabel.ForeColor = Color.Red;
+                    NotificationLabel.Visible = true;
+                }
+                else
+                {
+                    NotificationLabel.Text = "";
+                    NotificationLabel.ForeColor = Color.Black;
+                    NotificationLabel.Visible = false;
+                }
+
             }
         }
         #endregion
@@ -1603,6 +1757,21 @@ namespace MainForm
                         e.Graphics.DrawImage(Evf_Bmp, 0, 0, w, h);
                     }
                 }
+            }
+        }
+
+        private void PreviewThumbButton_Click(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+            if (btn.Text == "Preview On")
+            {
+                btn.Text = "Preview Off";
+                PreviewOn = true;
+            }
+            else
+            {
+                btn.Text = "Preview On";
+                PreviewOn = false;
             }
         }
 
@@ -1689,6 +1858,8 @@ namespace MainForm
             LiveViewButton.Text = "Start LV";
             LoadSettingsButton.Enabled = true;
             SaveSettingsButton.Enabled = false;
+            if (!_debug)
+                StartCaptureButton.Enabled = false;
         }
 
         private void ExpandButton_Click(object sender, EventArgs e)
@@ -1751,6 +1922,9 @@ namespace MainForm
                 SettingsTabPage.Enabled = true;
                 LiveViewGroupBox.Enabled = true;
                 GetGPSButton.Enabled = true;
+                StartCaptureButton.Enabled = true;
+                //_lastAction = DateTime.Now;
+                NudgeCamera();
             }
         }
 
@@ -1893,15 +2067,21 @@ namespace MainForm
                     // deserialize the settings and populate the lists
                     IFormatter formatter = new BinaryFormatter();
                     Stream stream = new FileStream(SettingsPath, FileMode.Open, System.IO.FileAccess.Read);
+                    List<CameraValue> tmpTvList = new List<CameraValue>();
                     List<CameraValue> valueList = (List<CameraValue>)formatter.Deserialize(stream);
                     Console.WriteLine(valueList.Count);
                     foreach (CameraValue val in valueList)
                     {
                         if (val.ValueType == PropertyID.Av) { SeqAvCoBox.Items.Add(val.StringValue); }
                         else if (val.ValueType == PropertyID.ISO) { SeqIsoCoBox.Items.Add(val.DoubleValue); }
-                        else if (val.ValueType == PropertyID.Tv) { SeqTvListBox.Items.Add(val.StringValue); }
+                        else if (val.ValueType == PropertyID.Tv) 
+                        { 
+                            SeqTvListBox.Items.Add(val.StringValue);
+                            tmpTvList.Add(val);
+                        }
                         else { Console.WriteLine("ValueType mismatch!"); }
                     }
+                    TvList = tmpTvList.ToArray();
                     ResetPhaseList();
                     String cameraname = Path.GetFileNameWithoutExtension(SettingsPath);
                     cameraname = cameraname.Replace("_", " ");
@@ -2081,6 +2261,9 @@ namespace MainForm
                 // add the step to the flow panel
                 SeqFlowPanel.Controls.Add(step);
             }
+
+            // refresh the _AebRequired variable
+            _AebRequired = IsAebRequired();
         }
 
         private void ClearSeqPanel()
@@ -2119,11 +2302,12 @@ namespace MainForm
                         foreach (TaskControl task in step.GetTasks())
                         {
                             if (DateTime.Now > step.EndDateTime - _averageTaskTime) break;
-                            await FireTask(task);
+                            if (SessionIsLive)
+                                await FireTask(task);
                         }
                         TimeSpan intervalT2 = step.GetStepTime();
                         DateTime t2 = DateTime.Now;
-                        Console.WriteLine("realtime: {0}  -  steptime: {1}", (t2 - t1).ToString(), (intervalT2 - intervalT1).ToString());
+                        //Console.WriteLine("realtime: {0}  -  steptime: {1}", (t2 - t1).ToString(), (intervalT2 - intervalT1).ToString());
                     }
                 }
                 else
@@ -2136,11 +2320,14 @@ namespace MainForm
                         DateTime t1 = DateTime.Now;
                         foreach (TaskControl task in step.GetTasks())
                         {
-                            await FireTask(task);
+                            if (SessionIsLive)
+                            {
+                                await FireTask(task);
+                            }
                         }
                         TimeSpan intervalT2 = step.GetStepTime();
                         DateTime t2 = DateTime.Now;
-                        Console.WriteLine("realtime: {0}  -  steptime: {1}", (t2 - t1).ToString(), (intervalT2 - intervalT1).ToString());
+                        //Console.WriteLine("realtime: {0}  -  steptime: {1}", (t2 - t1).ToString(), (intervalT2 - intervalT1).ToString());
                     }
                 }
             }
@@ -2153,7 +2340,8 @@ namespace MainForm
                 // Step's timeframe
                 foreach (TaskControl task in step.GetTasks())
                 {
-                    await FireTask(task);
+                    if (SessionIsLive)
+                        await FireTask(task);
                 }
             }
             else
@@ -2167,7 +2355,8 @@ namespace MainForm
                     foreach (TaskControl task in step.GetTasks())
                     {
                         if (DateTime.Now > step.EndDateTime - _averageTaskTime) break;
-                        await FireTask(task);
+                        if (SessionIsLive)
+                            await FireTask(task);
                     }
                     TimeSpan intervalT2 = step.GetStepTime();
                     DateTime t2 = DateTime.Now;
@@ -2181,13 +2370,29 @@ namespace MainForm
                     DateTime t1 = DateTime.Now;
                     foreach (TaskControl task in step.GetTasks())
                     {
-                        await FireTask(task);
+                        if (SessionIsLive)
+                            await FireTask(task);
                     }
                     TimeSpan intervalT2 = step.GetStepTime();
                     DateTime t2 = DateTime.Now;
                     Console.WriteLine("realtime: {0}  -  steptime: {1}", (t2 - t1).ToString(), (intervalT2 - intervalT1).ToString());
                 }
+                //// show preview if there is time
+                //if (SessionIsLive && DateTime.Now < e.IntervalEndTime - new TimeSpan(0, 0, 1))
+                //{
+                //    //ShowPreviewThumb();    // this does not work
+
+                //    // TODO: fix this to avoid Device_busy errors
+                //    LiveViewButton.PerformClick();
+                //    await Task.Delay(500);
+                //    LiveViewButton.PerformClick();
+                //}
             }
+        }
+
+        private void SequenceGroupBox_Enter(object sender, EventArgs e)
+        {
+
         }
 
         private void EventHandler_CircumstancesRequested(object sender, EventArgs e)
@@ -2282,7 +2487,8 @@ namespace MainForm
                 SeqFlowPanel.Enabled = true;
                 SeqGenTabPage.Enabled = true;
                 RefreshSequenceButton.Visible = false;
-                StartCaptureButton.Enabled = true;
+                if (MainCamera != null || _debug)
+                    StartCaptureButton.Enabled = true;
             }
             else if (!calcsAreGood)
             {
@@ -2330,6 +2536,60 @@ namespace MainForm
             
         }
 
+
+        private bool IsAebActive()
+        {
+            if (MainCamera != null)
+            {
+                int[] goodResults = { 1, 3, 5, 7, 9, 11, 13, 15 };
+                int bracket = MainCamera.GetInt32Setting(PropertyID.Bracket);
+                if (goodResults.Contains(bracket))
+                    return true;
+            }
+            return false;
+        }
+
+        private bool IsAebRequired()
+        {
+            for (int i = 1; i < SeqFlowPanel.Controls.Count; i++) 
+            {
+                if (SeqFlowPanel.Controls[i].GetType() == typeof(StepControl))
+                {
+                    StepControl step = (StepControl)SeqFlowPanel.Controls[i];
+                    foreach (TaskControl task in step.GetTasks())
+                    {
+                        if (task.AEBMinus != TvValues.Auto)
+                        {
+                            // at least 1 task requires AE bracketing
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        private IntPtr GetLastThumbnail()
+        {
+            if (MainCamera != null)
+            {
+                DownloadInfo fileInfo = MainCamera.GetLastImage();
+                Console.WriteLine("Last IMG: {0}", fileInfo.FileName);
+                return fileInfo.Reference;
+            }
+            return IntPtr.Zero;
+        }
+
+        // This does not work
+        private void ShowPreviewThumb()
+        {
+            if (PreviewOn && MainCamera != null)
+            {
+                DownloadInfo fileInfo = MainCamera.GetLastImage();
+                var image = Image.FromStream(MainCamera.GetThumbnailStream(fileInfo));
+                LiveViewPicBox.Image = image;
+            }
+        }
         #endregion        
     }
 }

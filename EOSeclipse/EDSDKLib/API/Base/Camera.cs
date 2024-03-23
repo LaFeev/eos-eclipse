@@ -504,15 +504,16 @@ namespace EOSDigital.API
         /// <exception cref="ObjectDisposedException">Camera is disposed</exception>
         /// <exception cref="CameraSessionException">Session is closed</exception>
         /// <exception cref="SDKStateException">Canon SDK is not initialized</exception>
-        public async Task TakePhotoShutterContAsync(int burstDur = 0)
+        public async Task TakePhotoShutterContAsync(int burstDur = 0, int errorDelay = 50, int errors = 10)
         {
 
-            SendCommandCont(CameraCommand.PressShutterButton, (int)ShutterButton.Completely, 50);
+            SendCommandCont(CameraCommand.PressShutterButton, (int)ShutterButton.Completely, errorDelay, errors);
             if (burstDur > 0)
             {
                 await Task.Delay(burstDur);
             }
             SendCommand(CameraCommand.PressShutterButton, (int)ShutterButton.OFF);
+            Console.WriteLine("burst end: {0}", DateTime.Now.ToString("mm:ss.fff"));
         }
 
         /// <summary>
@@ -680,6 +681,19 @@ namespace EOSDigital.API
         }
 
         /// <summary>
+        /// Gets (hopefully) last image saved on the cameras memory card (only on the first card having a DCIM directory)
+        /// </summary>
+        /// <returns>An isntance of CameraFileEntry that is the last image found on first volume</returns>
+        /// <exception cref="ObjectDisposedException">Camera is disposed</exception>
+        /// <exception cref="CameraSessionException">Session is closed</exception>
+        /// <exception cref="SDKStateException">Canon SDK is not initialized</exception>
+        public DownloadInfo GetLastImage()
+        {
+            CheckState();
+            return GetLastImageSub();
+        }
+
+        /// <summary>
         /// Formats a given camera volume. Get the available volumes with <see cref="GetAllVolumes"/>
         /// <para>Warning: All data on this volume will be lost!</para>
         /// </summary>
@@ -829,7 +843,7 @@ namespace EOSDigital.API
         /// <summary>
         /// Sends a command safely to the camera, but ignores DEVICE_BUSY errors and attempts to resend command instead
         /// </summary>
-        public void SendCommandCont(CameraCommand command, int inParam = 0, int delay = 100)
+        public void SendCommandCont(CameraCommand command, int inParam = 0, int delay = 100, int errors = 10)
         {
             CheckState();
             MainThread.Invoke(() =>
@@ -838,7 +852,7 @@ namespace EOSDigital.API
                 ErrorCode errorCode = CanonSDK.EdsSendCommand(CamRef, command, inParam);
                 int errorCount = 1;
 
-                while (errorCount < 10 && errorCode == ErrorCode.DEVICE_BUSY)
+                while (errorCount <= errors && errorCode == ErrorCode.DEVICE_BUSY)
                 {
                     Thread.Sleep(delay);
                     //Console.WriteLine("{0:HH:mm:ss.fff}  - {1}", DateTime.Now, errorCount);
@@ -846,7 +860,7 @@ namespace EOSDigital.API
                     ErrorHandler.CheckErrorCont(this, errorCode);
                     errorCount++;
                 }
-                Console.WriteLine("cmd {0}", errorCode);
+                Console.WriteLine("cmd {0}: {1}", errorCode, DateTime.Now.ToString("mm:ss.fff"));
             });
         }
 
@@ -957,6 +971,15 @@ namespace EOSDigital.API
             }
         }
 
+        // ARL - this does not work
+        public Stream GetThumbnailStream(DownloadInfo Info)
+        {
+            SDKStream stream = new SDKStream(Info.Size64);
+            ErrorHandler.CheckError(this, CanonSDK.EdsDownloadThumbnail(Info.Reference, stream.Reference));
+            DownloadData(Info, stream.Reference);
+            stream.Position = 0;
+            return stream;
+        }
         #endregion
 
         #region Set Settings
@@ -987,11 +1010,11 @@ namespace EOSDigital.API
         /// <summary>
         /// Sets a value for the given property ID, but ignores DEVICE_BUSY errors and attempts to resend setting instead
         /// </summary>
-        public void SetSettingCont(PropertyID propID, object value, int inParam = 0, int delay = 75)
+        public async Task SetSettingContAsync(PropertyID propID, object value, int inParam = 0, int delay = 75, int errors = 10)
         {
             CheckState();
 
-            MainThread.Invoke(() =>
+            await MainThread.Invoke(async () =>
             {
                 int propsize;
                 DataType proptype;
@@ -1000,15 +1023,16 @@ namespace EOSDigital.API
                 ErrorCode errorCode = CanonSDK.EdsSetPropertyData(CamRef, propID, inParam, propsize, value);
                 int errorCount = 1;
 
-                while (errorCount < 10 && errorCode == ErrorCode.DEVICE_BUSY)
+                while (errorCount <= errors && errorCode == ErrorCode.DEVICE_BUSY)
                 {
-                    Thread.Sleep(delay);
+                    await Task.Delay(delay);
+                    //Thread.Sleep(delay);
                     //Console.WriteLine("prop {0:HH:mm:ss.fff}  - {1}", DateTime.Now, errorCount);
                     errorCode = CanonSDK.EdsSetPropertyData(CamRef, propID, inParam, propsize, value);
                     ErrorHandler.CheckErrorCont(this, errorCode);
                     errorCount++;
                 }
-                Console.WriteLine("prop {0}", errorCode);
+                Console.WriteLine("prop {0}: {1}", errorCode, DateTime.Now.ToString("mm:ss.fff"));
             });
         }
 
@@ -1663,6 +1687,43 @@ namespace EOSDigital.API
             }
 
             return ImageList.ToArray();
+        }
+
+        /// <summary>
+        /// Gets last image saved on the cameras first memory card
+        /// </summary>
+        /// <returns>An isntance of CameraFileEntry that is the last image found on the first volume</returns>
+        /// <exception cref="SDKException">An SDK call failed</exception>
+        protected DownloadInfo GetLastImageSub()
+        {
+            CameraFileEntry[] volumes = GetAllVolumesSub();
+            List<CameraFileEntry> ImageList = new List<CameraFileEntry>();
+
+            for (int i = 0; i < volumes.Length; i++)
+            {
+                int ChildCount;
+                lock (STAThread.ExecLock) { ErrorHandler.CheckError(this, CanonSDK.EdsGetChildCount(volumes[i].Reference, out ChildCount)); }
+                CameraFileEntry[] ventries = new CameraFileEntry[0];
+
+                for (int j = 0; j < ChildCount; j++)
+                {
+                    CameraFileEntry entry = GetChild(volumes[i].Reference, j);
+                    if (entry.IsFolder && entry.Name == "DCIM") { ventries = GetChildren(entry.Reference); break; }
+                }
+
+                //foreach (CameraFileEntry ve in ventries) { if (ve.IsFolder && ve.Entries != null) ImageList.AddRange(ve.Entries.Where(t => !t.IsFolder)); }
+                for (int k = ventries.Length - 1; k >= 0; k--)
+                {
+                    if (ventries[k].IsFolder && ventries[k].Entries != null)
+                        for (int l = ventries[k].Entries.Length - 1; l >= 0; l--)
+                        {
+                            if (!ventries[k].Entries[l].IsFolder)
+                                return new DownloadInfo(ventries[k].Entries[l].Reference);
+                        }
+                }
+            }
+
+            return null;
         }
 
         /// <summary>

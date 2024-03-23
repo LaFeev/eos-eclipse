@@ -22,6 +22,7 @@ namespace EDSDKLib.API.Helper
     [Serializable]
     public class StepComposer
     {
+        public string Version {  get; set; }
         public List<StepBuilder> StepList { get; set; }
         public SeIndex Eclipse { get; set; }
         public double ShootingLat { get; set; }
@@ -45,6 +46,7 @@ namespace EDSDKLib.API.Helper
 
         public StepComposer()
         {
+            Version = "";
             StepList = new List<StepBuilder>();
             ShootingLat = 0;
             ShootingLng = 0;

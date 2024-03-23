@@ -367,3 +367,7 @@ FodyWeavers.xsd
 !/EOSeclipse/EDSDKLib/bin/release/*
 /XavierJubier
 /WebBrowserTest
+/debugs0.txt
+/debugs1.txt
+/debugs2.txt
+/debugs3.txt

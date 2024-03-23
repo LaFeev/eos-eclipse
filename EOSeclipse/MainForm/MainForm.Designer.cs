@@ -32,6 +32,7 @@ namespace MainForm
         {
             this.components = new System.ComponentModel.Container();
             this.LiveViewGroupBox = new System.Windows.Forms.GroupBox();
+            this.PreviewThumbButton = new System.Windows.Forms.Button();
             this.FocusFar3Button = new System.Windows.Forms.Button();
             this.FocusFar2Button = new System.Windows.Forms.Button();
             this.FocusFar1Button = new System.Windows.Forms.Button();
@@ -208,8 +209,16 @@ namespace MainForm
             this.label32 = new System.Windows.Forms.Label();
             this.StartCaptureButton = new System.Windows.Forms.Button();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.NotificationLabel = new System.Windows.Forms.Label();
+            this.LivePanel1 = new System.Windows.Forms.Panel();
+            this.LivePanel2 = new System.Windows.Forms.Panel();
+            this.LiveLabel = new System.Windows.Forms.Label();
             this.ExpandButton = new System.Windows.Forms.Button();
             this.SequenceGroupBox = new System.Windows.Forms.GroupBox();
+            this.PhaseTimeOffsetLabel2 = new System.Windows.Forms.Label();
+            this.PhaseTimeOffsetLabel1 = new System.Windows.Forms.Label();
+            this.PhaseTimeRefLabel2 = new System.Windows.Forms.Label();
+            this.PhaseTimeRefLabel1 = new System.Windows.Forms.Label();
             this.RefreshSequenceButton = new System.Windows.Forms.Button();
             this.ClearSeqButton = new System.Windows.Forms.Button();
             this.LoadSeqButton = new System.Windows.Forms.Button();
@@ -222,6 +231,9 @@ namespace MainForm
             this.SettingsFileBrowser = new System.Windows.Forms.OpenFileDialog();
             this.SequenceOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.SequenceSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.BurstLengthUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label42 = new System.Windows.Forms.Label();
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
             this.InitGroupBox.SuspendLayout();
@@ -254,8 +266,12 @@ namespace MainForm
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            this.LivePanel1.SuspendLayout();
+            this.LivePanel2.SuspendLayout();
             this.SequenceGroupBox.SuspendLayout();
             this.SeqFlowPanel.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BurstLengthUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // LiveViewGroupBox
@@ -263,6 +279,7 @@ namespace MainForm
             this.LiveViewGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.LiveViewGroupBox.Controls.Add(this.PreviewThumbButton);
             this.LiveViewGroupBox.Controls.Add(this.FocusFar3Button);
             this.LiveViewGroupBox.Controls.Add(this.FocusFar2Button);
             this.LiveViewGroupBox.Controls.Add(this.FocusFar1Button);
@@ -274,10 +291,21 @@ namespace MainForm
             this.LiveViewGroupBox.Enabled = false;
             this.LiveViewGroupBox.Location = new System.Drawing.Point(12, 238);
             this.LiveViewGroupBox.Name = "LiveViewGroupBox";
-            this.LiveViewGroupBox.Size = new System.Drawing.Size(541, 355);
+            this.LiveViewGroupBox.Size = new System.Drawing.Size(543, 340);
             this.LiveViewGroupBox.TabIndex = 13;
             this.LiveViewGroupBox.TabStop = false;
             this.LiveViewGroupBox.Text = "LiveView";
+            // 
+            // PreviewThumbButton
+            // 
+            this.PreviewThumbButton.Location = new System.Drawing.Point(449, 20);
+            this.PreviewThumbButton.Name = "PreviewThumbButton";
+            this.PreviewThumbButton.Size = new System.Drawing.Size(75, 23);
+            this.PreviewThumbButton.TabIndex = 7;
+            this.PreviewThumbButton.Text = "Preview On";
+            this.PreviewThumbButton.UseVisualStyleBackColor = true;
+            this.PreviewThumbButton.Visible = false;
+            this.PreviewThumbButton.Click += new System.EventHandler(this.PreviewThumbButton_Click);
             // 
             // FocusFar3Button
             // 
@@ -353,7 +381,7 @@ namespace MainForm
             this.LiveViewPicBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.LiveViewPicBox.Location = new System.Drawing.Point(9, 51);
             this.LiveViewPicBox.Name = "LiveViewPicBox";
-            this.LiveViewPicBox.Size = new System.Drawing.Size(519, 293);
+            this.LiveViewPicBox.Size = new System.Drawing.Size(528, 278);
             this.LiveViewPicBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.LiveViewPicBox.TabIndex = 1;
             this.LiveViewPicBox.TabStop = false;
@@ -2066,6 +2094,7 @@ namespace MainForm
             // 
             // CaptureTabPage
             // 
+            this.CaptureTabPage.Controls.Add(this.groupBox4);
             this.CaptureTabPage.Controls.Add(this.groupBox2);
             this.CaptureTabPage.Controls.Add(this.groupBox1);
             this.CaptureTabPage.Controls.Add(this.StartCaptureButton);
@@ -2217,6 +2246,8 @@ namespace MainForm
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.NotificationLabel);
+            this.splitContainer2.Panel1.Controls.Add(this.LivePanel1);
             this.splitContainer2.Panel1.Controls.Add(this.ExpandButton);
             this.splitContainer2.Panel1.Controls.Add(this.InitGroupBox);
             this.splitContainer2.Panel1.Controls.Add(this.SettingsTabControl);
@@ -2233,11 +2264,50 @@ namespace MainForm
             this.splitContainer2.SplitterDistance = 560;
             this.splitContainer2.TabIndex = 14;
             // 
+            // NotificationLabel
+            // 
+            this.NotificationLabel.AutoSize = true;
+            this.NotificationLabel.Location = new System.Drawing.Point(11, 585);
+            this.NotificationLabel.Name = "NotificationLabel";
+            this.NotificationLabel.Size = new System.Drawing.Size(79, 13);
+            this.NotificationLabel.TabIndex = 15;
+            this.NotificationLabel.Text = "Notification Bar";
+            // 
+            // LivePanel1
+            // 
+            this.LivePanel1.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.LivePanel1.Controls.Add(this.LivePanel2);
+            this.LivePanel1.Location = new System.Drawing.Point(37, 181);
+            this.LivePanel1.Name = "LivePanel1";
+            this.LivePanel1.Size = new System.Drawing.Size(81, 41);
+            this.LivePanel1.TabIndex = 14;
+            // 
+            // LivePanel2
+            // 
+            this.LivePanel2.BackColor = System.Drawing.SystemColors.Control;
+            this.LivePanel2.Controls.Add(this.LiveLabel);
+            this.LivePanel2.Location = new System.Drawing.Point(7, 6);
+            this.LivePanel2.Name = "LivePanel2";
+            this.LivePanel2.Size = new System.Drawing.Size(67, 29);
+            this.LivePanel2.TabIndex = 15;
+            // 
+            // LiveLabel
+            // 
+            this.LiveLabel.AutoSize = true;
+            this.LiveLabel.BackColor = System.Drawing.Color.Transparent;
+            this.LiveLabel.Font = new System.Drawing.Font("Arial Black", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LiveLabel.ForeColor = System.Drawing.SystemColors.ControlLight;
+            this.LiveLabel.Location = new System.Drawing.Point(-2, -1);
+            this.LiveLabel.Name = "LiveLabel";
+            this.LiveLabel.Size = new System.Drawing.Size(71, 31);
+            this.LiveLabel.TabIndex = 0;
+            this.LiveLabel.Text = "LIVE";
+            // 
             // ExpandButton
             // 
             this.ExpandButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ExpandButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ExpandButton.Location = new System.Drawing.Point(543, 216);
+            this.ExpandButton.Location = new System.Drawing.Point(542, 220);
             this.ExpandButton.Name = "ExpandButton";
             this.ExpandButton.Size = new System.Drawing.Size(17, 52);
             this.ExpandButton.TabIndex = 7;
@@ -2251,6 +2321,10 @@ namespace MainForm
             this.SequenceGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.SequenceGroupBox.Controls.Add(this.PhaseTimeOffsetLabel2);
+            this.SequenceGroupBox.Controls.Add(this.PhaseTimeOffsetLabel1);
+            this.SequenceGroupBox.Controls.Add(this.PhaseTimeRefLabel2);
+            this.SequenceGroupBox.Controls.Add(this.PhaseTimeRefLabel1);
             this.SequenceGroupBox.Controls.Add(this.RefreshSequenceButton);
             this.SequenceGroupBox.Controls.Add(this.ClearSeqButton);
             this.SequenceGroupBox.Controls.Add(this.LoadSeqButton);
@@ -2263,6 +2337,52 @@ namespace MainForm
             this.SequenceGroupBox.TabIndex = 0;
             this.SequenceGroupBox.TabStop = false;
             this.SequenceGroupBox.Text = "Sequence";
+            this.SequenceGroupBox.Enter += new System.EventHandler(this.SequenceGroupBox_Enter);
+            // 
+            // PhaseTimeOffsetLabel2
+            // 
+            this.PhaseTimeOffsetLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.PhaseTimeOffsetLabel2.Font = new System.Drawing.Font("Arial Black", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PhaseTimeOffsetLabel2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.PhaseTimeOffsetLabel2.Location = new System.Drawing.Point(191, 33);
+            this.PhaseTimeOffsetLabel2.Name = "PhaseTimeOffsetLabel2";
+            this.PhaseTimeOffsetLabel2.Size = new System.Drawing.Size(91, 23);
+            this.PhaseTimeOffsetLabel2.TabIndex = 13;
+            this.PhaseTimeOffsetLabel2.Text = "0:00:00.0";
+            // 
+            // PhaseTimeOffsetLabel1
+            // 
+            this.PhaseTimeOffsetLabel1.AutoSize = true;
+            this.PhaseTimeOffsetLabel1.Font = new System.Drawing.Font("Arial Black", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PhaseTimeOffsetLabel1.ForeColor = System.Drawing.Color.Green;
+            this.PhaseTimeOffsetLabel1.Location = new System.Drawing.Point(54, 33);
+            this.PhaseTimeOffsetLabel1.Name = "PhaseTimeOffsetLabel1";
+            this.PhaseTimeOffsetLabel1.Size = new System.Drawing.Size(91, 23);
+            this.PhaseTimeOffsetLabel1.TabIndex = 13;
+            this.PhaseTimeOffsetLabel1.Text = "0:00:00.0";
+            // 
+            // PhaseTimeRefLabel2
+            // 
+            this.PhaseTimeRefLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.PhaseTimeRefLabel2.AutoSize = true;
+            this.PhaseTimeRefLabel2.Font = new System.Drawing.Font("Arial Black", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PhaseTimeRefLabel2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.PhaseTimeRefLabel2.Location = new System.Drawing.Point(147, 33);
+            this.PhaseTimeRefLabel2.Name = "PhaseTimeRefLabel2";
+            this.PhaseTimeRefLabel2.Size = new System.Drawing.Size(49, 23);
+            this.PhaseTimeRefLabel2.TabIndex = 12;
+            this.PhaseTimeRefLabel2.Text = "C1 +";
+            // 
+            // PhaseTimeRefLabel1
+            // 
+            this.PhaseTimeRefLabel1.AutoSize = true;
+            this.PhaseTimeRefLabel1.Font = new System.Drawing.Font("Arial Black", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PhaseTimeRefLabel1.ForeColor = System.Drawing.Color.Green;
+            this.PhaseTimeRefLabel1.Location = new System.Drawing.Point(14, 33);
+            this.PhaseTimeRefLabel1.Name = "PhaseTimeRefLabel1";
+            this.PhaseTimeRefLabel1.Size = new System.Drawing.Size(43, 23);
+            this.PhaseTimeRefLabel1.TabIndex = 12;
+            this.PhaseTimeRefLabel1.Text = "C1 -";
             // 
             // RefreshSequenceButton
             // 
@@ -2357,12 +2477,47 @@ namespace MainForm
             this.SequenceSaveFileDialog.FileName = "eclipse_sequence.json";
             this.SequenceSaveFileDialog.Title = "Save Eclipse Sequence";
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label42);
+            this.groupBox4.Controls.Add(this.BurstLengthUpDown);
+            this.groupBox4.Location = new System.Drawing.Point(10, 82);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(129, 64);
+            this.groupBox4.TabIndex = 12;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Min. Burst Length";
+            // 
+            // BurstLengthUpDown
+            // 
+            this.BurstLengthUpDown.Location = new System.Drawing.Point(7, 25);
+            this.BurstLengthUpDown.Maximum = new decimal(new int[] {
+            3000,
+            0,
+            0,
+            0});
+            this.BurstLengthUpDown.Name = "BurstLengthUpDown";
+            this.BurstLengthUpDown.Size = new System.Drawing.Size(93, 20);
+            this.BurstLengthUpDown.TabIndex = 0;
+            this.BurstLengthUpDown.ThousandsSeparator = true;
+            this.BurstLengthUpDown.ValueChanged += new System.EventHandler(this.BurstLengthUpDown_ValueChanged);
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(103, 28);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(20, 13);
+            this.label42.TabIndex = 13;
+            this.label42.Text = "ms";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(871, 607);
             this.Controls.Add(this.splitContainer2);
+            this.MinimumSize = new System.Drawing.Size(887, 646);
             this.Name = "MainForm";
             this.Text = "EOS Eclipse";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
@@ -2410,11 +2565,19 @@ namespace MainForm
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel1.PerformLayout();
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            this.LivePanel1.ResumeLayout(false);
+            this.LivePanel2.ResumeLayout(false);
+            this.LivePanel2.PerformLayout();
             this.SequenceGroupBox.ResumeLayout(false);
+            this.SequenceGroupBox.PerformLayout();
             this.SeqFlowPanel.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BurstLengthUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -2611,6 +2774,18 @@ namespace MainForm
         private System.Windows.Forms.Label label41;
         private System.Windows.Forms.Label FocuserStatusLabel;
         private System.Windows.Forms.SaveFileDialog SequenceSaveFileDialog;
+        private System.Windows.Forms.Panel LivePanel1;
+        private System.Windows.Forms.Panel LivePanel2;
+        private System.Windows.Forms.Label LiveLabel;
+        private System.Windows.Forms.Label PhaseTimeOffsetLabel1;
+        private System.Windows.Forms.Label PhaseTimeRefLabel1;
+        private System.Windows.Forms.Label PhaseTimeOffsetLabel2;
+        private System.Windows.Forms.Label PhaseTimeRefLabel2;
+        private System.Windows.Forms.Label NotificationLabel;
+        private System.Windows.Forms.Button PreviewThumbButton;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.NumericUpDown BurstLengthUpDown;
+        private System.Windows.Forms.Label label42;
     }
 }
 
