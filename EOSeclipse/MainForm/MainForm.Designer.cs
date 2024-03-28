@@ -73,7 +73,7 @@ namespace MainForm
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.LocTabPage = new System.Windows.Forms.TabPage();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.LocationSplitContainer = new System.Windows.Forms.SplitContainer();
             this.ElvLabel = new System.Windows.Forms.Label();
             this.LonLabel = new System.Windows.Forms.Label();
             this.LatLabel = new System.Windows.Forms.Label();
@@ -176,6 +176,7 @@ namespace MainForm
             this.CancelStageButton = new System.Windows.Forms.Button();
             this.AddStageButton = new System.Windows.Forms.Button();
             this.ScriptGroupBox = new System.Windows.Forms.GroupBox();
+            this.ScriptComboBox = new System.Windows.Forms.ComboBox();
             this.ScriptBrowseButton = new System.Windows.Forms.Button();
             this.ScriptTextBox = new System.Windows.Forms.TextBox();
             this.IntervalGroupBox = new System.Windows.Forms.GroupBox();
@@ -195,6 +196,9 @@ namespace MainForm
             this.label10 = new System.Windows.Forms.Label();
             this.PhaseComboBox = new System.Windows.Forms.ComboBox();
             this.CaptureTabPage = new System.Windows.Forms.TabPage();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label42 = new System.Windows.Forms.Label();
+            this.BurstLengthUpDown = new System.Windows.Forms.NumericUpDown();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.SolarFilterWebBrowser = new System.Windows.Forms.WebBrowser();
             this.SolarFilterButton = new System.Windows.Forms.Button();
@@ -226,14 +230,18 @@ namespace MainForm
             this.SeqFlowPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.SeqSizerPanel = new System.Windows.Forms.Panel();
             this.MasterTimer = new System.Windows.Forms.Timer(this.components);
-            this.LoadScriptBrowserOLD = new System.Windows.Forms.FolderBrowserDialog();
             this.ScriptFileBrowser = new System.Windows.Forms.OpenFileDialog();
             this.SettingsFileBrowser = new System.Windows.Forms.OpenFileDialog();
             this.SequenceOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.SequenceSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.BurstLengthUpDown = new System.Windows.Forms.NumericUpDown();
-            this.label42 = new System.Windows.Forms.Label();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.Zoom1RadioButton = new System.Windows.Forms.RadioButton();
+            this.Zoom5RadioButton = new System.Windows.Forms.RadioButton();
+            this.Zoom10RadioButton = new System.Windows.Forms.RadioButton();
+            this.LVPanLeftButton = new System.Windows.Forms.Button();
+            this.LVPanUpButton = new System.Windows.Forms.Button();
+            this.LVPanRightButton = new System.Windows.Forms.Button();
+            this.LVPanDownButton = new System.Windows.Forms.Button();
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
             this.InitGroupBox.SuspendLayout();
@@ -243,10 +251,10 @@ namespace MainForm
             ((System.ComponentModel.ISupportInitialize)(this.BulbUpDo)).BeginInit();
             this.SaveToGroupBox.SuspendLayout();
             this.LocTabPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.LocationSplitContainer)).BeginInit();
+            this.LocationSplitContainer.Panel1.SuspendLayout();
+            this.LocationSplitContainer.Panel2.SuspendLayout();
+            this.LocationSplitContainer.SuspendLayout();
             this.EclipseTabPage.SuspendLayout();
             this.SeWebBrowserPanel.SuspendLayout();
             this.SeqGenTabPage.SuspendLayout();
@@ -260,6 +268,8 @@ namespace MainForm
             ((System.ComponentModel.ISupportInitialize)(this.EndOffsetUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.StartOffsetUpDown)).BeginInit();
             this.CaptureTabPage.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BurstLengthUpDown)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -270,8 +280,7 @@ namespace MainForm
             this.LivePanel2.SuspendLayout();
             this.SequenceGroupBox.SuspendLayout();
             this.SeqFlowPanel.SuspendLayout();
-            this.groupBox4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BurstLengthUpDown)).BeginInit();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // LiveViewGroupBox
@@ -279,6 +288,11 @@ namespace MainForm
             this.LiveViewGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.LiveViewGroupBox.Controls.Add(this.LVPanDownButton);
+            this.LiveViewGroupBox.Controls.Add(this.LVPanRightButton);
+            this.LiveViewGroupBox.Controls.Add(this.LVPanUpButton);
+            this.LiveViewGroupBox.Controls.Add(this.LVPanLeftButton);
+            this.LiveViewGroupBox.Controls.Add(this.groupBox5);
             this.LiveViewGroupBox.Controls.Add(this.PreviewThumbButton);
             this.LiveViewGroupBox.Controls.Add(this.FocusFar3Button);
             this.LiveViewGroupBox.Controls.Add(this.FocusFar2Button);
@@ -298,7 +312,7 @@ namespace MainForm
             // 
             // PreviewThumbButton
             // 
-            this.PreviewThumbButton.Location = new System.Drawing.Point(449, 20);
+            this.PreviewThumbButton.Location = new System.Drawing.Point(84, 19);
             this.PreviewThumbButton.Name = "PreviewThumbButton";
             this.PreviewThumbButton.Size = new System.Drawing.Size(75, 23);
             this.PreviewThumbButton.TabIndex = 7;
@@ -760,7 +774,7 @@ namespace MainForm
             // 
             // LocTabPage
             // 
-            this.LocTabPage.Controls.Add(this.splitContainer1);
+            this.LocTabPage.Controls.Add(this.LocationSplitContainer);
             this.LocTabPage.Location = new System.Drawing.Point(4, 22);
             this.LocTabPage.Name = "LocTabPage";
             this.LocTabPage.Size = new System.Drawing.Size(398, 193);
@@ -768,43 +782,43 @@ namespace MainForm
             this.LocTabPage.Text = "Location";
             this.LocTabPage.UseVisualStyleBackColor = true;
             // 
-            // splitContainer1
+            // LocationSplitContainer
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.splitContainer1.IsSplitterFixed = true;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Name = "splitContainer1";
+            this.LocationSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LocationSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.LocationSplitContainer.IsSplitterFixed = true;
+            this.LocationSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.LocationSplitContainer.Name = "LocationSplitContainer";
             // 
-            // splitContainer1.Panel1
+            // LocationSplitContainer.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.ElvLabel);
-            this.splitContainer1.Panel1.Controls.Add(this.LonLabel);
-            this.splitContainer1.Panel1.Controls.Add(this.LatLabel);
-            this.splitContainer1.Panel1.Controls.Add(this.GPSStatusTextBox);
-            this.splitContainer1.Panel1.Controls.Add(this.SetLocButton);
-            this.splitContainer1.Panel1.Controls.Add(this.GetGPSButton);
-            this.splitContainer1.Panel1.Controls.Add(this.label18);
-            this.splitContainer1.Panel1.Controls.Add(this.label7);
-            this.splitContainer1.Panel1.Controls.Add(this.label9);
-            this.splitContainer1.Panel1.Controls.Add(this.label6);
-            this.splitContainer1.Panel1.Controls.Add(this.label8);
-            this.splitContainer1.Panel1.Controls.Add(this.label5);
-            this.splitContainer1.Panel1.Controls.Add(this.AltTextBox);
-            this.splitContainer1.Panel1.Controls.Add(this.LonTextBox);
-            this.splitContainer1.Panel1.Controls.Add(this.LatTextBox);
-            this.splitContainer1.Panel1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.splitContainer1.Panel1MinSize = 133;
+            this.LocationSplitContainer.Panel1.Controls.Add(this.ElvLabel);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.LonLabel);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.LatLabel);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.GPSStatusTextBox);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.SetLocButton);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.GetGPSButton);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.label18);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.label7);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.label9);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.label6);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.label8);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.label5);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.AltTextBox);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.LonTextBox);
+            this.LocationSplitContainer.Panel1.Controls.Add(this.LatTextBox);
+            this.LocationSplitContainer.Panel1.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.LocationSplitContainer.Panel1MinSize = 133;
             // 
-            // splitContainer1.Panel2
+            // LocationSplitContainer.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.gmap);
-            this.splitContainer1.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.splitContainer1.Panel2MinSize = 200;
-            this.splitContainer1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.splitContainer1.Size = new System.Drawing.Size(398, 193);
-            this.splitContainer1.SplitterDistance = 133;
-            this.splitContainer1.TabIndex = 0;
+            this.LocationSplitContainer.Panel2.Controls.Add(this.gmap);
+            this.LocationSplitContainer.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.LocationSplitContainer.Panel2MinSize = 200;
+            this.LocationSplitContainer.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.LocationSplitContainer.Size = new System.Drawing.Size(398, 193);
+            this.LocationSplitContainer.SplitterDistance = 133;
+            this.LocationSplitContainer.TabIndex = 0;
             // 
             // ElvLabel
             // 
@@ -1867,6 +1881,7 @@ namespace MainForm
             // 
             // ScriptGroupBox
             // 
+            this.ScriptGroupBox.Controls.Add(this.ScriptComboBox);
             this.ScriptGroupBox.Controls.Add(this.ScriptBrowseButton);
             this.ScriptGroupBox.Controls.Add(this.ScriptTextBox);
             this.ScriptGroupBox.Location = new System.Drawing.Point(6, 290);
@@ -1876,6 +1891,15 @@ namespace MainForm
             this.ScriptGroupBox.TabStop = false;
             this.ScriptGroupBox.Text = "Script";
             // 
+            // ScriptComboBox
+            // 
+            this.ScriptComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ScriptComboBox.FormattingEnabled = true;
+            this.ScriptComboBox.Location = new System.Drawing.Point(6, 19);
+            this.ScriptComboBox.Name = "ScriptComboBox";
+            this.ScriptComboBox.Size = new System.Drawing.Size(355, 21);
+            this.ScriptComboBox.TabIndex = 11;
+            // 
             // ScriptBrowseButton
             // 
             this.ScriptBrowseButton.Location = new System.Drawing.Point(286, 18);
@@ -1884,6 +1908,7 @@ namespace MainForm
             this.ScriptBrowseButton.TabIndex = 10;
             this.ScriptBrowseButton.Text = "Browse";
             this.ScriptBrowseButton.UseVisualStyleBackColor = true;
+            this.ScriptBrowseButton.Visible = false;
             this.ScriptBrowseButton.Click += new System.EventHandler(this.ScriptBrowseButton_Click);
             // 
             // ScriptTextBox
@@ -1892,6 +1917,7 @@ namespace MainForm
             this.ScriptTextBox.Name = "ScriptTextBox";
             this.ScriptTextBox.Size = new System.Drawing.Size(274, 20);
             this.ScriptTextBox.TabIndex = 9;
+            this.ScriptTextBox.Visible = false;
             // 
             // IntervalGroupBox
             // 
@@ -2020,6 +2046,7 @@ namespace MainForm
             this.StartOffsetUpDown.Name = "StartOffsetUpDown";
             this.StartOffsetUpDown.Size = new System.Drawing.Size(62, 20);
             this.StartOffsetUpDown.TabIndex = 3;
+            this.StartOffsetUpDown.ValueChanged += new System.EventHandler(this.StartOffsetUpDown_ValueChanged);
             // 
             // EndRefComboBox
             // 
@@ -2104,6 +2131,40 @@ namespace MainForm
             this.CaptureTabPage.TabIndex = 4;
             this.CaptureTabPage.Text = "Capture";
             this.CaptureTabPage.UseVisualStyleBackColor = true;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label42);
+            this.groupBox4.Controls.Add(this.BurstLengthUpDown);
+            this.groupBox4.Location = new System.Drawing.Point(10, 82);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(129, 64);
+            this.groupBox4.TabIndex = 12;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Min. Burst Length";
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(103, 28);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(20, 13);
+            this.label42.TabIndex = 13;
+            this.label42.Text = "ms";
+            // 
+            // BurstLengthUpDown
+            // 
+            this.BurstLengthUpDown.Location = new System.Drawing.Point(7, 25);
+            this.BurstLengthUpDown.Maximum = new decimal(new int[] {
+            3000,
+            0,
+            0,
+            0});
+            this.BurstLengthUpDown.Name = "BurstLengthUpDown";
+            this.BurstLengthUpDown.Size = new System.Drawing.Size(93, 20);
+            this.BurstLengthUpDown.TabIndex = 0;
+            this.BurstLengthUpDown.ThousandsSeparator = true;
+            this.BurstLengthUpDown.ValueChanged += new System.EventHandler(this.BurstLengthUpDown_ValueChanged);
             // 
             // groupBox2
             // 
@@ -2266,6 +2327,7 @@ namespace MainForm
             // 
             // NotificationLabel
             // 
+            this.NotificationLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.NotificationLabel.AutoSize = true;
             this.NotificationLabel.Location = new System.Drawing.Point(11, 585);
             this.NotificationLabel.Name = "NotificationLabel";
@@ -2355,7 +2417,7 @@ namespace MainForm
             this.PhaseTimeOffsetLabel1.AutoSize = true;
             this.PhaseTimeOffsetLabel1.Font = new System.Drawing.Font("Arial Black", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PhaseTimeOffsetLabel1.ForeColor = System.Drawing.Color.Green;
-            this.PhaseTimeOffsetLabel1.Location = new System.Drawing.Point(54, 33);
+            this.PhaseTimeOffsetLabel1.Location = new System.Drawing.Point(56, 33);
             this.PhaseTimeOffsetLabel1.Name = "PhaseTimeOffsetLabel1";
             this.PhaseTimeOffsetLabel1.Size = new System.Drawing.Size(91, 23);
             this.PhaseTimeOffsetLabel1.TabIndex = 13;
@@ -2380,9 +2442,9 @@ namespace MainForm
             this.PhaseTimeRefLabel1.ForeColor = System.Drawing.Color.Green;
             this.PhaseTimeRefLabel1.Location = new System.Drawing.Point(14, 33);
             this.PhaseTimeRefLabel1.Name = "PhaseTimeRefLabel1";
-            this.PhaseTimeRefLabel1.Size = new System.Drawing.Size(43, 23);
+            this.PhaseTimeRefLabel1.Size = new System.Drawing.Size(49, 23);
             this.PhaseTimeRefLabel1.TabIndex = 12;
-            this.PhaseTimeRefLabel1.Text = "C1 -";
+            this.PhaseTimeRefLabel1.Text = "C1 +";
             // 
             // RefreshSequenceButton
             // 
@@ -2460,6 +2522,7 @@ namespace MainForm
             // ScriptFileBrowser
             // 
             this.ScriptFileBrowser.FileName = "openFileDialog1";
+            this.ScriptFileBrowser.Title = "Load Script";
             // 
             // SettingsFileBrowser
             // 
@@ -2477,39 +2540,113 @@ namespace MainForm
             this.SequenceSaveFileDialog.FileName = "eclipse_sequence.json";
             this.SequenceSaveFileDialog.Title = "Save Eclipse Sequence";
             // 
-            // groupBox4
+            // groupBox5
             // 
-            this.groupBox4.Controls.Add(this.label42);
-            this.groupBox4.Controls.Add(this.BurstLengthUpDown);
-            this.groupBox4.Location = new System.Drawing.Point(10, 82);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(129, 64);
-            this.groupBox4.TabIndex = 12;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Min. Burst Length";
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.Zoom10RadioButton);
+            this.groupBox5.Controls.Add(this.Zoom5RadioButton);
+            this.groupBox5.Controls.Add(this.Zoom1RadioButton);
+            this.groupBox5.Location = new System.Drawing.Point(392, 10);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(134, 35);
+            this.groupBox5.TabIndex = 8;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Zoom";
             // 
-            // BurstLengthUpDown
+            // Zoom1RadioButton
             // 
-            this.BurstLengthUpDown.Location = new System.Drawing.Point(7, 25);
-            this.BurstLengthUpDown.Maximum = new decimal(new int[] {
-            3000,
-            0,
-            0,
-            0});
-            this.BurstLengthUpDown.Name = "BurstLengthUpDown";
-            this.BurstLengthUpDown.Size = new System.Drawing.Size(93, 20);
-            this.BurstLengthUpDown.TabIndex = 0;
-            this.BurstLengthUpDown.ThousandsSeparator = true;
-            this.BurstLengthUpDown.ValueChanged += new System.EventHandler(this.BurstLengthUpDown_ValueChanged);
+            this.Zoom1RadioButton.AutoSize = true;
+            this.Zoom1RadioButton.Checked = true;
+            this.Zoom1RadioButton.Location = new System.Drawing.Point(9, 13);
+            this.Zoom1RadioButton.Name = "Zoom1RadioButton";
+            this.Zoom1RadioButton.Size = new System.Drawing.Size(36, 17);
+            this.Zoom1RadioButton.TabIndex = 0;
+            this.Zoom1RadioButton.TabStop = true;
+            this.Zoom1RadioButton.Text = "1x";
+            this.Zoom1RadioButton.UseVisualStyleBackColor = true;
+            this.Zoom1RadioButton.CheckedChanged += new System.EventHandler(this.Zoom1RadioButton_CheckedChanged);
             // 
-            // label42
+            // Zoom5RadioButton
             // 
-            this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(103, 28);
-            this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(20, 13);
-            this.label42.TabIndex = 13;
-            this.label42.Text = "ms";
+            this.Zoom5RadioButton.AutoSize = true;
+            this.Zoom5RadioButton.Location = new System.Drawing.Point(49, 13);
+            this.Zoom5RadioButton.Name = "Zoom5RadioButton";
+            this.Zoom5RadioButton.Size = new System.Drawing.Size(36, 17);
+            this.Zoom5RadioButton.TabIndex = 0;
+            this.Zoom5RadioButton.Text = "5x";
+            this.Zoom5RadioButton.UseVisualStyleBackColor = true;
+            this.Zoom5RadioButton.CheckedChanged += new System.EventHandler(this.Zoom5RadioButton_CheckedChanged);
+            // 
+            // Zoom10RadioButton
+            // 
+            this.Zoom10RadioButton.AutoSize = true;
+            this.Zoom10RadioButton.Location = new System.Drawing.Point(90, 13);
+            this.Zoom10RadioButton.Name = "Zoom10RadioButton";
+            this.Zoom10RadioButton.Size = new System.Drawing.Size(42, 17);
+            this.Zoom10RadioButton.TabIndex = 0;
+            this.Zoom10RadioButton.Text = "10x";
+            this.Zoom10RadioButton.UseVisualStyleBackColor = true;
+            this.Zoom10RadioButton.CheckedChanged += new System.EventHandler(this.Zoom10RadioButton_CheckedChanged);
+            // 
+            // LVPanLeftButton
+            // 
+            this.LVPanLeftButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.LVPanLeftButton.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.LVPanLeftButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LVPanLeftButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.LVPanLeftButton.Location = new System.Drawing.Point(474, 266);
+            this.LVPanLeftButton.Margin = new System.Windows.Forms.Padding(0);
+            this.LVPanLeftButton.Name = "LVPanLeftButton";
+            this.LVPanLeftButton.Size = new System.Drawing.Size(28, 28);
+            this.LVPanLeftButton.TabIndex = 9;
+            this.LVPanLeftButton.Text = "⇦";
+            this.LVPanLeftButton.UseVisualStyleBackColor = false;
+            this.LVPanLeftButton.Click += new System.EventHandler(this.LVPanLeftButton_Click);
+            // 
+            // LVPanUpButton
+            // 
+            this.LVPanUpButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.LVPanUpButton.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.LVPanUpButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LVPanUpButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.LVPanUpButton.Location = new System.Drawing.Point(487, 238);
+            this.LVPanUpButton.Margin = new System.Windows.Forms.Padding(0);
+            this.LVPanUpButton.Name = "LVPanUpButton";
+            this.LVPanUpButton.Size = new System.Drawing.Size(28, 28);
+            this.LVPanUpButton.TabIndex = 10;
+            this.LVPanUpButton.Text = "⇧";
+            this.LVPanUpButton.UseVisualStyleBackColor = false;
+            this.LVPanUpButton.Click += new System.EventHandler(this.LVPanUpButton_Click);
+            // 
+            // LVPanRightButton
+            // 
+            this.LVPanRightButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.LVPanRightButton.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.LVPanRightButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LVPanRightButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.LVPanRightButton.Location = new System.Drawing.Point(502, 266);
+            this.LVPanRightButton.Margin = new System.Windows.Forms.Padding(0);
+            this.LVPanRightButton.Name = "LVPanRightButton";
+            this.LVPanRightButton.Size = new System.Drawing.Size(28, 28);
+            this.LVPanRightButton.TabIndex = 11;
+            this.LVPanRightButton.Text = "⇨";
+            this.LVPanRightButton.UseVisualStyleBackColor = false;
+            this.LVPanRightButton.Click += new System.EventHandler(this.LVPanRightButton_Click);
+            // 
+            // LVPanDownButton
+            // 
+            this.LVPanDownButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.LVPanDownButton.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.LVPanDownButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LVPanDownButton.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.LVPanDownButton.Location = new System.Drawing.Point(487, 295);
+            this.LVPanDownButton.Margin = new System.Windows.Forms.Padding(0);
+            this.LVPanDownButton.Name = "LVPanDownButton";
+            this.LVPanDownButton.Size = new System.Drawing.Size(28, 28);
+            this.LVPanDownButton.TabIndex = 12;
+            this.LVPanDownButton.Text = "⇩";
+            this.LVPanDownButton.UseVisualStyleBackColor = false;
+            this.LVPanDownButton.Click += new System.EventHandler(this.LVPanDownButton_Click);
             // 
             // MainForm
             // 
@@ -2536,11 +2673,11 @@ namespace MainForm
             this.SaveToGroupBox.ResumeLayout(false);
             this.SaveToGroupBox.PerformLayout();
             this.LocTabPage.ResumeLayout(false);
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel1.PerformLayout();
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
+            this.LocationSplitContainer.Panel1.ResumeLayout(false);
+            this.LocationSplitContainer.Panel1.PerformLayout();
+            this.LocationSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.LocationSplitContainer)).EndInit();
+            this.LocationSplitContainer.ResumeLayout(false);
             this.EclipseTabPage.ResumeLayout(false);
             this.EclipseTabPage.PerformLayout();
             this.SeWebBrowserPanel.ResumeLayout(false);
@@ -2560,6 +2697,9 @@ namespace MainForm
             ((System.ComponentModel.ISupportInitialize)(this.EndOffsetUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.StartOffsetUpDown)).EndInit();
             this.CaptureTabPage.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BurstLengthUpDown)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -2575,9 +2715,8 @@ namespace MainForm
             this.SequenceGroupBox.ResumeLayout(false);
             this.SequenceGroupBox.PerformLayout();
             this.SeqFlowPanel.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BurstLengthUpDown)).EndInit();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2619,7 +2758,7 @@ namespace MainForm
         private System.Windows.Forms.TabPage SeqGenTabPage;
         private System.Windows.Forms.Button StartCaptureButton;
         private System.Windows.Forms.TabPage LocTabPage;
-        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.SplitContainer LocationSplitContainer;
         private System.Windows.Forms.TextBox LonTextBox;
         private System.Windows.Forms.TextBox LatTextBox;
         private System.Windows.Forms.Button GetGPSButton;
@@ -2663,7 +2802,6 @@ namespace MainForm
         private System.Windows.Forms.DomainUpDown AEBUpDown;
         private System.Windows.Forms.RadioButton AEBRadioButton;
         private System.Windows.Forms.RadioButton AEBDisabledRadioButton;
-        private System.Windows.Forms.FolderBrowserDialog LoadScriptBrowserOLD;
         private System.Windows.Forms.GroupBox ScriptGroupBox;
         private System.Windows.Forms.TextBox ScriptTextBox;
         private System.Windows.Forms.Button ScriptBrowseButton;
@@ -2786,6 +2924,15 @@ namespace MainForm
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.NumericUpDown BurstLengthUpDown;
         private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.ComboBox ScriptComboBox;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.RadioButton Zoom10RadioButton;
+        private System.Windows.Forms.RadioButton Zoom5RadioButton;
+        private System.Windows.Forms.RadioButton Zoom1RadioButton;
+        private System.Windows.Forms.Button LVPanLeftButton;
+        private System.Windows.Forms.Button LVPanUpButton;
+        private System.Windows.Forms.Button LVPanDownButton;
+        private System.Windows.Forms.Button LVPanRightButton;
     }
 }
 

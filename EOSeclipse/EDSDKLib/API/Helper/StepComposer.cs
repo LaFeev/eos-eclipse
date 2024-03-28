@@ -23,6 +23,7 @@ namespace EDSDKLib.API.Helper
     public class StepComposer
     {
         public string Version {  get; set; }
+        public int BurstLength { get; set; }
         public List<StepBuilder> StepList { get; set; }
         public SeIndex Eclipse { get; set; }
         public double ShootingLat { get; set; }
@@ -47,6 +48,7 @@ namespace EDSDKLib.API.Helper
         public StepComposer()
         {
             Version = "";
+            BurstLength = 500;
             StepList = new List<StepBuilder>();
             ShootingLat = 0;
             ShootingLng = 0;
@@ -426,20 +428,17 @@ namespace EDSDKLib.API.Helper
                     {
                         foreach (StepBuilder sb in StepList)
                         {
-                            if (sb.Phase == ph)
+                            if (ph == "Baily's Beads" && sb.Phase == ph)
                             {
-                                if (sb.Phase == "Baily's Beads")
-                                {
-                                    if (sb.StartRef == "C2") c2bb = true;
-                                    if (sb.StartRef == "C3") c3bb = true;
+                                if (sb.StartRef == "C2") c2bb = true;
+                                if (sb.StartRef == "C3") c3bb = true;
 
-                                    if (c2bb && c3bb) remainingPhases.Remove(ph); break;
-                                }
-                                else
-                                {
-                                    remainingPhases.Remove(ph);
-                                    break;
-                                }
+                                if (c2bb && c3bb) remainingPhases.Remove(ph);
+                            }
+                            else if (sb.Phase == ph)
+                            {
+                                remainingPhases.Remove(ph);
+                                break;
                             }
                         }
                     }

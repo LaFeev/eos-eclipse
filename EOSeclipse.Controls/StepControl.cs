@@ -260,11 +260,19 @@ namespace EOSeclipse.Controls
         #region Subroutines
         private void ToggleEnabled()
         {
-            PhaseLabel.Enabled = _active;
-            StartEndPanel.Enabled = _active;
-            IntervalTimerLabel.Enabled = _active;
-            IntervalLabel.Enabled = _active;
-            ProgressPanel.Enabled = CheckInStep();
+            if(InvokeRequired)
+            {
+                Invoke(new Action(() => 
+                {
+                    PhaseLabel.Enabled = _active;
+                    StartEndPanel.Enabled = _active;
+                    IntervalTimerLabel.Enabled = _active;
+                    IntervalLabel.Enabled = _active;
+                    ProgressPanel.Enabled = CheckInStep();
+                }));
+                
+            }
+            
         }
 
         private string BuildTimeRef(string timeRef, TimeSpan timeOffset)
@@ -432,6 +440,14 @@ namespace EOSeclipse.Controls
                 args.Repeat = false;
                 args.IntervalEndTime = _intervalStartTime + Interval;
             }
+            // get longest task length (should be the first task, since default Tv sorting puts longest exposure lengths first)
+            if (Phase == "Script")
+                args.LongestTask = TimeSpan.Zero;
+            else
+            {
+                double millis = 1000 * (Tasks[0].Tv.DoubleValue + Tasks[0].AEBMinus.DoubleValue + Tasks[0].AEBPlus.DoubleValue);
+                args.LongestTask = new TimeSpan(0,0,0,0,(int)millis);
+            }
 
             EventHandler<TaskFiredEventArgs> handler = TaskFired;
             if (handler != null)
@@ -471,7 +487,7 @@ namespace EOSeclipse.Controls
     {
         public DateTime IntervalStartTime { get; set; }
         public DateTime IntervalEndTime { get; set; }
-
+        public TimeSpan LongestTask { get; set; }
         public bool Repeat { get; set; }
     }
 }

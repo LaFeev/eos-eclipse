@@ -18,14 +18,14 @@ using System.IO;
 using EDSDKLib.API.Helper;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
+using System.Media;
+using WMPLib;
 
 namespace MainForm
 {
     public partial class MainForm : Form
     {
         #region Variables
-
-        string Version = "0.1.0";
         CanonAPI APIHandler;
         Camera MainCamera;
         CameraValue[] AvList;
@@ -39,6 +39,9 @@ namespace MainForm
         int LVBw, LVBh, w, h;
         float LVBratio, LVration;
         bool PreviewOn = false;
+        int LVoffsetX = 0, LVoffsetY = 0;
+        EOSDigital.SDK.Rectangle ZoomRect;
+        EOSDigital.SDK.Size ZoomSize;
 
         int ErrCount;
         object ErrLock = new object();
@@ -49,11 +52,12 @@ namespace MainForm
 
         StepComposer Composer = new StepComposer();
         private StepControl _editStep;
-        private TimeSpan _averageTaskTime = new TimeSpan(0, 0, 0, 0, 700);
-        private int _burstLength = 500;     // TODO: offer a way to congifure this in settings. It should equal roughly (1000/[camera fps] * 3.5).  This gives the ~average between a 3 and 4 shot burst in milliseconds.
+        private int _burstLength = 500;     // TODO: Precompute this for each camera model?. It should equal roughly (1000/[camera fps] * 3.5).  This gives the ~average between a 3 and 4 shot burst in milliseconds.
         private bool _debug = false;
         DateTime _lastAction;
         bool _AebRequired = false;
+        bool _AllowEdit = false;
+        DateTime _lastCameraRefresh;
 
         string AppDataDir;
         public CalcRaw calcRaw = new CalcRaw();
@@ -71,7 +75,7 @@ namespace MainForm
             {
                 InitializeComponent();
 
-                Composer.Version = Version;
+                Composer.Version = Application.ProductVersion;
 
                 APIHandler = new CanonAPI();
                 APIHandler.CameraAdded += APIHandler_CameraAdded;
@@ -87,6 +91,10 @@ namespace MainForm
                 SaveSettingsButton.Enabled = false;
                 LoadedCameraSettingsLabel.Visible = false;
                 NotificationLabel.Visible = false;
+                LVPanDownButton.Visible = false;
+                LVPanUpButton.Visible = false;
+                LVPanLeftButton.Visible = false;
+                LVPanRightButton.Visible = false;
 
                 // Settings tab
                 FocuserWebBrowser.Visible = false;
@@ -101,6 +109,8 @@ namespace MainForm
                 gmap.MinZoom = 1;
                 gmap.MaxZoom = 20;
                 gmap.Zoom = 3;
+                //gmap.KeyDown += EventHandler_LocationKeyDowned;
+                gmap.KeyUp += EventHandler_LocationKeyUpped;
 
                 // Eclipse tab
                 SeList = SeIndex.SeIndices();
@@ -110,7 +120,7 @@ namespace MainForm
                 SeCalcButton.Enabled = false;
 
                 // Sequence Panel
-                splitContainer1.Panel2.Controls.Add( gmap );
+                LocationSplitContainer.Panel2.Controls.Add( gmap );
                 splitContainer2.Panel2Collapsed = true;
                 RefreshSequenceButton.Visible = false;
 
@@ -127,7 +137,8 @@ namespace MainForm
                 ResetStage();
                 ClearSequence();
                 ScriptTextBox.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Eclipse Scripts");
-                LoadScriptBrowserOLD.Description = "Load Script...";
+                ScriptComboBox.Items.Clear();
+                ScriptComboBox.Items.AddRange(new object[]{ "FILTER-OPEN", "FILTER-CLOSE", "NOTIFY-FILTER-OPEN", "NOTIFY-FILTER-CLOSE", "LIVEVIEW-DISABLE", "LIVEVIEW-ENABLE"});
 
                 // load html content
                 string curDir = Directory.GetCurrentDirectory();
@@ -221,6 +232,16 @@ namespace MainForm
             catch (Exception ex) { ReportError(ex.Message, false); }
         }
 
+        private void MainCamera_ZoomRectUpdated(Object sender, EOSDigital.SDK.Rectangle rect)
+        {
+            ZoomRect = rect;
+        }
+
+        private void MainCamera_ZoomSizeUpdated(Object sender, EOSDigital.SDK.Size size)
+        {
+            ZoomSize = size;
+        }
+
         private void MainCamera_DownloadReady(Camera sender, DownloadInfo Info)
         {
             try
@@ -255,7 +276,7 @@ namespace MainForm
 
         private void RefreshButton_Click(object sender, EventArgs e)
         {
-            try { RefreshCamera(); }
+            try { RefreshCamera(); _lastCameraRefresh = DateTime.Now; }
             catch (Exception ex) { ReportError(ex.Message, false); }
         }
 
@@ -403,9 +424,9 @@ namespace MainForm
         {
             // make the setting changes
             Console.WriteLine("set Tv: {0}", task.Tv.StringValue);
-            await MainCamera.SetSettingContAsync(PropertyID.Tv, task.Tv.IntValue, 0, 75, 20);
-            await MainCamera.SetSettingContAsync(PropertyID.Av, task.Av.IntValue, 0, 75, 20);
-            await MainCamera.SetSettingContAsync(PropertyID.ISO, task.ISO.IntValue, 0, 75, 20);
+            await Task.Run(() => MainCamera.SetSettingContAsync(PropertyID.Tv, task.Tv.IntValue, 0, 75, 40));
+            await Task.Run(() => MainCamera.SetSettingContAsync(PropertyID.Av, task.Av.IntValue, 0, 75, 20));
+            await Task.Run(() => MainCamera.SetSettingContAsync(PropertyID.ISO, task.ISO.IntValue, 0, 75, 20));
             // fire the burst
             await Task.Run(() => MainCamera.TakePhotoShutterContAsync(burstDuration, 50, 20));
             _lastAction = DateTime.Now;
@@ -413,10 +434,10 @@ namespace MainForm
 
         private async Task TakePhoto(TaskControl task)
         {
-            // make the setting changes
-            await Task.Run(() => MainCamera.SetSettingContAsync(PropertyID.Tv, task.Tv.IntValue));
-            await Task.Run(() => MainCamera.SetSettingContAsync(PropertyID.Av, task.Av.IntValue));
-            await Task.Run(() => MainCamera.SetSettingContAsync(PropertyID.ISO, task.ISO.IntValue));
+            Console.WriteLine("set Tv: {0}", task.Tv.StringValue);
+            await Task.Run(() => MainCamera.SetSettingContAsync(PropertyID.Tv, task.Tv.IntValue, 0, 75, 40));
+            await Task.Run(() => MainCamera.SetSettingContAsync(PropertyID.Av, task.Av.IntValue, 0, 75, 20));
+            await Task.Run(() => MainCamera.SetSettingContAsync(PropertyID.ISO, task.ISO.IntValue, 0, 75, 20));
             // fire the shot
             await Task.Run(() => MainCamera.TakePhotoShutterAsync());
             _lastAction = DateTime.Now;
@@ -429,8 +450,8 @@ namespace MainForm
                 // open the filter
                 if (Composer.SolarFilterIP != null && Composer.SolarFilterIP != string.Empty)
                 {
+                    Console.WriteLine("Script Fired: {0}", task.Script.ToUpper());
                     await Task.Run(() => SolarFilter_Open());
-                    Console.WriteLine("SolarFiler_Open task complete");
                 }
             }
             else if (task.Script.ToUpper() == "FILTER-CLOSE")
@@ -438,8 +459,52 @@ namespace MainForm
                 // close the filter
                 if (Composer.SolarFilterIP != null && Composer.SolarFilterIP != string.Empty)
                 {
+                    Console.WriteLine("Script Fired: {0}", task.Script.ToUpper());
                     await Task.Run(() => SolarFilter_Close());
                 }
+            }
+            else if (task.Script.ToUpper() == "LIVEVIEW-DISABLE")
+            {
+                // stop live view
+                if (MainCamera.IsLiveViewOn)
+                {
+                    LiveViewStopSub(true);
+                }
+            }
+            else if (task.Script.ToUpper() == "LIVEVIEW-ENABLE")
+            {
+                // start live view
+                if (!MainCamera.IsLiveViewOn)
+                    LiveViewStartSub();
+            }
+            else if (task.Script != null)
+            {
+                string curDir = Directory.GetCurrentDirectory();
+                string fpath = null;
+                if (task.Script.ToUpper() == "NOTIFY-FILTER-OPEN")
+                {
+                    fpath = String.Format("{0}\\Scripts\\remove_filters.mp3", curDir);
+                    //fpath = Path.Combine(curDir, @"/Scripts/remove_filters.mp3");  // doesnt work
+                }
+                else if (task.Script.ToUpper() == "NOTIFY-FILTER-CLOSE")
+                {
+                    fpath = String.Format("{0}\\Scripts\\install_filters.mp3", curDir);
+                    //fpath = Path.Combine(curDir, @"/Scripts/install_filters.mp3");  // doesnt work
+                }
+                if (fpath != null && File.Exists(fpath))
+                {
+                    // only for .wav
+                    //SoundPlayer sound = new SoundPlayer(fpath);
+                    //sound.Play();
+                    WindowsMediaPlayer wplayer = new WindowsMediaPlayer();
+                    wplayer.URL = fpath;
+                    wplayer.controls.play();
+                    Console.WriteLine("Script Fired: {0}", task.Script.ToUpper());
+                }
+                else if (fpath != null)
+                    Console.WriteLine("ERROR - could not find '{0}'", fpath);
+                else
+                    Console.WriteLine("Unhandled non-null script: {0}", task.Script);
             }
             else
             {
@@ -451,7 +516,7 @@ namespace MainForm
 
         private async Task FireTask(TaskControl task)
         {
-            if (MainCamera != null)
+            if (MainCamera?.SessionOpen == true)
             {
                 // responsible for determining what methods to call depending on the content of the TaskControl
                 if (task.Script != null)
@@ -462,7 +527,6 @@ namespace MainForm
                 else if (task.AEBMinus != TvValues.Auto)
                 {
                     // AEB mode activated
-                    // TODO: check if AEB is set on camera and flag the UI if it is not
                     double dblBurst = task.Tv.DoubleValue + task.AEBMinus.DoubleValue + task.AEBPlus.DoubleValue;
                     int intBurst = (int)Math.Round(dblBurst * 1000);
                     await TakeBurst(Math.Max(intBurst, _burstLength), task);
@@ -476,6 +540,12 @@ namespace MainForm
             else
             {
                 // no camera attached, fire debug messages
+                TimeSpan task_length = TimeSpan.Zero;
+                if (task.Script == null)
+                {
+                    double millis = 1000 * (task.AEBMinus.DoubleValue + task.AEBPlus.DoubleValue + task.Tv.DoubleValue);
+                    task_length = TimeSpan.FromMilliseconds(millis);
+                }
                 if (task.Script != null)
                 {
                     Console.WriteLine("{0} FIRE - script: {1}", DateTime.Now.ToString(), task.Script);
@@ -484,12 +554,12 @@ namespace MainForm
                 else if (task.AEBMinus != TvValues.Auto)
                 {
                     Console.WriteLine("{0} FIRE - burst: {1} Tv; {2} Av; {3} ISO", DateTime.Now, task.Tv.StringValue, task.Av.StringValue, task.ISO.StringValue);
-                    await Task.Delay(_averageTaskTime);
+                    await Task.Delay(Math.Max(task_length.Milliseconds, _burstLength));
                 }
                 else
                 {
                     Console.WriteLine("{0} FIRE - shoot: {1} Tv; {2} Av; {3} ISO", DateTime.Now, task.Tv.StringValue, task.Av.StringValue, task.ISO.StringValue);
-                    await Task.Delay(_averageTaskTime);
+                    await Task.Delay(task_length);
                 }
             }
         }
@@ -567,10 +637,13 @@ namespace MainForm
             }
         }
 
-        private void NudgeCamera()
+        private async void NudgeCamera()
         {
-            // read a setting from camera to keep connection alive
-            _ = GetLastThumbnail();
+            // get the current ISO
+            CameraValue currentISO = ISOValues.GetValue(MainCamera.GetInt32Setting(PropertyID.ISO));
+            // set the ISO back (no change)
+            await Task.Run(() => MainCamera.SetSetting(PropertyID.ISO, currentISO.IntValue));
+
             _lastAction = DateTime.Now;
             Console.WriteLine("nudge - {0}", _lastAction.ToString("HH:mm:ss.f"));
         }
@@ -645,6 +718,36 @@ namespace MainForm
             }
         }
 
+        private void EventHandler_LocationKeyUpped(object sender, KeyEventArgs e)
+        {
+            double delta = 18.828 * Math.Pow(Math.E, gmap.Zoom * -.596);
+            switch (e.KeyCode)
+            {
+                case Keys.Up:
+                    gmap.Position += new SizeLatLng(-delta, 0);
+                    break;
+                case Keys.Down:
+                    gmap.Position += new SizeLatLng(delta, 0);
+                    break;
+                case Keys.Left:
+                    gmap.Position += new SizeLatLng(0, -delta);
+                    break;
+                case Keys.Right:
+                    gmap.Position += new SizeLatLng(0, delta);
+                    break;
+                case Keys.Add:
+                    if (gmap.Zoom < gmap.MaxZoom)
+                        gmap.Zoom += 1;
+                    break;
+                case Keys.Subtract:
+                    if (gmap.Zoom > gmap.MinZoom)
+                        gmap.Zoom -= 1;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         #endregion
 
         #region Sequence gen
@@ -699,8 +802,6 @@ namespace MainForm
                         EndRefComboBox.Enabled = false;
                         EndOffsetUpDown.Enabled = true;
 
-                        // TODO: need to test this change.  Add both BB stages, and then try to edit one.
-                        // TODO: this doesn't work, the button text has not changed yet.  Need to rework how BB is handled anyways, remainingPhases() is not working.
                         if (AddStageButton.Text == "Add Stage")
                         {
                             // if one of the two baily's beads stages has been configured, remove it from the start/end reference options
@@ -762,11 +863,15 @@ namespace MainForm
                         StartRefComboBox.SelectedItem = "Mx";
                         EndRefComboBox.SelectedItem = "Mx";
 
-                        StartRefComboBox.Enabled = false;
+                        StartOffsetUpDown.Value = -10;
+                        EndOffsetUpDown.Value = 10;
+
                         EndOffsetUpDown.Enabled = true;
 
-                        StartOffsetUpDown.Value = 10;
-                        EndOffsetUpDown.Value = -10;
+                        SingleRadioButtonToggle(SingleRadioButton.Checked);
+
+                        StartRefComboBox.Enabled = false;
+                        EndRefComboBox.Enabled = false;
                         break;
                     case "C1":
                         StartRefComboBox.Items.AddRange(new string[] { "C1" });
@@ -775,11 +880,15 @@ namespace MainForm
                         StartRefComboBox.SelectedItem = "C1";
                         EndRefComboBox.SelectedItem = "C1";
 
-                        StartRefComboBox.Enabled = false;
+                        StartOffsetUpDown.Value = -1;
+                        EndOffsetUpDown.Value = 1;
+
                         EndOffsetUpDown.Enabled = true;
 
-                        StartOffsetUpDown.Value = 1;
-                        EndOffsetUpDown.Value = -1;
+                        SingleRadioButtonToggle(SingleRadioButton.Checked);
+
+                        StartRefComboBox.Enabled = false;
+                        EndRefComboBox.Enabled = false;
                     break;
                     case "C2":
                         StartRefComboBox.Items.AddRange(new string[] { "C2" });
@@ -788,11 +897,15 @@ namespace MainForm
                         StartRefComboBox.SelectedItem = "C2";
                         EndRefComboBox.SelectedItem = "C2";
 
-                        StartRefComboBox.Enabled = false;
+                        StartOffsetUpDown.Value = -1;
+                        EndOffsetUpDown.Value = 1;
+
                         EndOffsetUpDown.Enabled = true;
 
-                        StartOffsetUpDown.Value = 1;
-                        EndOffsetUpDown.Value = -1;
+                        SingleRadioButtonToggle(SingleRadioButton.Checked);
+
+                        StartRefComboBox.Enabled = false;
+                        EndRefComboBox.Enabled = false;
                     break;
                     case "C3":
                         StartRefComboBox.Items.AddRange(new string[] { "C3" });
@@ -801,11 +914,15 @@ namespace MainForm
                         StartRefComboBox.SelectedItem = "C3";
                         EndRefComboBox.SelectedItem = "C3";
 
-                        StartRefComboBox.Enabled = false;
+                        StartOffsetUpDown.Value = -1;
+                        EndOffsetUpDown.Value = 1;
+
                         EndOffsetUpDown.Enabled = true;
 
-                        StartOffsetUpDown.Value = 1;
-                        EndOffsetUpDown.Value = -1;
+                        SingleRadioButtonToggle(SingleRadioButton.Checked);
+
+                        StartRefComboBox.Enabled = false;
+                        EndRefComboBox.Enabled = false;
                     break;
                     case "C4":
                         StartRefComboBox.Items.AddRange(new string[] { "C4" });
@@ -814,11 +931,15 @@ namespace MainForm
                         StartRefComboBox.SelectedItem = "C4";
                         EndRefComboBox.SelectedItem = "C4";
 
-                        StartRefComboBox.Enabled = false;
+                        StartOffsetUpDown.Value = -1;
+                        EndOffsetUpDown.Value = 1;
+
                         EndOffsetUpDown.Enabled = true;
 
-                        StartOffsetUpDown.Value = 1;
-                        EndOffsetUpDown.Value = -1;
+                        SingleRadioButtonToggle(SingleRadioButton.Checked);
+
+                        StartRefComboBox.Enabled = false;
+                        EndRefComboBox.Enabled = false;
                     break;
                     case "Script":
                         StartRefComboBox.Items.AddRange(new string[] { "C1", "C2", "Mx", "C3", "C4" });
@@ -827,12 +948,7 @@ namespace MainForm
                         StartRefComboBox.SelectedIndex = -1;
                         EndRefComboBox.SelectedIndex = -1;
 
-                        if (SingleRadioButton.Checked)
-                        {
-                            EndRefComboBox.Enabled = false;
-                        }
-                        else { EndRefComboBox.Enabled = true; }
-                        EndOffsetUpDown.Enabled = true;
+                        SingleRadioButtonToggle(SingleRadioButton.Checked);
 
                         StartOffsetUpDown.Value = 0;
                         EndOffsetUpDown.Value = 0;
@@ -847,22 +963,12 @@ namespace MainForm
                         StartRefComboBox.SelectedIndex = -1;
                         EndRefComboBox.SelectedIndex = -1;
 
-                        if (SingleRadioButton.Checked)
-                        {
-                            EndRefComboBox.Enabled = false;
-                        }
-                        else { EndRefComboBox.Enabled = true; }
-                        EndOffsetUpDown.Enabled = true;
+                        SingleRadioButtonToggle(SingleRadioButton.Checked);
 
                         StartOffsetUpDown.Value = 0;
                         EndOffsetUpDown.Value = 0;
                     break;
                 }
-            }
-            else
-            {
-                // should only get here via a call to StageReset(), which should clear everything etc
-                // TODO: delete this else block?
             }
         }
 
@@ -1036,12 +1142,17 @@ namespace MainForm
 
         private void SingleRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            if (SingleRadioButton.Checked)
+            SingleRadioButtonToggle(SingleRadioButton.Checked);
+        }
+
+        private void SingleRadioButtonToggle(bool _checked)
+        {
+            if (_checked)
             {
                 EndRefComboBox.Enabled = false;
                 EndOffsetUpDown.Enabled = false;
 
-                if (StartRefComboBox.SelectedItem != null) 
+                if (StartRefComboBox.SelectedItem != null)
                 {
                     EndRefComboBox.SelectedItem = StartRefComboBox.SelectedItem;
                     EndOffsetUpDown.Value = StartOffsetUpDown.Value;
@@ -1082,7 +1193,14 @@ namespace MainForm
             if (Phase != "Script")
             {
                 ISO = new CameraValue((double)SeqIsoCoBox.SelectedItem, PropertyID.ISO);
-                Av = new CameraValue(SeqAvCoBox.SelectedItem.ToString(), PropertyID.Av);
+                if (SeqAvCoBox.SelectedIndex == -1)
+                {
+                    Av = AvValues.Auto;
+                }
+                else
+                {
+                    Av = new CameraValue(SeqAvCoBox.SelectedItem.ToString(), PropertyID.Av);
+                }
 
                 foreach (string _tv in SeqTvListBox.SelectedItems)
                 {
@@ -1097,7 +1215,10 @@ namespace MainForm
                     }
                 }
             }
-            string Script = ScriptTextBox.Text;
+            //string Script = ScriptTextBox.Text;
+            string Script = null;
+            if (ScriptComboBox.SelectedIndex != -1)
+                Script = ScriptComboBox.SelectedItem.ToString();
             DateTime StartDateTime = DateTime.MinValue;
             DateTime EndDateTime = DateTime.MinValue;
 
@@ -1110,7 +1231,7 @@ namespace MainForm
                 }
                 else
                 {
-                    // TODO: pop up a dialog saying there is no valid event time for that phase (not happening for the location calculated)
+                    // shouldn't get a non-present phase if the StepComposer.GetPhases method works properly.  TODO: update GetPhases() to handle annular eclipses
                 }
                 if (!SeResult.Phase(EndRef).DateTime.IsNull)
                 {
@@ -1118,7 +1239,7 @@ namespace MainForm
                 }
                 else
                 {
-                    // TODO: pop up a dialog saying there is no valid event time for that phase (not happening for the location calculated)
+                    // shouldn't get a non-present phase if the StepComposer.GetPhases method works properly.  TODO: update GetPhases() to handle annular eclipses
                 }
             }
             if (EndDateTime < StartDateTime)
@@ -1220,6 +1341,15 @@ namespace MainForm
                 }
             }
             catch (Exception ex) { ReportError(ex.Message, false); }
+        }
+
+        private void ScrollPanelTo(int index)
+        {
+            var ctl = SeqFlowPanel.Controls[index];
+            var loc = ctl.Location - new System.Drawing.Size(SeqFlowPanel.AutoScrollPosition);
+            loc -= new System.Drawing.Size(0, ctl.Margin.Top);
+            SeqFlowPanel.AutoScrollPosition = loc;
+            ctl.Focus();
         }
 
         #endregion
@@ -1454,6 +1584,7 @@ namespace MainForm
                         step.Stop();
                     }
                 }
+
                 // if a sequence gets invalidated while running, the Stop Capture button is left enabled, but
                 // should be disabled upon stopping, to prevent starting capture on an invalid sequence.
                 EnableSequence(VerifyComposer());
@@ -1531,6 +1662,8 @@ namespace MainForm
         {
             _burstLength = (int)BurstLengthUpDown.Value;
             BurstLengthUpDown.Value = _burstLength;
+            Composer.BurstLength = _burstLength;
+            // save session?
         }
 
         #endregion
@@ -1552,7 +1685,10 @@ namespace MainForm
                 DateTime mx = SeResult.Phase("Mx").DateTime.ComputeValue;
                 DateTime c3 = SeResult.Phase("C3").DateTime.ComputeValue;
                 DateTime c4 = SeResult.Phase("C4").DateTime.ComputeValue;
-                String format = @"d\:mm\:ss\.f";
+                String format_long = @"d\:hh\:mm\:ss\.f";
+                String format_short = @"h\:mm\:ss\.f";
+                PhaseTimeRefLabel1.ForeColor = System.Drawing.Color.Green;
+                PhaseTimeOffsetLabel1.ForeColor = System.Drawing.Color.Green;
 
                 if (now < c1)
                 {
@@ -1562,7 +1698,7 @@ namespace MainForm
                     PhaseTimeRefLabel2.Visible = false;
                     PhaseTimeOffsetLabel2.Visible = false;
                     PhaseTimeRefLabel1.Text = "C1 -";
-                    PhaseTimeOffsetLabel1.Text = (c1 - now).ToString(format);
+                    PhaseTimeOffsetLabel1.Text = (c1 - now).ToString(format_long);
                 }
                 else if (now < c2)
                 {
@@ -1572,9 +1708,9 @@ namespace MainForm
                     PhaseTimeRefLabel2.Visible = true;
                     PhaseTimeOffsetLabel2.Visible = true;
                     PhaseTimeRefLabel1.Text = "C2 -";
-                    PhaseTimeOffsetLabel1.Text = (c2 - now).ToString(format);
+                    PhaseTimeOffsetLabel1.Text = (c2 - now).ToString(format_short);
                     PhaseTimeRefLabel2.Text = "C1 +";
-                    PhaseTimeOffsetLabel2.Text = (now - c1).ToString(format);
+                    PhaseTimeOffsetLabel2.Text = (now - c1).ToString(format_short);
                 }
                 else if (now < mx)
                 {
@@ -1584,9 +1720,9 @@ namespace MainForm
                     PhaseTimeRefLabel2.Visible = true;
                     PhaseTimeOffsetLabel2.Visible = true;
                     PhaseTimeRefLabel1.Text = "Mx -";
-                    PhaseTimeOffsetLabel1.Text = (mx - now).ToString(format);
+                    PhaseTimeOffsetLabel1.Text = (mx - now).ToString(format_short);
                     PhaseTimeRefLabel2.Text = "C2 +";
-                    PhaseTimeOffsetLabel2.Text = (now - c2).ToString(format);
+                    PhaseTimeOffsetLabel2.Text = (now - c2).ToString(format_short);
                 }
                 else if (now < c3)
                 {
@@ -1596,9 +1732,9 @@ namespace MainForm
                     PhaseTimeRefLabel2.Visible = true;
                     PhaseTimeOffsetLabel2.Visible = true;
                     PhaseTimeRefLabel1.Text = "C3 -";
-                    PhaseTimeOffsetLabel1.Text = (c3 - now).ToString(format);
+                    PhaseTimeOffsetLabel1.Text = (c3 - now).ToString(format_short);
                     PhaseTimeRefLabel2.Text = "Mx +";
-                    PhaseTimeOffsetLabel2.Text = (now - mx).ToString(format);
+                    PhaseTimeOffsetLabel2.Text = (now - mx).ToString(format_short);
                 }
                 else if (now < c4)
                 {
@@ -1608,19 +1744,21 @@ namespace MainForm
                     PhaseTimeRefLabel2.Visible = true;
                     PhaseTimeOffsetLabel2.Visible = true;
                     PhaseTimeRefLabel1.Text = "C4 -";
-                    PhaseTimeOffsetLabel1.Text = (c4 - now).ToString(format);
+                    PhaseTimeOffsetLabel1.Text = (c4 - now).ToString(format_short);
                     PhaseTimeRefLabel2.Text = "C3 +";
-                    PhaseTimeOffsetLabel2.Text = (now - c3).ToString(format);
+                    PhaseTimeOffsetLabel2.Text = (now - c3).ToString(format_short);
                 }
                 else
                 {
                     // after eclipse finish
-                    PhaseTimeRefLabel1.Visible = false;
-                    PhaseTimeOffsetLabel1.Visible = false;
-                    PhaseTimeRefLabel2.Visible = true;
-                    PhaseTimeOffsetLabel2.Visible = true;
-                    PhaseTimeRefLabel2.Text = "C4 +";
-                    PhaseTimeOffsetLabel2.Text = (now - c4).ToString(format);
+                    PhaseTimeRefLabel2.Visible = false;
+                    PhaseTimeOffsetLabel2.Visible = false;
+                    PhaseTimeRefLabel1.Visible = true;
+                    PhaseTimeOffsetLabel1.Visible = true;
+                    PhaseTimeRefLabel1.Text = "C4 +";
+                    PhaseTimeOffsetLabel1.Text = (now - c4).ToString(format_long);
+                    PhaseTimeRefLabel1.ForeColor = Color.FromArgb(192, 0, 0);
+                    PhaseTimeOffsetLabel1.ForeColor = Color.FromArgb(192, 0, 0);
                 }
             }
             else
@@ -1653,7 +1791,16 @@ namespace MainForm
                                 if (!step.IsActive() && SessionIsLive)
                                 {
                                     // If we're live, start the step if it isn't active, and break the forloop to stop evaluating the rest of the steps (steps cannot be parallel)
+                                    ScrollPanelTo(i);
                                     Console.WriteLine("step starting: {0}", step.Phase);
+                                    if (MainCamera.IsLiveViewOn)
+                                    {
+                                        // disable liveview if the interval is 'continuous' or less than 10s
+                                        if (step.Interval == TimeSpan.Zero || step.Interval < new TimeSpan(0, 0, 10))
+                                        {
+                                            LiveViewStopSub(true);
+                                        }
+                                    }
                                     step.Start();
                                     break;
                                 }
@@ -1676,9 +1823,9 @@ namespace MainForm
             }
 
             // check for last activity on camera and nudge it to stay awake, if needed
-            if ((now - _lastAction) > new TimeSpan(0,5,0))
+            if ((now - _lastAction) > new TimeSpan(0,5,0) && MainCamera?.SessionOpen == true)
             {
-                NudgeCamera();
+                    NudgeCamera();
             }
 
             // Check for issues
@@ -1703,7 +1850,23 @@ namespace MainForm
                     NotificationLabel.ForeColor = Color.Black;
                     NotificationLabel.Visible = false;
                 }
+            }
+            else
+            {
+                NotificationLabel.Text = "";
+                NotificationLabel.ForeColor = Color.Black;
+                NotificationLabel.Visible = false;
+            }
 
+            if (MainCamera?.SessionOpen == false)
+            {
+                // no camera session currently, update the camera list
+                if (DateTime.Now - _lastCameraRefresh > new TimeSpan(0,0,1))
+                {
+                    try { RefreshCamera(); _lastCameraRefresh = DateTime.Now; }
+                    catch (Exception ex) { ReportError(ex.Message, false); }
+                }
+                
             }
         }
         #endregion
@@ -1714,10 +1877,26 @@ namespace MainForm
         {
             try
             {
-                if (!MainCamera.IsLiveViewOn) { MainCamera.StartLiveView(); LiveViewButton.Text = "Stop LV"; }
-                else { MainCamera.StopLiveView(); LiveViewButton.Text = "Start LV"; }
+                if (!MainCamera.IsLiveViewOn) { LiveViewStartSub(); }
+                else { LiveViewStopSub(); }
             }
             catch (Exception ex) { ReportError(ex.Message, false); }
+        }
+
+        private void LiveViewStopSub(bool contAsync = false)
+        {
+            if (!contAsync)
+                MainCamera.StopLiveView();
+            else
+                MainCamera.StopLiveViewContAsync();
+            LiveViewButton.Text = "Start LV";
+        }
+
+        private void LiveViewStartSub()
+        {
+            MainCamera.StartLiveView(); 
+            LiveViewButton.Text = "Stop LV"; 
+            Zoom1RadioButton.Checked = true;
         }
 
         private void LiveViewPicBox_SizeChanged(object sender, EventArgs e)
@@ -1754,10 +1933,107 @@ namespace MainForm
                             w = (int)(LVBh * LVration);
                             h = LVBh;
                         }
-                        e.Graphics.DrawImage(Evf_Bmp, 0, 0, w, h);
+                        //if (!Zoom10RadioButton.Checked && !Zoom5RadioButton.Checked)      // use this logic instead if additional zoom levels are required
+                        if (Zoom10RadioButton.Checked)
+                            {
+                            // software zoom
+                            double _zoomRatio = 1d / 1d;     // 5x  - the camera-supplied 5x zoom is higher quality, use this logic if other synthetic zoom levels are required
+                            if (Zoom10RadioButton.Checked) _zoomRatio /= 2d;    // 10x
+                            Int32 newWidth = (Int32)(Evf_Bmp.Width * _zoomRatio);
+                            Int32 newHeight = (Int32)(Evf_Bmp.Height * _zoomRatio);
+
+                            // Cropping around the center of the original bitmap
+                            Int32 xOffset = (Evf_Bmp.Width - newWidth) / 2;
+                            Int32 yOffset = (Evf_Bmp.Height - newHeight) / 2;
+
+                            // make sure we're still inside the bitmap after panning
+                            if (xOffset + LVoffsetX < 0)
+                                LVoffsetX = -1 * xOffset;
+                            else if (xOffset + LVoffsetX + newWidth > Evf_Bmp.Width)
+                                LVoffsetX = Evf_Bmp.Width - newWidth - xOffset;
+                            if (yOffset + LVoffsetY < 0) 
+                                LVoffsetY = -1 * yOffset;
+                            else if (yOffset + LVoffsetY > Evf_Bmp.Height - newHeight)
+                                LVoffsetY = Evf_Bmp.Height - newHeight - yOffset;
+                            xOffset += LVoffsetX;
+                            yOffset += LVoffsetY;
+
+                            System.Drawing.Rectangle rectSource = new System.Drawing.Rectangle(xOffset, yOffset, newWidth, newHeight);
+                            System.Drawing.Rectangle rectTarget = new System.Drawing.Rectangle(0, 0, w, h);
+                            e.Graphics.DrawImage(Evf_Bmp, rectTarget, rectSource, GraphicsUnit.Pixel);
+                        }
+                        else
+                        {
+                            e.Graphics.DrawImage(Evf_Bmp, 0, 0, w, h);
+                        }
                     }
                 }
             }
+        }
+
+        private void Zoom1RadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MainCamera.IsLiveViewOn)
+            {
+                if (Zoom1RadioButton.Checked)
+                {
+                    try
+                    {
+                        MainCamera.SetSetting(PropertyID.Evf_Zoom, (UInt32)EvfZoom.Fit);
+                    }
+                    catch (Exception ex) { ReportError(ex.Message, false); }
+                }
+            }
+            LVPanDownButton.Visible = false;
+            LVPanUpButton.Visible = false;
+            LVPanLeftButton.Visible = false;
+            LVPanRightButton.Visible = false;
+        }
+
+        private void Zoom5RadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MainCamera.IsLiveViewOn)
+            {
+                if (Zoom5RadioButton.Checked)
+                {
+                    try
+                    {
+                        MainCamera.SetSetting(PropertyID.Evf_Zoom, (UInt32)EvfZoom.x5);
+                    }
+                    catch (Exception ex) { ReportError(ex.Message, false); }
+
+                    LVPanDownButton.Visible = true;
+                    LVPanUpButton.Visible = true;
+                    LVPanLeftButton.Visible = true;
+                    LVPanRightButton.Visible = true;
+                }
+                LVoffsetX = LVoffsetY = 0;
+            }
+        }
+
+        private void Zoom10RadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (MainCamera.IsLiveViewOn)
+            {
+                if (Zoom10RadioButton.Checked)
+                {
+                    // the Canon SDK does not send a 10x cropped bitmap, the documentation is opaque but this is currently by design
+                    // see discussion here https://stackoverflow.com/questions/31634533/edsdk-liveview-zoom-10x
+                    //try
+                    //{
+                    //    MainCamera.SetSetting(PropertyID.Evf_Zoom, (UInt32)EvfZoom.x10);
+                    //}
+                    //catch (Exception ex) { ReportError(ex.Message, false); }
+
+                    LVPanDownButton.Visible = true;
+                    LVPanUpButton.Visible = true;
+                    LVPanLeftButton.Visible = true;
+                    LVPanRightButton.Visible = true;
+
+                }
+                LVoffsetX = LVoffsetY = 0;
+            }
+
         }
 
         private void PreviewThumbButton_Click(object sender, EventArgs e)
@@ -1835,12 +2111,60 @@ namespace MainForm
             }
         }
 
+        private void LVPanUpButton_Click(object sender, EventArgs e)
+        {
+            LVoffsetY -= 30;
+            //if (Zoom5RadioButton.Checked)
+            //{
+            //    EOSDigital.SDK.Point newPoint = new EOSDigital.SDK.Point(ZoomRect.X, Math.Max(ZoomRect.Y + LVoffsetY, 0));
+            //    MainCamera.SetZoomPositionSetting(PropertyID.Evf_ZoomPosition, newPoint);
+            //}
+        }
+
+        private void LVPanLeftButton_Click(object sender, EventArgs e)
+        {
+            LVoffsetX -= 30;
+            //if (Zoom5RadioButton.Checked)
+            //{
+            //    EOSDigital.SDK.Point newPoint = new EOSDigital.SDK.Point(Math.Max(ZoomRect.X + LVoffsetX, 0), ZoomRect.Y);
+            //    MainCamera.SetZoomPositionSetting(PropertyID.Evf_ZoomPosition, newPoint);
+            //}
+        }
+
+        private void LVPanDownButton_Click(object sender, EventArgs e)
+        {
+            LVoffsetY += 30;
+            //if (Zoom5RadioButton.Checked)
+            //{
+            //    EOSDigital.SDK.Point newPoint = new EOSDigital.SDK.Point(ZoomRect.X, Math.Min(ZoomRect.Y + LVoffsetY, ZoomSize.Height - ZoomRect.Height));
+            //    MainCamera.SetZoomPositionSetting(PropertyID.Evf_ZoomPosition, newPoint);
+
+            //}
+        }
+
+        private void LVPanRightButton_Click(object sender, EventArgs e)
+        {
+            LVoffsetX += 30;
+            //if (Zoom5RadioButton.Checked)
+            //{
+            //    EOSDigital.SDK.Point newPoint = new EOSDigital.SDK.Point(Math.Min(ZoomRect.X + LVoffsetX, ZoomSize.Width - ZoomRect.Width), ZoomRect.Y);
+            //    MainCamera.SetZoomPositionSetting(PropertyID.Evf_ZoomPosition, newPoint);
+            //}
+        }
+
         #endregion
 
         #region Subroutines
 
         private void CloseSession()
         {
+            MainCamera.LiveViewUpdated -= MainCamera_LiveViewUpdated;
+            MainCamera.ZoomRectangleUpdated -= MainCamera_ZoomRectUpdated;
+                MainCamera.ZoomSizeUpdated -= MainCamera_ZoomSizeUpdated;
+            //MainCamera.ProgressChanged -= MainCamera_ProgressChanged;
+            MainCamera.StateChanged -= MainCamera_StateChanged;
+            MainCamera.DownloadReady -= MainCamera_DownloadReady;
+
             MainCamera.CloseSession();
             AvCoBox.Items.Clear();
             TvCoBox.Items.Clear();
@@ -1858,6 +2182,7 @@ namespace MainForm
             LiveViewButton.Text = "Start LV";
             LoadSettingsButton.Enabled = true;
             SaveSettingsButton.Enabled = false;
+            _AllowEdit = false;
             if (!_debug)
                 StartCaptureButton.Enabled = false;
         }
@@ -1885,22 +2210,25 @@ namespace MainForm
             else if (CamList.Count > 0) CameraListBox.SelectedIndex = 0;
         }
 
-        private void OpenSession()
+        private async void OpenSession()
         {
             if (CameraListBox.SelectedIndex >= 0)
             {
+                _lastAction = DateTime.Now;   // required to keep time keeper from firing a "nudge" before camera session is fully opened
                 MainCamera = CamList[CameraListBox.SelectedIndex];
-                MainCamera.OpenSession();
+                await Task.Run(() => MainCamera.OpenSession());
                 MainCamera.LiveViewUpdated += MainCamera_LiveViewUpdated;
+                MainCamera.ZoomRectangleUpdated += MainCamera_ZoomRectUpdated;
+                MainCamera.ZoomSizeUpdated += MainCamera_ZoomSizeUpdated;
                 //MainCamera.ProgressChanged += MainCamera_ProgressChanged;
                 MainCamera.StateChanged += MainCamera_StateChanged;
                 MainCamera.DownloadReady += MainCamera_DownloadReady;
 
                 SessionButton.Text = "Close Session";
                 SessionLabel.Text = MainCamera.DeviceName;
-                AvList = MainCamera.GetSettingsList(PropertyID.Av);
-                TvList = MainCamera.GetSettingsList(PropertyID.Tv);
-                ISOList = MainCamera.GetSettingsList(PropertyID.ISO);
+                AvList = await Task.Run(() => MainCamera.GetSettingsList(PropertyID.Av));
+                TvList = await Task.Run(() => MainCamera.GetSettingsList(PropertyID.Tv));
+                ISOList = await Task.Run(() => MainCamera.GetSettingsList(PropertyID.ISO));
                 AEBList = AEBValue.AEBValues();
                 SeqTvListBox.Items.Clear();
                 SeqAvCoBox.Items.Clear();
@@ -1914,16 +2242,16 @@ namespace MainForm
                 LoadSettingsButton.Enabled = false;
                 SaveSettingsButton.Enabled = true;
                 LoadedCameraSettingsLabel.Visible = false;
-                AvCoBox.SelectedIndex = AvCoBox.Items.IndexOf(AvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Av)).StringValue);
-                TvCoBox.SelectedIndex = TvCoBox.Items.IndexOf(TvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Tv)).StringValue);
-                ISOCoBox.SelectedIndex = ISOCoBox.Items.IndexOf(ISOValues.GetValue(MainCamera.GetInt32Setting(PropertyID.ISO)).StringValue);
+                AvCoBox.SelectedIndex = await Task.Run(() => AvCoBox.Items.IndexOf(AvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Av)).StringValue));
+                TvCoBox.SelectedIndex = await Task.Run(() => TvCoBox.Items.IndexOf(TvValues.GetValue(MainCamera.GetInt32Setting(PropertyID.Tv)).StringValue));
+                ISOCoBox.SelectedIndex = await Task.Run(() => ISOCoBox.Items.IndexOf(ISOValues.GetValue(MainCamera.GetInt32Setting(PropertyID.ISO)).StringValue));
                 SeqAvCoBox.SelectedIndex = AvCoBox.SelectedIndex;
                 SeqIsoCoBox.SelectedIndex = ISOCoBox.SelectedIndex;
                 SettingsTabPage.Enabled = true;
                 LiveViewGroupBox.Enabled = true;
                 GetGPSButton.Enabled = true;
                 StartCaptureButton.Enabled = true;
-                //_lastAction = DateTime.Now;
+                _AllowEdit = true;
                 NudgeCamera();
             }
         }
@@ -2010,7 +2338,7 @@ namespace MainForm
                         SettingsTabControl.SelectedTab = EclipseTabPage;
                         SeCalcButton.PerformClick();
                     }
-                    SettingsTabControl.SelectedTab = SettingsTabPage;
+                    SettingsTabControl.SelectedTab = CaptureTabPage;
                     // restore the step sequence, if present
                     Composer.ReloadSequence();
                     // Invalidate the sequence panel if the location/eclipse info differ from the circumstances stored in the Composer.
@@ -2020,6 +2348,9 @@ namespace MainForm
                     // restore the Solar Filter and Focuser IPs if present
                     SolarFilterIpTextBox.Text = Composer.SolarFilterIP;
                     FocuserIpTextBox.Text = Composer.FocuserIP;
+                    // restore min burst length if present
+                    _burstLength = Composer.BurstLength;
+                    BurstLengthUpDown.Value = Composer.BurstLength;
                 }
                 catch (Exception ex) { ReportError(ex.Message, false); }
             }
@@ -2040,7 +2371,8 @@ namespace MainForm
             // debug location
             Stream streamDebug = new FileStream("../../test.settings", FileMode.Create, System.IO.FileAccess.Write);
             // production location
-            Stream stream = new FileStream(Path.Combine(AppDataDir, fname), FileMode.Create, System.IO.FileAccess.Write);
+            String fpath = Path.Combine(AppDataDir, fname);
+            Stream stream = new FileStream(fpath, FileMode.Create, System.IO.FileAccess.Write);
 
             List<CameraValue> valueList = AvList.ToList<CameraValue>();
             valueList.AddRange(TvList);
@@ -2051,6 +2383,8 @@ namespace MainForm
             // also write to production location
             formatter.Serialize(stream, valueList);
             stream.Close();
+            LoadedCameraSettingsLabel.Visible = true;
+            LoadedCameraSettingsLabel.Text = "Settings saved to " + fpath;
         }
 
         // TODO: change default filename in designer
@@ -2090,6 +2424,7 @@ namespace MainForm
                     AEBList = AEBValue.AEBValues();
                     for (int i = AEBList.Count - 1; i >= 0; i--) { AEBUpDown.Items.Add(AEBList[i].StringValue); }
                     stream.Close();
+                    _AllowEdit = true;
                 }
             }
             catch (Exception ex) { ReportError(ex.Message, false); }
@@ -2130,9 +2465,11 @@ namespace MainForm
             double target = baseTv.DoubleValue * Math.Pow(2, offset / 3);  // computes the precise shutter speed, but cameras list nominal values
             Console.WriteLine("offset: {0}\nbaseTv: {1}\ntarget: {2}", offset.ToString(), baseTv.DoubleValue.ToString(), target.ToString());
 
-            // TODO: TvList is null if settings were loaded, change this reference
             for (int i = 0; i < TvList.Count(); i++)
             {
+                if (TvList[i].StringValue == TvValues.Bulb.StringValue)
+                    continue;
+
                 double high = TvList[i].DoubleValue;
                 
                 // on first item, if target is higher, return first item
@@ -2156,16 +2493,20 @@ namespace MainForm
 
         private void EventHandler_EditStage(object sender, EventArgs e)
         {
+            // TODO: disable the edit button instead of this silent return
+            if (!VerifyCalcs() || !VerifyComposer() || !_AllowEdit)
+                return;
+
             StepControl step = (StepControl)sender;
 
+            CancelStageButton.Text = "Cancel";
+            AddStageButton.Text = "Save Changes";
             SettingsTabControl.SelectedTab = SeqGenTabPage;
             PhaseComboBox.Items.Clear();
             PhaseComboBox.Items.Add(step.Phase);
             PhaseComboBox.SelectedIndex = 0;
             PhaseComboBox.Enabled = false;
             ClearSeqButton.Enabled = false;
-            CancelStageButton.Text = "Cancel";
-            AddStageButton.Text = "Save Changes";
 
             StartRefComboBox.SelectedItem = step.StartRef;
             EndRefComboBox.SelectedItem = step.EndRef;
@@ -2187,7 +2528,7 @@ namespace MainForm
             {
                 if (task.Script != null)
                 {
-                    ScriptTextBox.Text = task.Script;
+                    ScriptComboBox.SelectedItem = task.Script;
                 }
                 else
                 {
@@ -2286,7 +2627,8 @@ namespace MainForm
             int nextStepIdx = SeqFlowPanel.Controls.IndexOf(step) + 1;
             if (SeqFlowPanel.Controls.Count > nextStepIdx)
             {
-            nextStep = (StepControl)SeqFlowPanel.Controls[nextStepIdx];
+                if (SeqFlowPanel.Controls[nextStepIdx].GetType() == typeof(StepControl))
+                    nextStep = (StepControl)SeqFlowPanel.Controls[nextStepIdx];
             }
 
             if (e.Repeat)
@@ -2295,39 +2637,31 @@ namespace MainForm
                 if (nextStep != null)
                 {
                     // try not to bleed over into nextStep's timeframe
-                    while (DateTime.Now <= step.EndDateTime - _averageTaskTime)
+                    while (DateTime.Now <= step.EndDateTime - e.LongestTask && SessionIsLive)
                     {
-                        TimeSpan intervalT1 = step.GetStepTime();
-                        DateTime t1 = DateTime.Now;
                         foreach (TaskControl task in step.GetTasks())
                         {
-                            if (DateTime.Now > step.EndDateTime - _averageTaskTime) break;
+                            if (DateTime.Now > step.EndDateTime - e.LongestTask) break;
                             if (SessionIsLive)
                                 await FireTask(task);
+                            else
+                                break;
                         }
-                        TimeSpan intervalT2 = step.GetStepTime();
-                        DateTime t2 = DateTime.Now;
-                        //Console.WriteLine("realtime: {0}  -  steptime: {1}", (t2 - t1).ToString(), (intervalT2 - intervalT1).ToString());
                     }
                 }
                 else
                 {
                     // last step, not worried about bleedover (will complete the entire task list on the
                     // final pass, regardless of endtime)
-                    while (DateTime.Now <= e.IntervalEndTime)
+                    while (DateTime.Now <= e.IntervalEndTime && SessionIsLive)
                     {
-                        TimeSpan intervalT1 = step.GetStepTime();
-                        DateTime t1 = DateTime.Now;
                         foreach (TaskControl task in step.GetTasks())
                         {
                             if (SessionIsLive)
-                            {
                                 await FireTask(task);
-                            }
+                            else 
+                                break;
                         }
-                        TimeSpan intervalT2 = step.GetStepTime();
-                        DateTime t2 = DateTime.Now;
-                        //Console.WriteLine("realtime: {0}  -  steptime: {1}", (t2 - t1).ToString(), (intervalT2 - intervalT1).ToString());
                     }
                 }
             }
@@ -2350,32 +2684,26 @@ namespace MainForm
                 if (nextStep != null)
                 {
                     // try not to bleed over into nextStep's timeframe
-                    TimeSpan intervalT1 = step.GetStepTime();
-                    DateTime t1 = DateTime.Now;
                     foreach (TaskControl task in step.GetTasks())
                     {
-                        if (DateTime.Now > step.EndDateTime - _averageTaskTime) break;
+                        if (DateTime.Now > step.EndDateTime - e.LongestTask) break;
                         if (SessionIsLive)
                             await FireTask(task);
+                        else
+                            break;
                     }
-                    TimeSpan intervalT2 = step.GetStepTime();
-                    DateTime t2 = DateTime.Now;
-                    Console.WriteLine("realtime: {0}  -  steptime: {1}", (t2 - t1).ToString(), (intervalT2 - intervalT1).ToString());
                 }
                 else
                 {
                     // last step, not worried about bleedover (will complete the entire task list on the
                     // final pass, regardless of endtime)
-                    TimeSpan intervalT1 = step.GetStepTime();
-                    DateTime t1 = DateTime.Now;
                     foreach (TaskControl task in step.GetTasks())
                     {
                         if (SessionIsLive)
                             await FireTask(task);
+                        else
+                            break;
                     }
-                    TimeSpan intervalT2 = step.GetStepTime();
-                    DateTime t2 = DateTime.Now;
-                    Console.WriteLine("realtime: {0}  -  steptime: {1}", (t2 - t1).ToString(), (intervalT2 - intervalT1).ToString());
                 }
                 //// show preview if there is time
                 //if (SessionIsLive && DateTime.Now < e.IntervalEndTime - new TimeSpan(0, 0, 1))
@@ -2487,7 +2815,7 @@ namespace MainForm
                 SeqFlowPanel.Enabled = true;
                 SeqGenTabPage.Enabled = true;
                 RefreshSequenceButton.Visible = false;
-                if (MainCamera != null || _debug)
+                if (MainCamera?.SessionOpen == true || _debug)
                     StartCaptureButton.Enabled = true;
             }
             else if (!calcsAreGood)
@@ -2536,10 +2864,9 @@ namespace MainForm
             
         }
 
-
         private bool IsAebActive()
         {
-            if (MainCamera != null)
+            if (MainCamera?.SessionOpen == true)
             {
                 int[] goodResults = { 1, 3, 5, 7, 9, 11, 13, 15 };
                 int bracket = MainCamera.GetInt32Setting(PropertyID.Bracket);
@@ -2556,6 +2883,7 @@ namespace MainForm
                 if (SeqFlowPanel.Controls[i].GetType() == typeof(StepControl))
                 {
                     StepControl step = (StepControl)SeqFlowPanel.Controls[i];
+                    if (step.Phase == "Script") continue;
                     foreach (TaskControl task in step.GetTasks())
                     {
                         if (task.AEBMinus != TvValues.Auto)
@@ -2571,11 +2899,14 @@ namespace MainForm
 
         private IntPtr GetLastThumbnail()
         {
-            if (MainCamera != null)
+            if (MainCamera?.SessionOpen == true)
             {
-                DownloadInfo fileInfo = MainCamera.GetLastImage();
-                Console.WriteLine("Last IMG: {0}", fileInfo.FileName);
-                return fileInfo.Reference;
+                var fileInfo = MainCamera.GetLastImage();
+                if (fileInfo != null)
+                {
+                    Console.WriteLine("Last IMG: {0}", fileInfo.FileName);
+                    return fileInfo.Reference;
+                }
             }
             return IntPtr.Zero;
         }
@@ -2583,7 +2914,7 @@ namespace MainForm
         // This does not work
         private void ShowPreviewThumb()
         {
-            if (PreviewOn && MainCamera != null)
+            if (PreviewOn && MainCamera?.SessionOpen == true)
             {
                 DownloadInfo fileInfo = MainCamera.GetLastImage();
                 var image = Image.FromStream(MainCamera.GetThumbnailStream(fileInfo));

@@ -7,6 +7,10 @@ using FileAccess = EOSDigital.SDK.FileAccess;
 using System.Collections.Generic;
 using System.Linq;
 using static System.Windows.Forms.AxHost;
+using EOSeclipse.Controls;
+using System.Runtime.InteropServices;
+using GMap.NET.MapProviders;
+using Newtonsoft.Json.Linq;
 
 namespace EOSDigital.API
 {
@@ -16,6 +20,10 @@ namespace EOSDigital.API
     public class Camera : IDisposable
     {
         #region Events
+
+        // ARL added
+        public event EventHandler<Rectangle> ZoomRectangleUpdated;
+        public event EventHandler<Size> ZoomSizeUpdated;
 
         /// <summary>
         /// The SDK object event
@@ -907,6 +915,13 @@ namespace EOSDigital.API
             else SetSetting(PropertyID.Evf_OutputDevice, (int)EvfOutputDevice.Camera);
         }
 
+        public void StopLiveViewContAsync(bool LVOff = true)
+        {
+            CheckState();
+            if (LVOff) SetSettingContAsync(PropertyID.Evf_OutputDevice, (int)EvfOutputDevice.Off, 0, 75, 40);
+            else SetSettingContAsync(PropertyID.Evf_OutputDevice, (int)EvfOutputDevice.Camera, 0, 75, 40);
+        }
+
         /// <summary>
         /// Starts recording a video
         /// <para>Note: The camera has to be set into filming mode before using this (usually a physical switch on the camera)</para>
@@ -1007,14 +1022,27 @@ namespace EOSDigital.API
             });
         }
 
-        /// <summary>
-        /// Sets a value for the given property ID, but ignores DEVICE_BUSY errors and attempts to resend setting instead
-        /// </summary>
-        public async Task SetSettingContAsync(PropertyID propID, object value, int inParam = 0, int delay = 75, int errors = 10)
+        // ARL - not sure why this has had some limited success over using the SetSetting method above.  The below came from (I wrapped it in the thread invoke):
+        // https://stackoverflow.com/questions/48579131/how-can-i-manage-moving-zoomed-view-in-canon-sdk-c-sharp
+        public void SetZoomPositionSetting(PropertyID propID, Point value, int inParam = 0)
         {
             CheckState();
 
-            await MainThread.Invoke(async () =>
+            MainThread.Invoke(() =>
+            {
+                int size = Marshal.SizeOf(typeof(Point));
+                ErrorHandler.CheckError(this, CanonSDK.EdsSetPropertyData(CamRef, propID, inParam, size, value));
+            });
+        }
+
+        /// <summary>
+        /// Sets a value for the given property ID, but ignores DEVICE_BUSY errors and attempts to resend setting instead
+        /// </summary>
+        public void SetSettingContAsync(PropertyID propID, object value, int inParam = 0, int delay = 75, int errors = 10)
+        {
+            CheckState();
+
+            MainThread.Invoke(() =>
             {
                 int propsize;
                 DataType proptype;
@@ -1025,8 +1053,7 @@ namespace EOSDigital.API
 
                 while (errorCount <= errors && errorCode == ErrorCode.DEVICE_BUSY)
                 {
-                    await Task.Delay(delay);
-                    //Thread.Sleep(delay);
+                    Thread.Sleep(delay);
                     //Console.WriteLine("prop {0:HH:mm:ss.fff}  - {1}", DateTime.Now, errorCount);
                     errorCode = CanonSDK.EdsSetPropertyData(CamRef, propID, inParam, propsize, value);
                     ErrorHandler.CheckErrorCont(this, errorCode);
@@ -1034,6 +1061,29 @@ namespace EOSDigital.API
                 }
                 Console.WriteLine("prop {0}: {1}", errorCode, DateTime.Now.ToString("mm:ss.fff"));
             });
+
+            //CheckState();
+
+            //await MainThread.Invoke(async () =>
+            //{
+            //    int propsize;
+            //    DataType proptype;
+            //    ErrorHandler.CheckError(this, CanonSDK.EdsGetPropertySize(CamRef, propID, inParam, out proptype, out propsize));
+
+            //    ErrorCode errorCode = CanonSDK.EdsSetPropertyData(CamRef, propID, inParam, propsize, value);
+            //    int errorCount = 1;
+
+            //    while (errorCount <= errors && errorCode == ErrorCode.DEVICE_BUSY)
+            //    {
+            //        await Task.Delay(delay);
+            //        //Thread.Sleep(delay);
+            //        //Console.WriteLine("prop {0:HH:mm:ss.fff}  - {1}", DateTime.Now, errorCount);
+            //        errorCode = CanonSDK.EdsSetPropertyData(CamRef, propID, inParam, propsize, value);
+            //        ErrorHandler.CheckErrorCont(this, errorCode);
+            //        errorCount++;
+            //    }
+            //    Console.WriteLine("prop {0}: {1}", errorCode, DateTime.Now.ToString("mm:ss.fff"));
+            //});
         }
 
         /// <summary>
@@ -1437,6 +1487,19 @@ namespace EOSDigital.API
             });
         }
 
+        // ARL
+        public T GetStructSettingFromRef<T>(PropertyID propID, IntPtr evfRef, int inParam = 0) where T : struct
+        {
+            CheckState();
+
+            return MainThread.Invoke(() =>
+            {
+                T property;
+                ErrorHandler.CheckError(this, CanonSDK.GetPropertyData<T>(evfRef, propID, inParam, out property));
+                return property;
+            });
+        }
+
 
         /// <summary>
         /// There is an overflow bug in the SDK that messes up the Evf_OutputDevice property.
@@ -1489,6 +1552,21 @@ namespace EOSDigital.API
                         //Check for errors
                         if (err == ErrorCode.OBJECT_NOTREADY) { continue; }
                         else if (err != ErrorCode.OK) { ErrorHandler.CheckError(err); continue; }
+
+                        //ARL - get the zoom rect
+                        Rectangle zoomRect = GetStructSettingFromRef<Rectangle>(PropertyID.Evf_ZoomRect, evfImageRef);
+                        EventHandler<Rectangle> rectHandler = ZoomRectangleUpdated;
+                        if (rectHandler != null)
+                        {
+                            rectHandler(this, zoomRect);
+                        }
+                        //ARL - get the coordsystem
+                        Size zoomSize = GetStructSettingFromRef<Size>(PropertyID.Evf_CoordinateSystem, evfImageRef);
+                        EventHandler<Size> sizeHandler = ZoomSizeUpdated;
+                        if (sizeHandler != null)
+                        {
+                            sizeHandler(this, zoomSize);
+                        }
 
                         //Release current evf image
                         CanonSDK.EdsRelease(evfImageRef);
