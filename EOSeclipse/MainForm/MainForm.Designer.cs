@@ -31,6 +31,7 @@ namespace MainForm
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.LiveViewGroupBox = new System.Windows.Forms.GroupBox();
             this.PreviewThumbButton = new System.Windows.Forms.Button();
             this.FocusFar3Button = new System.Windows.Forms.Button();
@@ -242,6 +243,7 @@ namespace MainForm
             this.LVPanUpButton = new System.Windows.Forms.Button();
             this.LVPanRightButton = new System.Windows.Forms.Button();
             this.LVPanDownButton = new System.Windows.Forms.Button();
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.LiveViewGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LiveViewPicBox)).BeginInit();
             this.InitGroupBox.SuspendLayout();
@@ -2648,12 +2650,18 @@ namespace MainForm
             this.LVPanDownButton.UseVisualStyleBackColor = false;
             this.LVPanDownButton.Click += new System.EventHandler(this.LVPanDownButton_Click);
             // 
+            // notifyIcon1
+            // 
+            this.notifyIcon1.Text = "notifyIcon1";
+            this.notifyIcon1.Visible = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(871, 607);
             this.Controls.Add(this.splitContainer2);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(887, 646);
             this.Name = "MainForm";
             this.Text = "EOS Eclipse";
@@ -2933,6 +2941,7 @@ namespace MainForm
         private System.Windows.Forms.Button LVPanUpButton;
         private System.Windows.Forms.Button LVPanDownButton;
         private System.Windows.Forms.Button LVPanRightButton;
+        private System.Windows.Forms.NotifyIcon notifyIcon1;
     }
 }
 
